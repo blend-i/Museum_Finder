@@ -1,22 +1,29 @@
 package no.hiof.museum_finder;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import no.hiof.museum_finder.adapter.MuseumRecyclerAdapter;
 import no.hiof.museum_finder.model.Museum;
 
 public class HomeFragment extends Fragment {
 
+    private static final String TAG = HomeFragment.class.getSimpleName();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -30,27 +37,19 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
+        setUpRecyclerView();
 
         /*
         Bundle arguments = getArguments();
-
         TextView textView = view.findViewById(R.id.homeTextView);
         assert arguments != null;
         HomeFragmentArgs args = HomeFragmentArgs.fromBundle(arguments);
-
         textView.setText(args.getUsername());
-
          */
-        setUpRecyclerView();
-        setupFavoritesRecyclerView();
-
-
-
     }
+
 
     private void setUpRecyclerView() {
         RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);

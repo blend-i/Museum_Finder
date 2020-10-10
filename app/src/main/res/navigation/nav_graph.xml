@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph.xml"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -23,5 +23,22 @@
             android:name="username"
             app:argType="string"
             android:defaultValue="Username" />
+        <action
+            android:id="@+id/action_homeFragment_to_museumDetailFragment"
+            app:destination="@id/museumDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/museumDetail"
+        android:name="no.hiof.museum_finder.MuseumDetailFragment"
+        android:label="fragment_museum_detail"
+        tools:layout="@layout/fragment_museum_detail" >
+        <argument
+            android:name="Title"
+            app:argType="string"
+            android:defaultValue="Museum Title" />
+        <argument
+            android:name="Description"
+            app:argType="string"
+            android:defaultValue="Description of museum" />
     </fragment>
 </navigation>

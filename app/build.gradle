@@ -36,3 +36,4 @@ dependencies {
 }
 
 apply plugin: "androidx.navigation.safeargs"
+

@@ -35,12 +35,13 @@ public class LoginFragment extends Fragment {
         Button button = view.findViewById(R.id.buttonLogin);
         //button.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_loginFragment_to_homeFragment));
 
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText usernameEditText = getView().findViewById(R.id.usernameEditText);
                 String userName = usernameEditText.getText().toString();
-                LoginFragmentDirections .ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
+                LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
                 action.setUsername(userName);
                 Navigation.findNavController(view).navigate(action);
             }

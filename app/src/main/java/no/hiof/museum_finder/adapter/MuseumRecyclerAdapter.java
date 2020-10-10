@@ -5,17 +5,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
 import no.hiof.museum_finder.HomeFragment;
+import no.hiof.museum_finder.HomeFragmentArgs;
+import no.hiof.museum_finder.HomeFragmentDirections;
+import no.hiof.museum_finder.LoginFragmentDirections;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
 
@@ -70,21 +73,31 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         private TextView thumbnailTextView;
         private ImageView thumbnailimageView;
         private TextView descriptionTextView;
+        private Button thumbnailButton;
 
-        public MuseumViewHolder(@NonNull View itemView) {
+        public MuseumViewHolder(@NonNull final View itemView) {
             super(itemView);
 
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
 
+            Button thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
+
+            thumbnailButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
+
+                    Navigation.findNavController(itemView).navigate(action);
+                }
+            });
         }
 
-        public void setMuseum(Museum museumToDisplay) {
+        public void setMuseum(final Museum museumToDisplay) {
             thumbnailTextView.setText(museumToDisplay.getTitle());
             thumbnailimageView.setImageResource(museumToDisplay.getUid());
             descriptionTextView.setText(museumToDisplay.getDescription());
         }
     }
-
 }
