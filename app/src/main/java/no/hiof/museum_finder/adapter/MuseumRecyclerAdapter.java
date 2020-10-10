@@ -73,7 +73,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         private TextView thumbnailTextView;
         private ImageView thumbnailimageView;
         private TextView descriptionTextView;
-        private Button thumbnailButton;
+
 
         public MuseumViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -88,6 +88,8 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
                 @Override
                 public void onClick(View v) {
                     HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
+                    action.setTitle(thumbnailTextView.getText().toString());
+                    action.setDescription(descriptionTextView.getText().toString());
 
                     Navigation.findNavController(itemView).navigate(action);
                 }

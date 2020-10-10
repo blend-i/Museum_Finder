@@ -1,12 +1,9 @@
 package no.hiof.museum_finder.model;
-
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-
 import no.hiof.museum_finder.R;
 
 public class Museum {
-
     private int uid;
     private String title;
     private String description;
@@ -19,11 +16,9 @@ public class Museum {
         //this.posterUrl = posterUrl;
     }
 
-
     public int getUid() {
         return uid;
     }
-
 
     public String getTitle() {
         return title;
@@ -48,7 +43,7 @@ public class Museum {
         String[] titles = getTitles();
 
         for (int i = 0; i <images.length ; i++) {
-            Museum aMuseum = new Museum(images[i], titles[i], "Description of museum");
+            Museum aMuseum = new Museum(images[i], titles[i], "Description of museum22");
             dataList.add(aMuseum);
         }
         return dataList;

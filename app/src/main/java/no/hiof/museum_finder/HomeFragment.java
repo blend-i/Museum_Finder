@@ -1,23 +1,14 @@
 package no.hiof.museum_finder;
 
-import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-
 import no.hiof.museum_finder.adapter.MuseumRecyclerAdapter;
 import no.hiof.museum_finder.model.Museum;
 
@@ -59,9 +50,7 @@ public class HomeFragment extends Fragment {
 
     private void setupFavoritesRecyclerView() {
         RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
-
         museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), Museum.getData()));
-
         museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
 }
