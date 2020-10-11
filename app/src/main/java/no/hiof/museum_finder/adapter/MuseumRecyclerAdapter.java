@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -77,20 +79,28 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
 
         public MuseumViewHolder(@NonNull final View itemView) {
             super(itemView);
-
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
 
             Button thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
-
             thumbnailButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
                     action.setTitle(thumbnailTextView.getText().toString());
                     action.setDescription(descriptionTextView.getText().toString());
+                    Navigation.findNavController(itemView).navigate(action);
+                }
+            });
 
+            ImageView imageView = itemView.findViewById(R.id.thumbnailimageView);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
+                    action.setTitle(thumbnailTextView.getText().toString());
+                    action.setDescription(descriptionTextView.getText().toString());
                     Navigation.findNavController(itemView).navigate(action);
                 }
             });
