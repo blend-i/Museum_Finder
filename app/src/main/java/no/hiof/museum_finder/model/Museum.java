@@ -49,7 +49,6 @@ public class Museum {
         return dataList;
     }
 
-
     private static int[] getImages() {
         return new int[] {
                 R.drawable.norsk_folkemuseum, R.drawable.norsk_teknisk_museum, R.drawable.vikingskipshuset,

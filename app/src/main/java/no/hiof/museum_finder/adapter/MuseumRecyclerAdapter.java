@@ -9,14 +9,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
-
 import no.hiof.museum_finder.HomeFragment;
 import no.hiof.museum_finder.HomeFragmentArgs;
 import no.hiof.museum_finder.HomeFragmentDirections;
@@ -71,11 +68,9 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
     }
 
     public class MuseumViewHolder extends RecyclerView.ViewHolder {
-
         private TextView thumbnailTextView;
         private ImageView thumbnailimageView;
         private TextView descriptionTextView;
-
 
         public MuseumViewHolder(@NonNull final View itemView) {
             super(itemView);
