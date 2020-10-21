@@ -3,6 +3,11 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "no.hiof.museum_finder"
         minSdkVersion 19
@@ -34,9 +39,13 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.21'
 
-    //Ikke bytt til nyere versjon. Det er bad news
-    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
+    implementation 'com.google.android.libraries.places:places:2.4.0'
+    def activity_version = "1.1.0"
+    // Java language implementation
+    implementation "androidx.activity:activity:$activity_version"
+    implementation 'com.karumi:dexter:6.2.1'
 
 
 }

@@ -41,4 +41,9 @@
             app:argType="string"
             android:defaultValue="Description of museum" />
     </fragment>
+    <fragment
+        android:id="@+id/museumDetailFragmentApi"
+        android:name="no.hiof.museum_finder.MuseumDetailFragmentApi"
+        android:label="fragment_museum_detail_api"
+        tools:layout="@layout/fragment_museum_detail_api" />
 </navigation>
