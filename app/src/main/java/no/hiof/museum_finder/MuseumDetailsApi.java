@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,6 +16,8 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
@@ -40,6 +41,9 @@ import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -52,6 +56,7 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -59,7 +64,6 @@ import java.util.Locale;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MuseumDetailsApi extends AppCompatActivity {
-
 
     //This class tells you your current location
     public FusedLocationProviderClient fusedLocationProviderClient;
@@ -90,9 +94,84 @@ public class MuseumDetailsApi extends AppCompatActivity {
         materialSearchBar = findViewById(R.id.searchBar);
         findButton = findViewById(R.id.findButton);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MuseumDetailsApi.this);
+
+
         Places.initialize(MuseumDetailsApi.this, "AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc");
         placesClient = Places.createClient(this);
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+
+
+
+        materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+            @Override
+            public void onSearchStateChanged(boolean enabled) {
+
+            }
+
+            @Override
+            public void onSearchConfirmed(CharSequence text) {
+                //dont exacly know what this does, but i know i need it
+                startSearch(text.toString(), true, null, true);
+            }
+
+            @Override
+            public void onButtonClicked(int buttonCode) {
+                //this function is called whne you click the button on the search bar. this may be the "back" button or the hamburger menu like button
+                if(buttonCode == MaterialSearchBar.BUTTON_NAVIGATION) {
+                    //for example open or close navigation drawer
+                } else if(buttonCode == MaterialSearchBar.BUTTON_BACK) {
+                    materialSearchBar.disableSearch();
+                }
+            }
+        });
+
+        materialSearchBar.addTextChangeListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                FindAutocompletePredictionsRequest predictionsRequest = FindAutocompletePredictionsRequest.builder()
+                        //Filter out what you want to search for. In this case i use ESTABLISHMENT because we want to find museums.
+                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                        .setSessionToken(token)
+                        .setQuery(s.toString())
+                        .build();
+                        // You can use this to restrict search if app is only gonna be used in one country -->  .setCountry("no")
+
+                placesClient.findAutocompletePredictions(predictionsRequest).addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
+                        if(task.isSuccessful()){
+                            FindAutocompletePredictionsResponse predictionsResponse = task.getResult();
+                            if(predictionsResponse!=null){
+                                predictionList = predictionsResponse.getAutocompletePredictions();
+                                // TODO: 22/10/2020  Here you should use an adapter to display the predictions! i will try with arraylist as for now
+                                List<String> suggestionsList = new ArrayList<>();
+                                for (int i = 0; i <predictionList.size() ; i++) {
+                                    AutocompletePrediction prediction = predictionList.get(i);
+                                    suggestionsList.add(prediction.getFullText(null).toString());
+                                }
+                                materialSearchBar.updateLastSuggestions(suggestionsList);
+                                if(!materialSearchBar.isSuggestionsVisible()){
+                                    materialSearchBar.showSuggestionsList();
+                                }
+                            }
+                        }else {
+                            Log.i("enTag", "prediction unsuccessful");
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         //check if gps is enabeled or not aand then request user to enable it
 
@@ -150,17 +229,18 @@ public class MuseumDetailsApi extends AppCompatActivity {
                 if(task.isSuccessful()){
                     //task is successful does not gurantee that it is so we check if its null
                     lastKnownLocation = task.getResult();
-                    if (lastKnownLocation != null) {
 
+                    //If it is not null, we get the location
+                    if (lastKnownLocation != null) {
                         //putting this in a thread beacuse i read somewhere that Geocoder can use alot of time.
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                //If it is not null, we get the location
                                 Geocoder geocoder;
                                 List<Address> addresses = null;
                                 geocoder = new Geocoder(MuseumDetailsApi.this, Locale.getDefault());
 
+                                //using latitude and longitude from last location to pinpoint address
                                 try {
                                     addresses = geocoder.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                                 } catch (IOException e) {
@@ -200,6 +280,34 @@ public class MuseumDetailsApi extends AppCompatActivity {
                                 }
                                 //update location
                                 lastKnownLocation = locationResult.getLastLocation();
+
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Geocoder geocoder;
+                                        List<Address> addresses = null;
+                                        geocoder = new Geocoder(MuseumDetailsApi.this, Locale.getDefault());
+
+                                        //using latitude and longitude from last location to pinpoint address
+                                        try {
+                                            addresses = geocoder.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                                        String city = addresses.get(0).getLocality();
+                                        String state = addresses.get(0).getAdminArea();
+                                        String country = addresses.get(0).getCountryName();
+                                        String postalCode = addresses.get(0).getPostalCode();
+                                        String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+
+                                        System.out.println("Address after location turn on: " + address);
+                                        System.out.println("City: " + city);
+                                        System.out.println("Country: " + country);
+                                    }
+                                }).start();
+
 
                                 fusedLocationProviderClient.removeLocationUpdates(locationCallback);
 

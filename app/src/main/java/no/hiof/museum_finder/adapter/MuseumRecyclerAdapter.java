@@ -29,19 +29,16 @@ Fra context så lager vi en inflater. Denne inflateren bruker vi for å få et v
 Det viewet bruker vi til å opprette new Viewholder slik at hver gang recyclerView finner ut at den trenger ny viewholder så sier den til adapteren "lag en ny viewholder til meg"
 Da får viewholder en instant av lista i form av view og da kan hente ut de enkle viewene.
 
-
  */
 
 public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAdapter.MuseumViewHolder> {
     private static final String TAG = MuseumRecyclerAdapter.class.getSimpleName();
-
     private List<Museum> museumList;
     private LayoutInflater inflater;
 
     public MuseumRecyclerAdapter (Context context, List<Museum> museumList) {
         //Lager en inflater basert på den konteksten man er i
         this.inflater = LayoutInflater.from(context);
-
         this.museumList = museumList;
     }
 
@@ -56,7 +53,6 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
 
     @Override
     public void onBindViewHolder(@NonNull MuseumViewHolder viewHolder, int position) {
-
         Museum museumToDisplay = museumList.get(position);
         Log.d(TAG, "onBindViewHolder" + museumToDisplay.getTitle() + " - " + position);
         viewHolder.setMuseum(museumToDisplay);
@@ -89,7 +85,9 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
                 }
             });
 
+            //not paste error. extra funcationality enableing the details of museum by clicking the image
             ImageView imageView = itemView.findViewById(R.id.thumbnailimageView);
+
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

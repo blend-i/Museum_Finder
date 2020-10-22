@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                     placeResponse.addOnCompleteListener(task -> {
                         if (task.isSuccessful()){
                             FindCurrentPlaceResponse response = task.getResult();
+                            //Doesent have to be included as long as task is succesful we got permission and can go to next activity.
                             for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
                                 Log.i(TAG, String.format("Place '%s' has likelihood: %f",
                                         placeLikelihood.getPlace().getName(),
