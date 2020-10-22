@@ -143,53 +143,20 @@ public class MuseumDetailsApi extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void getDeviceLocation() {
+        //Here we ask the fusedLocationProviderClient to give us the last location
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
                 if(task.isSuccessful()){
+                    //task is successful does not gurantee that it is so we check if its null
                     lastKnownLocation = task.getResult();
                     if (lastKnownLocation != null) {
 
-                        Geocoder geocoder;
-                        List<Address> addresses = null;
-                        geocoder = new Geocoder(MuseumDetailsApi.this, Locale.getDefault());
-
-                        try {
-                            addresses = geocoder.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                        String city = addresses.get(0).getLocality();
-                        String state = addresses.get(0).getAdminArea();
-                        String country = addresses.get(0).getCountryName();
-                        String postalCode = addresses.get(0).getPostalCode();
-                        String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
-
-                        System.out.println("Address: " + address);
-                        System.out.println("City: " + city);
-                        System.out.println("Country: " + country);
-                    }
-                    // if location is null, then we need to update the information
-                    else {
-                        LocationRequest locationRequest = LocationRequest.create();
-                        locationRequest.setInterval(10000);
-                        locationRequest.setFastestInterval(5000);
-                        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-                        locationCallback = new LocationCallback() {
+                        //putting this in a thread beacuse i read somewhere that Geocoder can use alot of time.
+                        new Thread(new Runnable() {
                             @Override
-                            public void onLocationResult(LocationResult locationResult) {
-                                super.onLocationResult(locationResult);
-                                //if its still null then just return and stop
-                                if(locationResult == null){
-                                    return;
-                                }
-                                //update location
-                                lastKnownLocation = locationResult.getLastLocation();
-
-
+                            public void run() {
+                                //If it is not null, we get the location
                                 Geocoder geocoder;
                                 List<Address> addresses = null;
                                 geocoder = new Geocoder(MuseumDetailsApi.this, Locale.getDefault());
@@ -206,6 +173,36 @@ public class MuseumDetailsApi extends AppCompatActivity {
                                 String country = addresses.get(0).getCountryName();
                                 String postalCode = addresses.get(0).getPostalCode();
                                 String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+
+                                System.out.println("Address: " + address);
+                                System.out.println("City: " + city);
+                                System.out.println("Country: " + country);
+                            }
+                        }).start();
+
+                    }
+                    // if location is null, then we need to update the information
+                    else {
+                        final LocationRequest locationRequest = LocationRequest.create();
+                        locationRequest.setInterval(10000);
+                        locationRequest.setFastestInterval(5000);
+                        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+
+                        //this function will be executed when an updated location is recieved
+                        locationCallback = new LocationCallback() {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                super.onLocationResult(locationResult);
+                                //if its still null then just return and stop
+                                if(locationResult == null){
+                                    return;
+                                }
+                                //update location
+                                lastKnownLocation = locationResult.getLastLocation();
+
+                                fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+
                             }
                         };
                         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
