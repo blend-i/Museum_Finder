@@ -208,7 +208,10 @@ public class MuseumDetailsApi extends AppCompatActivity {
                                 String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
                             }
                         };
+                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
                     }
+                } else {
+                    Toast.makeText(MuseumDetailsApi.this, "unable to get last location", Toast.LENGTH_SHORT).show();
                 }
             }
         });
