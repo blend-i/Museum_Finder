@@ -46,6 +46,7 @@ dependencies {
     // Java language implementation
     implementation "androidx.activity:activity:$activity_version"
     implementation 'com.karumi:dexter:6.2.1'
+    implementation 'com.github.mancj:MaterialSearchBar:0.8.1'
 
 
 }
