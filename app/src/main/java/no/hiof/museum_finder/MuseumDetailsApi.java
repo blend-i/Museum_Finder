@@ -15,10 +15,13 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -32,6 +35,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,6 +46,8 @@ import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
@@ -54,9 +60,11 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -169,6 +177,76 @@ public class MuseumDetailsApi extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        materialSearchBar.setSuggstionsClickListener(new SuggestionsAdapter.OnItemViewClickListener() {
+            @Override
+            public void OnItemClickListener(int position, View v) {
+                //at this point we dont have the latitude and longitude. we only have a place id reference which the user has clicked on the search result
+                //this needs to be sent to google places api and request it to return the latitude and longitude so we can find the actual address
+                //and information regarding the address.
+
+                if(position >= predictionList.size()){
+                    return;
+                }
+                AutocompletePrediction selectedPrediction = predictionList.get(position);
+                String suggestion = materialSearchBar.getLastSuggestions().get(position).toString();
+                materialSearchBar.setText(suggestion);
+
+                //Seperate thread so that the suggestion will be delayed before it gets clearaed from search list suggestion after you click it.
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        materialSearchBar.clearSuggestions();
+                    }
+                }, 200);
+
+
+                //closes keyboard after user clicks suggestion
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                if(imm != null){
+                    imm.hideSoftInputFromWindow(materialSearchBar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }
+                String placeId = selectedPrediction.getPlaceId();
+                //Here we write what we are interested in. You can chose opening hours etc.
+                List<Place.Field> placeFields  = Arrays.asList(Place.Field.LAT_LNG, Place.Field.OPENING_HOURS);
+
+                FetchPlaceRequest fetchPlaceRequest = FetchPlaceRequest.builder(placeId, placeFields).build();
+                placesClient.fetchPlace(fetchPlaceRequest).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
+                    @Override
+                    public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
+                        Place place = fetchPlaceResponse.getPlace();
+                        Log.i("Tag", "place found: " + place.getName());
+                        Log.i("Tag", "place opening hours: " + place.getOpeningHours());
+
+                        LatLng latLng = place.getLatLng();
+                        if(latLng != null){
+                            System.out.println("Gjør det du skal her.");
+                            System.out.println("Address: " + place.getAddress());
+                            System.out.println("Lat Lng : " + place.getLatLng());
+                            System.out.println("Opening hours: " + place.getOpeningHours());
+                            System.out.println("Phone number: " + place.getPhoneNumber());
+                            System.out.println("Rating: " + place.getRating());
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if(e instanceof ApiException) {
+                            ApiException apiException = (ApiException) e;
+                            apiException.printStackTrace();
+                            int statusCode = apiException.getStatusCode();
+                            Log.i("randomTag", "place not found: " + e.getMessage());
+                            Log.i("randomTag", "status code: " + statusCode);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void OnItemDeleteListener(int position, View v) {
 
             }
         });
