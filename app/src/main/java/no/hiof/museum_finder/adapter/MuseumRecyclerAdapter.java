@@ -47,7 +47,6 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
     public MuseumViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
         Log.d(TAG, "onCreateViewHolder");
         View itemView = inflater.inflate(R.layout.museum_list_item, parent, false);
-
         return new MuseumViewHolder(itemView);
     }
 
@@ -87,7 +86,6 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
 
             //not paste error. extra funcationality enableing the details of museum by clicking the image
             ImageView imageView = itemView.findViewById(R.id.thumbnailimageView);
-
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -41,7 +41,6 @@ public class HomeFragment extends Fragment {
          */
     }
 
-
     private void setUpRecyclerView() {
         RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
         museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), Museum.getData()));

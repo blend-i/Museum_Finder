@@ -2,29 +2,26 @@ package no.hiof.museum_finder;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,33 +40,24 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import java.util.Objects;
 
 public class MuseumDetailsApi extends AppCompatActivity {
 
@@ -93,6 +81,10 @@ public class MuseumDetailsApi extends AppCompatActivity {
     //Finds the result the user is searching for
     public Button findButton;
 
+    public TextView titleCardView;
+    public TextView openingHoursCardView;
+    public ImageView imageCardView;
+
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,13 +94,14 @@ public class MuseumDetailsApi extends AppCompatActivity {
         materialSearchBar = findViewById(R.id.searchBar);
         findButton = findViewById(R.id.findButton);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MuseumDetailsApi.this);
+        titleCardView = findViewById(R.id.titleCardView);
+        openingHoursCardView = findViewById(R.id.openingHoursCardView);
+        imageCardView = findViewById(R.id.imageCardView);
 
 
         Places.initialize(MuseumDetailsApi.this, "AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc");
         placesClient = Places.createClient(this);
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
-
-
 
         materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
             @Override
@@ -203,7 +196,6 @@ public class MuseumDetailsApi extends AppCompatActivity {
                     }
                 }, 200);
 
-
                 //closes keyboard after user clicks suggestion
                 InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 if(imm != null){
@@ -211,24 +203,67 @@ public class MuseumDetailsApi extends AppCompatActivity {
                 }
                 String placeId = selectedPrediction.getPlaceId();
                 //Here we write what we are interested in. You can chose opening hours etc.
-                List<Place.Field> placeFields  = Arrays.asList(Place.Field.LAT_LNG, Place.Field.OPENING_HOURS);
+                List<Place.Field> placeFields  = Arrays.asList(
+                        Place.Field.LAT_LNG,
+                        Place.Field.OPENING_HOURS,
+                        Place.Field.ADDRESS,
+                        Place.Field.PHONE_NUMBER,
+                        Place.Field.RATING,
+                        Place.Field.ADDRESS_COMPONENTS,
+                        Place.Field.BUSINESS_STATUS,
+                        Place.Field.PHOTO_METADATAS,
+                        Place.Field.PRICE_LEVEL,
+                        Place.Field.TYPES,
+                        Place.Field.USER_RATINGS_TOTAL,
+                        Place.Field.WEBSITE_URI
+                );
 
                 FetchPlaceRequest fetchPlaceRequest = FetchPlaceRequest.builder(placeId, placeFields).build();
                 placesClient.fetchPlace(fetchPlaceRequest).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
                     @Override
                     public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
                         Place place = fetchPlaceResponse.getPlace();
+
                         Log.i("Tag", "place found: " + place.getName());
                         Log.i("Tag", "place opening hours: " + place.getOpeningHours());
 
                         LatLng latLng = place.getLatLng();
                         if(latLng != null){
-                            System.out.println("Gjør det du skal her.");
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Place place1 = fetchPlaceResponse.getPlace();
+                                    List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+                                    PhotoMetadata photoMetadata = metadata.get(0);
+
+                                    // Create a FetchPhotoRequest.
+                                    final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                                            .setMaxWidth(500) // Optional.
+                                            .setMaxHeight(300) // Optional.
+                                            .build();
+                                    placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                                        Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                                        imageCardView.setImageBitmap(bitmap);
+                                    }).addOnFailureListener((exception) -> {
+                                        if (exception instanceof ApiException) {
+                                            final ApiException apiException = (ApiException) exception;
+                                            Log.e("TAG", "Place not found: " + exception.getMessage());
+                                            final int statusCode = apiException.getStatusCode();
+                                            // TODO: Handle error with given status code.
+                                        }
+                                    });
+
+
+                                }
+                            }).start();
+                            openingHoursCardView.setText(Objects.requireNonNull(Objects.requireNonNull(place.getOpeningHours()).getWeekdayText()).toString());
+                            /*System.out.println("Gjør det du skal her.");
                             System.out.println("Address: " + place.getAddress());
                             System.out.println("Lat Lng : " + place.getLatLng());
                             System.out.println("Opening hours: " + place.getOpeningHours());
                             System.out.println("Phone number: " + place.getPhoneNumber());
                             System.out.println("Rating: " + place.getRating());
+                             */
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -346,7 +381,6 @@ public class MuseumDetailsApi extends AppCompatActivity {
                         locationRequest.setFastestInterval(5000);
                         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-
                         //this function will be executed when an updated location is recieved
                         locationCallback = new LocationCallback() {
                             @Override
@@ -385,10 +419,7 @@ public class MuseumDetailsApi extends AppCompatActivity {
                                         System.out.println("Country: " + country);
                                     }
                                 }).start();
-
-
                                 fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-
                             }
                         };
                         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
