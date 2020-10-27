@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "743313491676",
+    "firebase_url": "https://museum-finder-19301.firebaseio.com",
+    "project_id": "museum-finder-19301",
+    "storage_bucket": "museum-finder-19301.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743313491676:android:f1ca4b819c8617e836d619",
+        "android_client_info": {
+          "package_name": "no.hiof.museum_finder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743313491676-euhkbb403ohan138prhjqu8ljk6t0bqc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "no.hiof.museum_finder",
+            "certificate_hash": "14dc0fe6d712799f62f13f73d9ef2671c370138d"
+          }
+        },
+        {
+          "client_id": "743313491676-m0peo4fl78rlgvtfgmqfrkv8emnheon6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPYwRjPBsGZXOUkGXTM9-w9UNxSJ1FIeM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "743313491676-m0peo4fl78rlgvtfgmqfrkv8emnheon6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
