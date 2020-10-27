@@ -47,8 +47,6 @@ dependencies {
     implementation "androidx.activity:activity:$activity_version"
     implementation 'com.karumi:dexter:6.2.1'
     implementation 'com.github.mancj:MaterialSearchBar:0.8.1'
-
-
 }
 
 apply plugin: "androidx.navigation.safeargs"

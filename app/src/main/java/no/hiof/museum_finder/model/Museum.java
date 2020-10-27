@@ -60,17 +60,17 @@ public class Museum {
 
     public static String[] getTitles() {
         return new String[]  {
-                "Norsk_Folkemuseum",
-                "Norsk_Teknisk_Museum",
+                "norsk_folkemuseum",
+                "norsk_teknisk_museum",
                 "Vikingskiphuset",
                 "Kon Tiki Museet",
-                "Bymuseet",
-                "Frammuseet",
+                "bymuseet",
+                "frammuseet",
                 "Kulturhistorisk museum",
                 "Munch",
-                "Nasjonalgalleriet",
+                "nasjonalgalleriet",
                 "Norges Resistance Museum",
-                "Vigelandmuseet"
+                "vigelandmuseet"
         };
     }
 }
