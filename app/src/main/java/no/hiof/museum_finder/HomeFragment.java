@@ -6,13 +6,21 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +38,7 @@ public class HomeFragment extends Fragment {
     private FirebaseFirestore firestoreDb;
 
     private CollectionReference museumCollectionReference;
+    private ListenerRegistration fireStoreListenerRegistration;
 
     private static final String TAG = HomeFragment.class.getSimpleName();
 
@@ -64,24 +73,83 @@ public class HomeFragment extends Fragment {
         textView.setText(args.getUsername());
          */
 
-        generateTestData();
+        //generateTestData();
         setUpRecyclerView();
 
-
     }
 
+    private void createFireStoreReadListener() {
+
+        fireStoreListenerRegistration = museumCollectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if(e != null) {
+                    Log.w(TAG, "Listen failed", e);
+                    return;
+                }
+
+                for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
+                    QueryDocumentSnapshot documentSnapshot = documentChange.getDocument();
+                    Museum museum = documentSnapshot.toObject(Museum.class);
+                    museum.setUid(documentSnapshot.getId());
+                    int pos = museumList.indexOf(museum.getUid());
+
+                    switch (documentChange.getType()) {
+                        case ADDED:
+                            museumList.add(museum);
+                            museumUidList.add(museum.getUid());
+                            museumAdapter.notifyItemInserted(museumList.size() -1);
+                            break;
+                        case REMOVED:
+                            museumList.remove(pos);
+                            museumUidList.remove(pos);
+                            museumAdapter.notifyItemRemoved(pos);
+                            break;
+                        case MODIFIED:
+                            museumList.set(pos, museum);
+                            museumAdapter.notifyItemChanged(pos);
+                            break;
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        createFireStoreReadListener();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if(fireStoreListenerRegistration != null) {
+            fireStoreListenerRegistration.remove();
+        }
+    }
 
     private void setUpRecyclerView() {
+        /*RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
+        museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), ));
+        museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+         */
+
+        recyclerView = getView().findViewById(R.id.museumRecyclerView);
+        museumAdapter = new MuseumRecyclerAdapter(this.getContext(), museumList);
+        recyclerView.setAdapter(museumAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+    }
+
+    /*private void setupFavoritesRecyclerView() {
         RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
         museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), Museum.getData()));
         museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
 
-    private void setupFavoritesRecyclerView() {
-        RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), Museum.getData()));
-        museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-    }
+     */
 
     private void generateTestData() {
         ArrayList<Museum> museums = new ArrayList<>();

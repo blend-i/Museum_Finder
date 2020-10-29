@@ -108,7 +108,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
 
         public void setMuseum(final Museum museumToDisplay) {
             thumbnailTextView.setText(museumToDisplay.getTitle());
-            thumbnailimageView.setImageResource(museumToDisplay.getUid());
+            //thumbnailimageView.setImageResource(museumToDisplay.getUid());
             descriptionTextView.setText(museumToDisplay.getDescription());
         }
     }

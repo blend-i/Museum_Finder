@@ -9,22 +9,26 @@ import no.hiof.museum_finder.R;
 
 public class Museum {
     @Exclude
-    private int uid;
+    private String uid;
     private String title;
     private String description;
     private String openingHours;
     private String location;
     private String posterUrl;
 
-    public Museum(int uid, String title, String description) {
+    /*public Museum(int uid, String title, String description) {
         this.uid = uid;
         this.title = title;
         this.description = description;
         //this.posterUrl = posterUrl;
     }
 
+     */
+    public Museum () {
+
+    }
     public Museum(String title, String description, String openingHours, String location) {
-        //this.uid = uid;
+        this.uid = "";
         this.title = title;
         this.description = description;
         this.openingHours = openingHours;
@@ -32,7 +36,7 @@ public class Museum {
     }
 
     public Museum(String title, String description, String openingHours, String location, String posterUrl) {
-        //this.uid = uid;
+        this.uid = "";
         this.title = title;
         this.description = description;
         this.openingHours = openingHours;
@@ -40,7 +44,7 @@ public class Museum {
         this.posterUrl = posterUrl;
     }
     @Exclude
-    public int getUid() {
+    public String getUid() {
         return uid;
     }
 
@@ -54,6 +58,10 @@ public class Museum {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public void setDescription(String description) {
@@ -76,7 +84,7 @@ public class Museum {
         this.location = location;
     }
 
-    public static ArrayList<Museum> getData() {
+    /*public static ArrayList<Museum> getData() {
         ArrayList<Museum> dataList = new ArrayList<>();
 
         int[] images = getImages();
@@ -88,6 +96,8 @@ public class Museum {
         }
         return dataList;
     }
+
+     */
 
 
     private static int[] getImages() {
