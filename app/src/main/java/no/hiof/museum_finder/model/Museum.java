@@ -1,13 +1,20 @@
 package no.hiof.museum_finder.model;
+import com.google.firebase.database.Exclude;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+
 import no.hiof.museum_finder.R;
 
 public class Museum {
+    @Exclude
     private int uid;
     private String title;
     private String description;
-    //private int posterUrl;
+    private String openingHours;
+    private String location;
+    private String posterUrl;
 
     public Museum(int uid, String title, String description) {
         this.uid = uid;
@@ -16,6 +23,23 @@ public class Museum {
         //this.posterUrl = posterUrl;
     }
 
+    public Museum(String title, String description, String openingHours, String location) {
+        //this.uid = uid;
+        this.title = title;
+        this.description = description;
+        this.openingHours = openingHours;
+        this.location = location;
+    }
+
+    public Museum(String title, String description, String openingHours, String location, String posterUrl) {
+        //this.uid = uid;
+        this.title = title;
+        this.description = description;
+        this.openingHours = openingHours;
+        this.location = location;
+        this.posterUrl = posterUrl;
+    }
+    @Exclude
     public int getUid() {
         return uid;
     }
@@ -34,6 +58,22 @@ public class Museum {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getOpeningHours() {
+        return openingHours;
+    }
+
+    public void setOpeningHours(String openingHours) {
+        this.openingHours = openingHours;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public static ArrayList<Museum> getData() {
