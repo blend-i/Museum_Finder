@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "743313491676-kh5tdciucfc8005qghnic34k2pur3qdd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "no.hiof.museum_finder",
+            "certificate_hash": "deeb5a6134e91c77b058d3116e1ffcd3bc883bb7"
+          }
+        },
+        {
+          "client_id": "743313491676-lbntlmhmc3o094smkvijjqfl8jd1svqn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "no.hiof.museum_finder",
+            "certificate_hash": "cb1f852ea94e032d028bfa7bcabfac07a338fa6b"
+          }
+        },
+        {
           "client_id": "743313491676-euhkbb403ohan138prhjqu8ljk6t0bqc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
