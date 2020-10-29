@@ -15,6 +15,8 @@ import androidx.cardview.widget.CardView;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import no.hiof.museum_finder.HomeFragment;
@@ -110,6 +112,16 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
             thumbnailTextView.setText(museumToDisplay.getTitle());
             //thumbnailimageView.setImageResource(museumToDisplay.getUid());
             descriptionTextView.setText(museumToDisplay.getDescription());
+
+            String posterUrl = museumToDisplay.getPosterUrl();
+
+            if(posterUrl != null && !posterUrl.equals("")) {
+                Glide.with(thumbnailimageView.getContext())
+                        .load(posterUrl)
+                        .into(thumbnailimageView);
+            } else {
+                thumbnailimageView.setImageResource(R.drawable.kon_tiki_museet);
+            }
         }
     }
 }

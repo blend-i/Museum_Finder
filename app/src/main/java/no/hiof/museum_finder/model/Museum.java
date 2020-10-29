@@ -53,6 +53,8 @@ public class Museum {
         return title;
     }
 
+    public String getPosterUrl() { return posterUrl; }
+
     public void setTitle(String title) {
         this.title = title;
     }
