@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+
 public class ProfileFragment extends Fragment {
 
     private TextView nameTextView;
@@ -33,6 +35,25 @@ public class ProfileFragment extends Fragment {
         emailTextView = view.findViewById(R.id.eMailTextView);
         profilePictureImageView = view.findViewById(R.id.profileImageView);
 
-        nameTextView.setText(ProfileFragmentArgs.fromBundle(getArguments()).getFirstname());
+        String firstName = ProfileFragmentArgs.fromBundle(getArguments()).getFirstname();
+        String lastName = ProfileFragmentArgs.fromBundle(getArguments()).getLastname();
+        String imageUrl = ProfileFragmentArgs.fromBundle(getArguments()).getProfileimage();
+
+        StringBuilder fullName = new StringBuilder();
+        fullName.append(firstName);
+        fullName.append(" ");
+        fullName.append(lastName);
+
+
+        nameTextView.setText(fullName.toString());
+        emailTextView.setText(ProfileFragmentArgs.fromBundle(getArguments()).getEmail());
+
+        if(imageUrl != null && !imageUrl.equals("")) {
+            Glide.with(profilePictureImageView.getContext())
+                    .load(imageUrl)
+                    .into(profilePictureImageView);
+        } else {
+            profilePictureImageView.setImageResource(R.drawable.kon_tiki_museet);
+        }
     }
 }

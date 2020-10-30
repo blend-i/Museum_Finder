@@ -91,6 +91,8 @@ public class LoginFragment extends Fragment {
             profileAction.setFirstname(account.getGivenName());
             profileAction.setLastname(account.getFamilyName());
             profileAction.setEmail(account.getEmail());
+            profileAction.setProfileimage(account.getPhotoUrl().toString());
+
             Navigation.findNavController(requireView()).navigate(profileAction);
 
             Context context = this.getContext();

@@ -55,16 +55,20 @@
         tools:layout="@layout/fragment_profile" >
 
         <argument
-        android:name="firstname"
-        app:argType="string"
-        android:defaultValue="Firstname" />
+            android:name="firstname"
+            app:argType="string"
+            android:defaultValue="Firstname" />
         <argument
-        android:name="lastname"
-        app:argType="string"
-        android:defaultValue="Lastname" />
+            android:name="lastname"
+            app:argType="string"
+            android:defaultValue="Lastname" />
         <argument
-        android:name="email"
-        app:argType="string"
-        android:defaultValue="Email" />
+            android:name="email"
+            app:argType="string"
+            android:defaultValue="Email" />
+        <argument
+            android:name="profileimage"
+            app:argType="string"
+            android:defaultValue="Profileimage" />
     </fragment>
 </navigation>
