@@ -34,19 +34,19 @@
         android:id="@+id/museumDetail"
         android:name="no.hiof.museum_finder.MuseumDetailFragment"
         android:label="fragment_museum_detail"
-        tools:layout="@layout/fragment_museum_detail" >
+        tools:layout="@layout/fragment_museum_detail">
         <argument
             android:name="Title"
-            app:argType="string"
-            android:defaultValue="Museum Title" />
+            android:defaultValue="Museum Title"
+            app:argType="string" />
         <argument
             android:name="Description"
-            app:argType="string"
-            android:defaultValue="Description of museum" />
+            android:defaultValue="Description of museum"
+            app:argType="string" />
         <argument
             android:name="PosterUrl"
-            app:argType="string"
-            android:defaultValue="Image of museum" />
+            android:defaultValue="Image"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"

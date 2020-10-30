@@ -59,7 +59,6 @@ public class MuseumDetailFragment extends Fragment {
 
         /*final String museumUid = getActivity().getIntent().getStringExtra(MUSEUM_UID);
 
-
         FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
         final DocumentReference museumCollectionReference = firestoreDb.collection("museum").document(museumUid);
 

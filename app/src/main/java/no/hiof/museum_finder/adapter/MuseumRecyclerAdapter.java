@@ -48,15 +48,11 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
     private List<Museum> museumList;
     private LayoutInflater inflater;
     private View.OnClickListener clickListener;
-    private Button.OnClickListener buttonClickListener;
 
     public void setOnItemClickListener(View.OnClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
-    public void setButtonClickListener(Button.OnClickListener buttonClickListener) {
-        this.buttonClickListener = buttonClickListener;
-    }
 
     public MuseumRecyclerAdapter (Context context, List<Museum> museumList) {
         //Lager en inflater basert på den konteksten man er i
@@ -95,10 +91,6 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         private TextView descriptionTextView;
         private Button thumbnailButton;
 
-        public Button getThumbnailButton() {
-            return thumbnailButton;
-        }
-
         public MuseumViewHolder(@NonNull final View itemView) {
             super(itemView);
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
@@ -127,7 +119,6 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
                     Navigation.findNavController(itemView).navigate(action);
                 }
             });
-
         }
 
         public void setMuseum(final Museum museumToDisplay) {

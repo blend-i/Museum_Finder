@@ -139,12 +139,15 @@ public class HomeFragment extends Fragment {
         museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), ));
         museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
+
          */
 
-        recyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumAdapter = new MuseumRecyclerAdapter(this.getContext(), museumList);
-        //MuseumRecyclerAdapter.MuseumViewHolder museumViewHolder = new MuseumRecyclerAdapter.MuseumViewHolder(recyclerView);
-        //museumViewHolder.
+
+            recyclerView = getView().findViewById(R.id.museumRecyclerView);
+            museumAdapter = new MuseumRecyclerAdapter(this.getContext(), museumList);
+
+
+
         //museumAdapter.setButtonClickListener(new Button.OnClickListener());
         /*museumAdapter.setOnItemClickListener(new View.OnClickListener() {
             @Override
@@ -152,15 +155,14 @@ public class HomeFragment extends Fragment {
                 int position = recyclerView.getChildAdapterPosition(v);
 
                 Museum museum = museumList.get(position);
-
                 Intent intent = new Intent(HomeFragment.this.getContext(), MuseumDetailFragment.class);
                 intent.putExtra(MuseumDetailFragment.MUSEUM_UID, museum.getUid());
 
                 startActivity(intent);
             }
-        });*/
-
-
+        });
+        
+         */
 
         recyclerView.setAdapter(museumAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
