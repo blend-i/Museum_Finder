@@ -16,6 +16,11 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
@@ -43,9 +48,14 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
     private List<Museum> museumList;
     private LayoutInflater inflater;
     private View.OnClickListener clickListener;
+    private Button.OnClickListener buttonClickListener;
 
     public void setOnItemClickListener(View.OnClickListener clickListener) {
         this.clickListener = clickListener;
+    }
+
+    public void setButtonClickListener(Button.OnClickListener buttonClickListener) {
+        this.buttonClickListener = buttonClickListener;
     }
 
     public MuseumRecyclerAdapter (Context context, List<Museum> museumList) {
@@ -60,6 +70,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
     public MuseumViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
         Log.d(TAG, "onCreateViewHolder");
         View itemView = inflater.inflate(R.layout.museum_list_item, parent, false);
+
 
         return new MuseumViewHolder(itemView);
     }
@@ -82,7 +93,11 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         private TextView thumbnailTextView;
         private ImageView thumbnailimageView;
         private TextView descriptionTextView;
+        private Button thumbnailButton;
 
+        public Button getThumbnailButton() {
+            return thumbnailButton;
+        }
 
         public MuseumViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -90,13 +105,14 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
 
-            Button thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
+            thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
             thumbnailButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
                     action.setTitle(thumbnailTextView.getText().toString());
                     action.setDescription(descriptionTextView.getText().toString());
+
                     Navigation.findNavController(itemView).navigate(action);
                 }
             });
@@ -111,6 +127,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
                     Navigation.findNavController(itemView).navigate(action);
                 }
             });
+
         }
 
         public void setMuseum(final Museum museumToDisplay) {

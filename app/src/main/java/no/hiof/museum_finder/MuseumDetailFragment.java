@@ -48,16 +48,16 @@ public class MuseumDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //Bundle arguments = getArguments();
+        Bundle arguments = getArguments();
         museumTitle = view.findViewById(R.id.museumTitleTextView);
         museumDescription = view.findViewById(R.id.museumDescriptionTextView);
         museumImage = view.findViewById(R.id.imageView);
-        /*assert arguments != null;
+        assert arguments != null;
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
         museumTitle.setText(args.getTitle());
-        museumDescription.setText(args.getDescription());*/
+        museumDescription.setText(args.getDescription());
 
-        final String museumUid = getActivity().getIntent().getStringExtra(MUSEUM_UID);
+        /*final String museumUid = getActivity().getIntent().getStringExtra(MUSEUM_UID);
 
 
         FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
@@ -85,6 +85,6 @@ public class MuseumDetailFragment extends Fragment {
                     Log.d(TAG, "Get failed with", task.getException());
                 }
             }
-        });
+        });*/
     }
 }
