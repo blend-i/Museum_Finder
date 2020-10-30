@@ -16,6 +16,7 @@ public class Museum {
     private String location;
     private String posterUrl;
     private String hei;
+    private String hei2;
 
     /*public Museum(int uid, String title, String description) {
         this.uid = uid;
