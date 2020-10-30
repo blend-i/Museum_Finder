@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -141,9 +142,11 @@ public class HomeFragment extends Fragment {
          */
 
         recyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumAdapter = new MuseumRecyclerAdapter(this.requireContext(), museumList);
-
-        museumAdapter.setOnItemClickListener(new View.OnClickListener() {
+        museumAdapter = new MuseumRecyclerAdapter(this.getContext(), museumList);
+        //MuseumRecyclerAdapter.MuseumViewHolder museumViewHolder = new MuseumRecyclerAdapter.MuseumViewHolder(recyclerView);
+        //museumViewHolder.
+        //museumAdapter.setButtonClickListener(new Button.OnClickListener());
+        /*museumAdapter.setOnItemClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v);
@@ -155,7 +158,9 @@ public class HomeFragment extends Fragment {
 
                 startActivity(intent);
             }
-        });
+        });*/
+
+
 
         recyclerView.setAdapter(museumAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));

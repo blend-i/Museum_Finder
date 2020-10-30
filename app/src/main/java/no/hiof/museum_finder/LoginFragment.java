@@ -84,11 +84,14 @@ public class LoginFragment extends Fragment {
 
     private void updateUI(GoogleSignInAccount account) {
         if (account != null) {
-            String userName = account.getEmail();
             LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
-            assert userName != null;
-            action.setUsername(userName);
-            Navigation.findNavController(requireView()).navigate(action);
+            //Navigation.findNavController(requireView()).navigate(action);
+
+            LoginFragmentDirections.ActionLoginFragmentToProfileFragment profileAction = LoginFragmentDirections.actionLoginFragmentToProfileFragment();
+            profileAction.setFirstname(account.getGivenName());
+            profileAction.setLastname(account.getFamilyName());
+            profileAction.setEmail(account.getEmail());
+            Navigation.findNavController(requireView()).navigate(profileAction);
 
             Context context = this.getContext();
             CharSequence text = "Signed in as: " + account.getEmail();
