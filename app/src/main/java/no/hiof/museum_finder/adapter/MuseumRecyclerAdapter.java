@@ -42,6 +42,11 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
 
     private List<Museum> museumList;
     private LayoutInflater inflater;
+    private View.OnClickListener clickListener;
+
+    public void setOnItemClickListener(View.OnClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
 
     public MuseumRecyclerAdapter (Context context, List<Museum> museumList) {
         //Lager en inflater basert på den konteksten man er i

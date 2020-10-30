@@ -1,5 +1,6 @@
 package no.hiof.museum_finder;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -138,7 +141,22 @@ public class HomeFragment extends Fragment {
          */
 
         recyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumAdapter = new MuseumRecyclerAdapter(this.getContext(), museumList);
+        museumAdapter = new MuseumRecyclerAdapter(this.requireContext(), museumList);
+
+        museumAdapter.setOnItemClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = recyclerView.getChildAdapterPosition(v);
+
+                Museum museum = museumList.get(position);
+
+                Intent intent = new Intent(HomeFragment.this.getContext(), MuseumDetailFragment.class);
+                intent.putExtra(MuseumDetailFragment.MUSEUM_UID, museum.getUid());
+
+                startActivity(intent);
+            }
+        });
+
         recyclerView.setAdapter(museumAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
