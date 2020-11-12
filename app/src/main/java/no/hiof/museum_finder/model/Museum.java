@@ -1,28 +1,60 @@
 package no.hiof.museum_finder.model;
+import com.google.firebase.database.Exclude;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+
 import no.hiof.museum_finder.R;
 
 public class Museum {
-    private int uid;
+    @Exclude
+    private String uid;
     private String title;
     private String description;
-    //private int posterUrl;
+    private String openingHours;
+    private String location;
+    private String posterUrl;
+    private String hei;
+    private String hei2;
 
-    public Museum(int uid, String title, String description) {
+    /*public Museum(int uid, String title, String description) {
         this.uid = uid;
         this.title = title;
         this.description = description;
         //this.posterUrl = posterUrl;
     }
 
-    public int getUid() {
+     */
+    public Museum () {
+
+    }
+    public Museum(String title, String description, String openingHours, String location) {
+        this.uid = "";
+        this.title = title;
+        this.description = description;
+        this.openingHours = openingHours;
+        this.location = location;
+    }
+
+    public Museum(String title, String description, String openingHours, String location, String posterUrl) {
+        this.uid = "";
+        this.title = title;
+        this.description = description;
+        this.openingHours = openingHours;
+        this.location = location;
+        this.posterUrl = posterUrl;
+    }
+    @Exclude
+    public String getUid() {
         return uid;
     }
 
     public String getTitle() {
         return title;
     }
+
+    public String getPosterUrl() { return posterUrl; }
 
     public void setTitle(String title) {
         this.title = title;
@@ -32,11 +64,31 @@ public class Museum {
         return description;
     }
 
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public static ArrayList<Museum> getData() {
+    public String getOpeningHours() {
+        return openingHours;
+    }
+
+    public void setOpeningHours(String openingHours) {
+        this.openingHours = openingHours;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    /*public static ArrayList<Museum> getData() {
         ArrayList<Museum> dataList = new ArrayList<>();
 
         int[] images = getImages();
@@ -48,6 +100,8 @@ public class Museum {
         }
         return dataList;
     }
+
+     */
 
 
     private static int[] getImages() {
