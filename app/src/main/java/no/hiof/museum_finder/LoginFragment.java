@@ -22,8 +22,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
+
+import no.hiof.museum_finder.model.Account;
 
 import static android.content.ContentValues.TAG;
 import static java.util.Objects.*;
@@ -32,6 +37,8 @@ public class LoginFragment extends Fragment {
 
     private GoogleSignInClient mGoogleSignInClient;
     private SignInButton signInButton;
+    private FirebaseFirestore firestoreDb;
+    private CollectionReference collectionReference;
 
 
 
@@ -127,6 +134,7 @@ public class LoginFragment extends Fragment {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
+            addAccountToDb(new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), account.getPhotoUrl().toString()));
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
@@ -137,6 +145,11 @@ public class LoginFragment extends Fragment {
         }
     }
 
+    private void addAccountToDb(Account account) {
+        firestoreDb = FirebaseFirestore.getInstance();
+        collectionReference = firestoreDb.collection("account");
+        collectionReference.add(account);
+    }
 
 
         //button.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_loginFragment_to_homeFragment));
