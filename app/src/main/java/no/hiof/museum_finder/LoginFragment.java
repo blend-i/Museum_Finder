@@ -22,16 +22,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.Objects;
 
 import no.hiof.museum_finder.model.Account;
 
 import static android.content.ContentValues.TAG;
-import static java.util.Objects.*;
 
 public class LoginFragment extends Fragment {
 
@@ -135,14 +132,18 @@ public class LoginFragment extends Fragment {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             addAccountToDb(new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), account.getPhotoUrl().toString()));
+
             // Signed in successfully, show authenticated UI.
             updateUI(account);
-        } catch (ApiException e) {
+        }
+        catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             updateUI(null);
         }
+
+
     }
 
     private void addAccountToDb(Account account) {

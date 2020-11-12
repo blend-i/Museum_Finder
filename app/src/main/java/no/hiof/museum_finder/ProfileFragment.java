@@ -13,14 +13,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import no.hiof.museum_finder.model.Account;
-import no.hiof.museum_finder.model.Museum;
 
 import static android.content.ContentValues.TAG;
 
@@ -42,69 +46,51 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getAccountInformationFromDb("account", view);
-        /*nameTextView = view.findViewById(R.id.nameTextView);
-        emailTextView = view.findViewById(R.id.eMailTextView);
-        profilePictureImageView = view.findViewById(R.id.profileImageView);
-
-        String firstName = ProfileFragmentArgs.fromBundle(getArguments()).getFirstname();
-        String lastName = ProfileFragmentArgs.fromBundle(getArguments()).getLastname();
-        String imageUrl = ProfileFragmentArgs.fromBundle(getArguments()).getProfileimage();
-
-        StringBuilder fullName = new StringBuilder();
-        fullName.append(firstName);
-        fullName.append(" ");
-        fullName.append(lastName);
-
-
-        nameTextView.setText(fullName.toString());
-        emailTextView.setText(ProfileFragmentArgs.fromBundle(getArguments()).getEmail());
-
-        if(imageUrl != null && !imageUrl.equals("")) {
-            Glide.with(profilePictureImageView.getContext())
-                    .load(imageUrl)
-                    .into(profilePictureImageView);
-        } else {
-            profilePictureImageView.setImageResource(R.drawable.kon_tiki_museet);
-        }*/
     }
 
     private void getAccountInformationFromDb(String documentReference, View view) {
-        FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
-        final DocumentReference accountDocumentReference = firestoreDb.collection(documentReference).document("ecKnqpM3RS85wIYIuJAK");
-
         nameTextView = view.findViewById(R.id.nameTextView);
         emailTextView = view.findViewById(R.id.eMailTextView);
         profilePictureImageView = view.findViewById(R.id.profileImageView);
 
-        accountDocumentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    Account account = documentSnapshot.toObject(Account.class);
-                    //account.setUid(documentSnapshot.getId());
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
+        System.out.println("SKILLE" + account.getEmail());
+        FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
+        final CollectionReference accountCollectionReference = firestoreDb.collection("account");
 
-                    StringBuilder fullName = new StringBuilder();
-                    fullName.append(account.getFirstName());
-                    fullName.append(" ");
-                    fullName.append(account.getLastName());
+        accountCollectionReference.whereEqualTo("eMail", account.getEmail())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot querySnapshot = task.getResult();
 
-                    nameTextView.setText(fullName.toString());
-                    emailTextView.setText(account.geteMail());
+                            for(QueryDocumentSnapshot document : querySnapshot) {
+                                Account account = document.toObject(Account.class);
+                                StringBuilder fullName = new StringBuilder();
+                                fullName.append(account.getFirstName());
+                                fullName.append(" ");
+                                fullName.append(account.getLastName());
 
-                    if(account.getProfilePictureUrl() != null && !account.getProfilePictureUrl().equals("")) {
-                        Glide.with(profilePictureImageView.getContext())
-                                .load(account.getProfilePictureUrl())
-                                .into(profilePictureImageView);
-                    } else {
-                        profilePictureImageView.setImageResource(R.drawable.kon_tiki_museet);
+                                nameTextView.setText(fullName.toString());
+                                emailTextView.setText(account.geteMail());
+
+                                if(account.getProfilePictureUrl() != null && !account.getProfilePictureUrl().equals("")) {
+                                    Glide.with(profilePictureImageView.getContext())
+                                            .load(account.getProfilePictureUrl())
+                                            .into(profilePictureImageView);
+                                } else {
+                                    profilePictureImageView.setImageResource(R.drawable.kon_tiki_museet);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Log.d(TAG, "Get failed with", task.getException());
+                        }
                     }
-                }
-                else
-                {
-                    Log.d(TAG, "Get failed with", task.getException());
-                }
-            }
-        });
+                });
+
     }
 }
