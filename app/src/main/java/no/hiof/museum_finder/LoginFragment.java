@@ -39,6 +39,7 @@ public class LoginFragment extends Fragment {
 
 
 
+
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -92,10 +93,10 @@ public class LoginFragment extends Fragment {
             //Navigation.findNavController(requireView()).navigate(action);
 
             LoginFragmentDirections.ActionLoginFragmentToProfileFragment profileAction = LoginFragmentDirections.actionLoginFragmentToProfileFragment();
-            profileAction.setFirstname(account.getGivenName());
+            /*profileAction.setFirstname(account.getGivenName());
             profileAction.setLastname(account.getFamilyName());
             profileAction.setEmail(account.getEmail());
-            profileAction.setProfileimage(account.getPhotoUrl().toString());
+            profileAction.setProfileimage(account.getPhotoUrl().toString());*/
 
             Navigation.findNavController(requireView()).navigate(profileAction);
 
@@ -130,13 +131,19 @@ public class LoginFragment extends Fragment {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(this.requireContext());
+            Account lastSignedInGoogleAccount = new Account(lastSignedInAccount.getGivenName(), lastSignedInAccount.getFamilyName(), lastSignedInAccount.getEmail(), lastSignedInAccount.getPhotoUrl().toString());
+            Account accountWithDefaultPicture = new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), "https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg");
+            Account accountWithProfilePicture = new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), account.getPhotoUrl().toString());
 
-            if(account.getPhotoUrl().equals(null)) {
-                addAccountToDb(new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), "https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg"));
-            } else {
-                addAccountToDb(new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), account.getPhotoUrl().toString()));
+            if(!lastSignedInGoogleAccount.geteMail().equals(accountWithProfilePicture.geteMail()) || !lastSignedInGoogleAccount.geteMail().equals(accountWithDefaultPicture.geteMail())) {
+                if (account.getPhotoUrl().equals(null)) {
+                    addAccountToDb(accountWithDefaultPicture);
+                } else {
+                    addAccountToDb(accountWithProfilePicture);
+                }
             }
-            
+
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         }
