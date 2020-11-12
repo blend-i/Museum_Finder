@@ -132,14 +132,16 @@ public class LoginFragment extends Fragment {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(this.requireContext());
-            Account lastSignedInGoogleAccount = new Account(lastSignedInAccount.getGivenName(), lastSignedInAccount.getFamilyName(), lastSignedInAccount.getEmail(), lastSignedInAccount.getPhotoUrl().toString());
-            Account accountWithDefaultPicture = new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), "https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg");
-            Account accountWithProfilePicture = new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), account.getPhotoUrl().toString());
+            
+            String lastSignedInEmail = lastSignedInAccount.getEmail();
+            String accountToBeSignedIn = account.getEmail();
 
-            if(!lastSignedInGoogleAccount.geteMail().equals(accountWithProfilePicture.geteMail()) || !lastSignedInGoogleAccount.geteMail().equals(accountWithDefaultPicture.geteMail())) {
+            if(!lastSignedInEmail.equals(accountToBeSignedIn)) {
                 if (account.getPhotoUrl().equals(null)) {
+                    Account accountWithDefaultPicture = new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), "https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg");
                     addAccountToDb(accountWithDefaultPicture);
                 } else {
+                    Account accountWithProfilePicture = new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), account.getPhotoUrl().toString());
                     addAccountToDb(accountWithProfilePicture);
                 }
             }
