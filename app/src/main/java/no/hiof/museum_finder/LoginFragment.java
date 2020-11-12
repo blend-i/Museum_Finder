@@ -131,8 +131,12 @@ public class LoginFragment extends Fragment {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
-            addAccountToDb(new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), account.getPhotoUrl().toString()));
-
+            if(account.getPhotoUrl().equals(null)) {
+                addAccountToDb(new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), "https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg"));
+            } else {
+                addAccountToDb(new Account(account.getGivenName(), account.getFamilyName(), account.getEmail(), account.getPhotoUrl().toString()));
+            }
+            
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         }
