@@ -25,6 +25,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import no.hiof.museum_finder.model.Account;
+import no.hiof.museum_finder.model.Museum;
 
 import static android.content.ContentValues.TAG;
 
@@ -39,7 +40,6 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
-
     }
 
     @Override
@@ -57,6 +57,8 @@ public class ProfileFragment extends Fragment {
         System.out.println("SKILLE" + account.getEmail());
         FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
         final CollectionReference accountCollectionReference = firestoreDb.collection("account");
+
+        //firestoreDb.collection("account").document("7AMUXAVCiNNllKTIBxty").collection("bucketlist").add((new Museum("Test", "testdesctiption", "10-17", "Fredrikstad")));
 
         accountCollectionReference.whereEqualTo("eMail", account.getEmail())
                 .get()

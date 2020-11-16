@@ -1,4 +1,4 @@
-package no.hiof.museum_finder.adapter;
+package no.hiof.museum_finder.adapter2;
 
 import android.content.Context;
 import android.util.Log;
@@ -32,8 +32,9 @@ Da får viewholder en instant av lista i form av view og da kan hente ut de enkl
 
  */
 
-public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAdapter.MuseumViewHolder> {
-    private static final String TAG = no.hiof.museum_finder.adapter.MuseumRecyclerAdapter.class.getSimpleName();
+public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRecyclerAdapter.BucketListViewHolder> {
+
+    private static final String TAG = BucketListRecyclerAdapter.class.getSimpleName();
 
     private List<Museum> museumList;
     private LayoutInflater inflater;
@@ -43,26 +44,23 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         this.clickListener = clickListener;
     }
 
-
-    public MuseumRecyclerAdapter (Context context, List<Museum> museumList) {
+    public BucketListRecyclerAdapter(Context context, List<Museum> museumList) {
         //Lager en inflater basert på den konteksten man er i
         this.inflater = LayoutInflater.from(context);
-
         this.museumList = museumList;
     }
 
     @NonNull
     @Override
-    public MuseumViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
+    public BucketListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
         Log.d(TAG, "onCreateViewHolder");
         View itemView = inflater.inflate(R.layout.museum_list_item, parent, false);
 
-
-        return new MuseumViewHolder(itemView);
+        return new BucketListViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MuseumViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull BucketListViewHolder viewHolder, int position) {
 
         Museum museumToDisplay = museumList.get(position);
         Log.d(TAG, "onBindViewHolder" + museumToDisplay.getTitle() + " - " + position);
@@ -74,7 +72,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         return museumList.size();
     }
 
-    public class MuseumViewHolder extends RecyclerView.ViewHolder {
+    public class BucketListViewHolder extends RecyclerView.ViewHolder {
 
         private TextView thumbnailTextView;
         private ImageView thumbnailimageView;
@@ -82,7 +80,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         private Button thumbnailButton;
 
 
-        public MuseumViewHolder(@NonNull final View itemView) {
+        public BucketListViewHolder(@NonNull final View itemView) {
             super(itemView);
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);

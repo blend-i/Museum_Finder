@@ -1,6 +1,5 @@
 package no.hiof.museum_finder;
 
-import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,11 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -30,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import no.hiof.museum_finder.adapter.MuseumRecyclerAdapter;
+import no.hiof.museum_finder.adapter2.BucketListRecyclerAdapter;
 import no.hiof.museum_finder.model.Museum;
 
 public class HomeFragment extends Fragment {
@@ -38,6 +35,8 @@ public class HomeFragment extends Fragment {
     private List<String> museumUidList;
     private RecyclerView recyclerView;
     private MuseumRecyclerAdapter museumAdapter;
+
+    //private MuseumRecyclerAdapter.MuseumViewHolder museumViewHolder;
 
     private FirebaseFirestore firestoreDb;
 
@@ -138,15 +137,10 @@ public class HomeFragment extends Fragment {
         /*RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
         museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), ));
         museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-
-
          */
 
-
-            recyclerView = getView().findViewById(R.id.museumRecyclerView);
-            museumAdapter = new MuseumRecyclerAdapter(this.getContext(), museumList);
-
-
+        recyclerView = getView().findViewById(R.id.museumRecyclerView);
+        museumAdapter = new MuseumRecyclerAdapter(this.getContext(), museumList);
 
         //museumAdapter.setButtonClickListener(new Button.OnClickListener());
         /*museumAdapter.setOnItemClickListener(new View.OnClickListener() {
@@ -162,19 +156,14 @@ public class HomeFragment extends Fragment {
             }
         });
         
-         */
+
+*/
 
         recyclerView.setAdapter(museumAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
     }
 
-    /*private void setupFavoritesRecyclerView() {
-        RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), Museum.getData()));
-        museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-    }
-
-     */
 
     private void generateTestData() {
         ArrayList<Museum> museums = new ArrayList<>();

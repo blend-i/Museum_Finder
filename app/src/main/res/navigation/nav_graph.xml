@@ -71,4 +71,9 @@
             app:argType="string"
             android:defaultValue="Profileimage" />
     </fragment>
+    <fragment
+        android:id="@+id/bucketlistFragment"
+        android:name="no.hiof.museum_finder.BucketlistFragment"
+        android:label="fragment_bucketlist"
+        tools:layout="@layout/fragment_bucketlist" />
 </navigation>

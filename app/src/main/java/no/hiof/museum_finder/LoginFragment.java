@@ -37,9 +37,6 @@ public class LoginFragment extends Fragment {
     private FirebaseFirestore firestoreDb;
     private CollectionReference collectionReference;
 
-
-
-
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -155,8 +152,6 @@ public class LoginFragment extends Fragment {
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             updateUI(null);
         }
-
-
     }
 
     private void addAccountToDb(Account account) {
@@ -164,8 +159,5 @@ public class LoginFragment extends Fragment {
         collectionReference = firestoreDb.collection("account");
         collectionReference.add(account);
     }
-
-
         //button.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_loginFragment_to_homeFragment));
-
 }
