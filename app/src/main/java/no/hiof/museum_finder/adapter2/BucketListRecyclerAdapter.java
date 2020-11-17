@@ -1,6 +1,7 @@
-package no.hiof.museum_finder.adapter;
+package no.hiof.museum_finder.adapter2;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,20 +34,19 @@ Da får viewholder en instant av lista i form av view og da kan hente ut de enkl
 
  */
 
-public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAdapter.MuseumViewHolder> {
-    private static final String TAG = no.hiof.museum_finder.adapter.MuseumRecyclerAdapter.class.getSimpleName();
+public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRecyclerAdapter.BucketListViewHolder> {
+
+    private static final String TAG = BucketListRecyclerAdapter.class.getSimpleName();
 
     private List<Museum> museumList;
     private LayoutInflater inflater;
-
-    private View.OnClickListener clickListener;
+    public View.OnClickListener clickListener;
 
     public void setOnItemClickListener(View.OnClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
-
-    public MuseumRecyclerAdapter (Context context, List<Museum> museumList) {
+    public BucketListRecyclerAdapter(Context context, List<Museum> museumList) {
         //Lager en inflater basert på den konteksten man er i
         this.inflater = LayoutInflater.from(context);
         this.museumList = museumList;
@@ -53,25 +54,23 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
 
     @NonNull
     @Override
-    public MuseumViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
+    public BucketListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
         Log.d(TAG, "onCreateViewHolder");
         View itemView = inflater.inflate(R.layout.museum_list_item, parent, false);
 
-        return new MuseumViewHolder(itemView);
+        return new BucketListViewHolder(itemView);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
-    public void onBindViewHolder(@NonNull MuseumViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull BucketListViewHolder viewHolder, int position) {
 
         Museum museumToDisplay = museumList.get(position);
         Log.d(TAG, "onBindViewHolder" + museumToDisplay.getTitle() + " - " + position);
 
+
         viewHolder.setMuseum(museumToDisplay);
-
-
-        if(clickListener != null) {
-            viewHolder.itemView.setOnClickListener(clickListener);
-        }
+        viewHolder.itemView.setOnClickListener(clickListener);
     }
 
     @Override
@@ -79,14 +78,15 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         return museumList.size();
     }
 
-     class MuseumViewHolder extends RecyclerView.ViewHolder {
+    public class BucketListViewHolder extends RecyclerView.ViewHolder {
 
         private TextView thumbnailTextView;
         private ImageView thumbnailimageView;
         private TextView descriptionTextView;
-        //private Button thumbnailButton;
+        private Button thumbnailButton;
 
-        public MuseumViewHolder(@NonNull final View itemView) {
+
+        public BucketListViewHolder(@NonNull final View itemView) {
             super(itemView);
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
@@ -113,8 +113,9 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
                     action.setDescription(descriptionTextView.getText().toString());
                     Navigation.findNavController(itemView).navigate(action);
                 }
-            });*/
+            });
 
+             */
         }
 
         public void setMuseum(final Museum museumToDisplay) {

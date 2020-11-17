@@ -74,4 +74,9 @@
             android:id="@+id/action_profileFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/bucketlistFragment"
+        android:name="no.hiof.museum_finder.BucketlistFragment"
+        android:label="fragment_bucketlist"
+        tools:layout="@layout/fragment_bucketlist" />
 </navigation>

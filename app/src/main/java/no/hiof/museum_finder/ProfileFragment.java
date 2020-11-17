@@ -50,7 +50,6 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
-
     }
 
     @Override
@@ -96,8 +95,12 @@ public class ProfileFragment extends Fragment {
         profilePictureImageView = view.findViewById(R.id.profileImageView);
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
+
+        System.out.println("SKILLE" + account.getEmail());
         FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
         final CollectionReference accountCollectionReference = firestoreDb.collection("account");
+
+        //firestoreDb.collection("account").document("7AMUXAVCiNNllKTIBxty").collection("bucketlist").add((new Museum("Test", "testdesctiption", "10-17", "Fredrikstad")));
 
         accountCollectionReference.whereEqualTo("eMail", account.getEmail())
                 .get()
