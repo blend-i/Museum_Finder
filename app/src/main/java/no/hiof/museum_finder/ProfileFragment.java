@@ -89,7 +89,7 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    private void getAccountInformationFromDb(String documentReference, View view) {
+    /*private void getAccountInformationFromDb(String documentReference, View view) {
         nameTextView = view.findViewById(R.id.nameTextView);
         emailTextView = view.findViewById(R.id.eMailTextView);
         profilePictureImageView = view.findViewById(R.id.profileImageView);
@@ -100,7 +100,7 @@ public class ProfileFragment extends Fragment {
         FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
         final CollectionReference accountCollectionReference = firestoreDb.collection("account");
 
-        //firestoreDb.collection("account").document("7AMUXAVCiNNllKTIBxty").collection("bucketlist").add((new Museum("Test", "testdesctiption", "10-17", "Fredrikstad")));
+        firestoreDb.collection("account").document("7AMUXAVCiNNllKTIBxty").collection("bucketlist").add((new Museum("Test", "testdesctiption", "10-17", "Fredrikstad")));
 
         accountCollectionReference.whereEqualTo("eMail", account.getEmail())
                 .get()
@@ -136,5 +136,5 @@ public class ProfileFragment extends Fragment {
                     }
                 });
 
-    }
+    }*/
 }

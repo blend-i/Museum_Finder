@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -34,6 +37,7 @@ public class BucketlistFragment extends Fragment {
     private BucketListRecyclerAdapter bucketlistAdapter;
     private CollectionReference museumCollectionReference;
     private ListenerRegistration fireStoreListenerRegistration;
+    private FirebaseAuth auth;
 
     public BucketlistFragment() {
         // Required empty public constructor
@@ -52,6 +56,8 @@ public class BucketlistFragment extends Fragment {
         museumList = new ArrayList<>();
         museumUidList = new ArrayList<>();
         firestoreDb = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser signedInUser = auth.getCurrentUser();
         museumCollectionReference = firestoreDb.collection("account").document("7AMUXAVCiNNllKTIBxty").collection("bucketlist");
         setUpRecyclerView();
     }

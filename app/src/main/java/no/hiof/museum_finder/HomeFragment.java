@@ -157,7 +157,6 @@ public class HomeFragment extends Fragment {
                 intent.putExtra(MuseumDetailFragment.MUSEUM_UID, museum.getUid());
                 startActivity(intent);*/
                 System.out.println("DET BLE KLIKKA JO");
-                startActivity(intent);
                  
                 //HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
                 //Navigation.findNavController(getView()).navigate(action);
