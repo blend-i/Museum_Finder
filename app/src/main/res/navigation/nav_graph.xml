@@ -47,6 +47,10 @@
             android:name="PosterUrl"
             android:defaultValue="Image"
             app:argType="string" />
+        <argument
+            android:name="Id"
+            app:argType="string"
+            android:defaultValue="Museum Id" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -70,5 +74,13 @@
             android:name="profileimage"
             app:argType="string"
             android:defaultValue="Profileimage" />
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/bucketlistFragment"
+        android:name="no.hiof.museum_finder.BucketlistFragment"
+        android:label="fragment_bucketlist"
+        tools:layout="@layout/fragment_bucketlist" />
 </navigation>

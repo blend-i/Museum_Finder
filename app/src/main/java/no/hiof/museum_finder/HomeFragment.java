@@ -1,10 +1,11 @@
 package no.hiof.museum_finder;
 
-import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,11 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -28,16 +26,20 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import no.hiof.museum_finder.adapter.MuseumRecyclerAdapter;
+import no.hiof.museum_finder.adapter2.BucketListRecyclerAdapter;
 import no.hiof.museum_finder.model.Museum;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements CardViewClickManager {
 
     private List<Museum> museumList;
     private List<String> museumUidList;
     private RecyclerView recyclerView;
     private MuseumRecyclerAdapter museumAdapter;
+
+    //private MuseumRecyclerAdapter.MuseumViewHolder museumViewHolder;
 
     private FirebaseFirestore firestoreDb;
 
@@ -62,8 +64,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
         museumList = new ArrayList<>();
         museumUidList = new ArrayList<>();
         firestoreDb = FirebaseFirestore.getInstance();
@@ -142,39 +142,35 @@ public class HomeFragment extends Fragment {
 
          */
 
+        recyclerView = getView().findViewById(R.id.museumRecyclerView);
+        museumAdapter = new MuseumRecyclerAdapter(getContext(), museumList, this);
 
-            recyclerView = getView().findViewById(R.id.museumRecyclerView);
-            museumAdapter = new MuseumRecyclerAdapter(this.getContext(), museumList);
+        System.out.println("getVIEW: " + getContext());
 
-
-
-        //museumAdapter.setButtonClickListener(new Button.OnClickListener());
         /*museumAdapter.setOnItemClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v);
 
+
+                Log.d(TAG, "CLICKCLICKCLICK");
                 Museum museum = museumList.get(position);
                 Intent intent = new Intent(HomeFragment.this.getContext(), MuseumDetailFragment.class);
                 intent.putExtra(MuseumDetailFragment.MUSEUM_UID, museum.getUid());
-
                 startActivity(intent);
+                System.out.println("DET BLE KLIKKA JO");
+                 
+                HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
+                Navigation.findNavController(getView()).navigate(action);
+
+
             }
-        });
-        
-         */
+        });*/
 
         recyclerView.setAdapter(museumAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
 
-    /*private void setupFavoritesRecyclerView() {
-        RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), Museum.getData()));
-        museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-    }
-
-     */
 
     private void generateTestData() {
         ArrayList<Museum> museums = new ArrayList<>();
@@ -194,5 +190,13 @@ public class HomeFragment extends Fragment {
             for(Museum m : museums) {
                 museumCollectionReference.add(m);
             }
+    }
+
+    @Override
+    public void onCardViewClick(int position) {
+        System.out.println(museumList.get(position).getTitle());
+        HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment  navigateToDetailFragment = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
+        navigateToDetailFragment.setId(museumList.get(position).getUid());
+        Navigation.findNavController(requireView()).navigate(navigateToDetailFragment);
     }
 }

@@ -30,6 +30,8 @@ public class MuseumDetailFragment extends Fragment {
     private TextView museumTitle;
     private TextView museumDescription;
     private ImageView museumImage;
+    private TextView museumLocation;
+    private TextView museumOpeningHours;
 
 
     public MuseumDetailFragment() {
@@ -48,16 +50,19 @@ public class MuseumDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Bundle arguments = getArguments();
         museumTitle = view.findViewById(R.id.museumTitleTextView);
         museumDescription = view.findViewById(R.id.museumDescriptionTextView);
         museumImage = view.findViewById(R.id.imageView);
+        museumLocation = view.findViewById(R.id.locationTextView);
+        museumOpeningHours = view.findViewById(R.id.openingHoursTextView);
+
+        Bundle arguments = getArguments();
         assert arguments != null;
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
-        museumTitle.setText(args.getTitle());
-        museumDescription.setText(args.getDescription());
+        //museumTitle.setText(args.getTitle());
+        //museumDescription.setText(args.getDescription());
 
-        /*final String museumUid = getActivity().getIntent().getStringExtra(MUSEUM_UID);
+        final String museumUid = args.getId();
 
         FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
         final DocumentReference museumCollectionReference = firestoreDb.collection("museum").document(museumUid);
@@ -70,8 +75,18 @@ public class MuseumDetailFragment extends Fragment {
                     Museum museum = documentSnapshot.toObject(Museum.class);
                     museum.setUid(documentSnapshot.getId());
 
+                    StringBuilder openingHours = new StringBuilder();
+                    openingHours.append("Opening hours: ");
+                    openingHours.append(museum.getOpeningHours());
+
+                    StringBuilder location = new StringBuilder();
+                    location.append("Location: ");
+                    location.append(museum.getLocation());
+
                     museumTitle.setText(museum.getTitle());
                     museumDescription.setText(museum.getDescription());
+                    museumLocation.setText(location.toString());
+                    museumOpeningHours.setText(openingHours.toString());
 
                     if (museum.getPosterUrl() != null && !museum.getPosterUrl().isEmpty()) {
                         Glide.with(museumImage.getContext())
@@ -84,6 +99,6 @@ public class MuseumDetailFragment extends Fragment {
                     Log.d(TAG, "Get failed with", task.getException());
                 }
             }
-        });*/
+        });
     }
 }
