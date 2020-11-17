@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import no.hiof.museum_finder.CardViewClickManager;
 import no.hiof.museum_finder.HomeFragmentDirections;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
@@ -37,6 +38,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
 
     private List<Museum> museumList;
     private LayoutInflater inflater;
+    private CardViewClickManager cardViewClickManager;
 
     private View.OnClickListener clickListener;
 
@@ -45,10 +47,11 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
     }
 
 
-    public MuseumRecyclerAdapter (Context context, List<Museum> museumList) {
+    public MuseumRecyclerAdapter (Context context, List<Museum> museumList, CardViewClickManager cardViewClickManager) {
         //Lager en inflater basert på den konteksten man er i
         this.inflater = LayoutInflater.from(context);
         this.museumList = museumList;
+        this.cardViewClickManager = cardViewClickManager;
     }
 
     @NonNull
@@ -91,6 +94,12 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cardViewClickManager.onCardViewClick(getAdapterPosition());
+                }
+            });
 
             /*thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
             thumbnailButton.setOnClickListener(new View.OnClickListener() {
