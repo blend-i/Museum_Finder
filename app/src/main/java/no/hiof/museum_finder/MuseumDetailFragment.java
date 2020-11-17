@@ -54,10 +54,10 @@ public class MuseumDetailFragment extends Fragment {
         museumImage = view.findViewById(R.id.imageView);
         assert arguments != null;
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
-        museumTitle.setText(args.getTitle());
-        museumDescription.setText(args.getDescription());
+        //museumTitle.setText(args.getTitle());
+        //museumDescription.setText(args.getDescription());
 
-        /*final String museumUid = getActivity().getIntent().getStringExtra(MUSEUM_UID);
+        final String museumUid = args.getId();
 
         FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
         final DocumentReference museumCollectionReference = firestoreDb.collection("museum").document(museumUid);
@@ -84,6 +84,6 @@ public class MuseumDetailFragment extends Fragment {
                     Log.d(TAG, "Get failed with", task.getException());
                 }
             }
-        });*/
+        });
     }
 }

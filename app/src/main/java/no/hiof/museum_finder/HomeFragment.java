@@ -4,6 +4,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +26,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import no.hiof.museum_finder.adapter.MuseumRecyclerAdapter;
 import no.hiof.museum_finder.adapter2.BucketListRecyclerAdapter;
@@ -193,5 +195,8 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
     @Override
     public void onCardViewClick(int position) {
         System.out.println(museumList.get(position).getTitle());
+        HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment  navigateToDetailFragment = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
+        navigateToDetailFragment.setId(museumList.get(position).getUid());
+        Navigation.findNavController(requireView()).navigate(navigateToDetailFragment);
     }
 }

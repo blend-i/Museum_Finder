@@ -47,6 +47,10 @@
             android:name="PosterUrl"
             android:defaultValue="Image"
             app:argType="string" />
+        <argument
+            android:name="Id"
+            app:argType="string"
+            android:defaultValue="Museum Id" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
