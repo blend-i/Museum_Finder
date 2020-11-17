@@ -77,6 +77,10 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         Museum museumToDisplay = museumList.get(position);
         Log.d(TAG, "onBindViewHolder" + museumToDisplay.getTitle() + " - " + position);
         viewHolder.setMuseum(museumToDisplay);
+
+        if(clickListener != null) {
+            viewHolder.itemView.setOnClickListener(clickListener);
+        }
     }
 
     @Override
@@ -97,7 +101,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
 
-            thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
+            /*thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
             thumbnailButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -118,7 +122,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
                     action.setDescription(descriptionTextView.getText().toString());
                     Navigation.findNavController(itemView).navigate(action);
                 }
-            });
+            });*/
         }
 
         public void setMuseum(final Museum museumToDisplay) {
