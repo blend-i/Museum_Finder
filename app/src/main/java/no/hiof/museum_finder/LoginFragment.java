@@ -31,11 +31,16 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import no.hiof.museum_finder.model.Account;
+import no.hiof.museum_finder.model.BucketList;
+import no.hiof.museum_finder.model.Museum;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.ContentValues.TAG;
@@ -44,6 +49,7 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 public class LoginFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseFirestore firebaseDb;
     private final String TAG = LoginFragment.class.getSimpleName();
     private final int RC_SIGN_IN = 1;
     private final Context context = this.getContext();
@@ -78,6 +84,7 @@ public class LoginFragment extends Fragment {
 
                 }
                 else {
+                    addAccountToDb(new Account(currentUser.getEmail(), new BucketList(new HashMap<String, Museum>())));
                     LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
                     Navigation.findNavController(requireView()).navigate(action);
                     Log.d("signedin", Objects.requireNonNull(currentUser.getEmail()));
@@ -128,6 +135,12 @@ public class LoginFragment extends Fragment {
         auth.removeAuthStateListener(authStateListener);
     }
 
-
+    private void addAccountToDb(Account account) {
+        FirebaseUser currentUser = auth.getCurrentUser();
+        firebaseDb = FirebaseFirestore.getInstance();
+        CollectionReference accountCollection = firebaseDb.collection("account");
+        if(currentUser != null)
+        accountCollection.document(currentUser.getUid()).set(account);
+    }
 
 }

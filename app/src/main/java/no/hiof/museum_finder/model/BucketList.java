@@ -1,19 +1,19 @@
 package no.hiof.museum_finder.model;
 
-import java.util.List;
+import java.util.Map;
 
 public class BucketList {
-    private List<Museum> bucketlist;
+    private Map<String,Museum> bucketlist;
 
-    public BucketList(List<Museum> bucketlist) {
+    public BucketList(Map<String, Museum> bucketlist) {
         this.bucketlist = bucketlist;
     }
 
-    public List<Museum> getBucketlist() {
+    public Map<String, Museum> getBucketlist() {
         return bucketlist;
     }
 
-    public void setBucketlist(List<Museum> bucketlist) {
+    public void setBucketlist(Map<String, Museum> bucketlist) {
         this.bucketlist = bucketlist;
     }
 }

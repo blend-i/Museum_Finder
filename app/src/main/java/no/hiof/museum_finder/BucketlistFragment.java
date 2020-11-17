@@ -15,6 +15,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -35,7 +37,7 @@ public class BucketlistFragment extends Fragment {
     private RecyclerView recyclerView;
     private FirebaseFirestore firestoreDb;
     private BucketListRecyclerAdapter bucketlistAdapter;
-    private CollectionReference museumCollectionReference;
+    private DocumentReference museumCollectionReference;
     private ListenerRegistration fireStoreListenerRegistration;
     private FirebaseAuth auth;
 
@@ -58,20 +60,27 @@ public class BucketlistFragment extends Fragment {
         firestoreDb = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         FirebaseUser signedInUser = auth.getCurrentUser();
-        museumCollectionReference = firestoreDb.collection("account").document("7AMUXAVCiNNllKTIBxty").collection("bucketlist");
+        assert signedInUser != null;
+        museumCollectionReference = firestoreDb.collection("account").document(signedInUser.getUid());
         setUpRecyclerView();
     }
 
     private void createFireStoreReadListener() {
-        fireStoreListenerRegistration = museumCollectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        fireStoreListenerRegistration = museumCollectionReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if(e != null) {
-                    Log.w(TAG, "Listen failed", e);
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshots, @Nullable FirebaseFirestoreException error) {
+
+                if(error != null) {
+                    Log.w(TAG, "Listen failed", error);
                     return;
                 }
 
-                for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
+                /*Kan ikke loope gjennom changes på en documentsnapshot, der av kan ikke bruk switch/case for endring :S*/
+                if( documentSnapshots != null && documentSnapshots.exists() ) {
+                    System.out.println(documentSnapshots.getData());
+                }
+
+                /*for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
                     QueryDocumentSnapshot documentSnapshot = documentChange.getDocument();
                     Museum museum = documentSnapshot.toObject(Museum.class);
                     museum.setUid(documentSnapshot.getId());
@@ -92,8 +101,8 @@ public class BucketlistFragment extends Fragment {
                             museumList.set(pos, museum);
                             bucketlistAdapter.notifyItemChanged(pos);
                             break;
-                    }
-                }
+                    }*/
+
             }
         });
     }
