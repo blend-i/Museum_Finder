@@ -44,27 +44,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:maxLength="60"
             android:maxLines="2"
             android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/thumbnailButton"
             app:layout_constraintStart_toEndOf="@+id/thumbnailimageView"
             app:layout_constraintTop_toBottomOf="@+id/thumbnailTextView" />
-
-        <Button
-            android:id="@+id/thumbnailButton"
-            android:layout_width="75dp"
-            android:layout_height="34dp"
-            android:onClick="details"
-            android:text="Details"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.4"
-            app:layout_constraintStart_toEndOf="@+id/thumbnailimageView"
-            app:layout_constraintTop_toBottomOf="@+id/descriptionTextView"
-            app:layout_constraintVertical_bias="0.6" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

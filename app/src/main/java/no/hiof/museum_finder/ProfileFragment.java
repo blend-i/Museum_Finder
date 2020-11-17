@@ -54,6 +54,8 @@ public class ProfileFragment extends Fragment {
         profilePictureImageView = view.findViewById(R.id.profileImageView);
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
+
+
         System.out.println("SKILLE" + account.getEmail());
         FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
         final CollectionReference accountCollectionReference = firestoreDb.collection("account");

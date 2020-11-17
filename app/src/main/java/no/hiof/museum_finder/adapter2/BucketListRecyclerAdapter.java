@@ -1,6 +1,7 @@
 package no.hiof.museum_finder.adapter2;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,7 +40,7 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
 
     private List<Museum> museumList;
     private LayoutInflater inflater;
-    private View.OnClickListener clickListener;
+    public View.OnClickListener clickListener;
 
     public void setOnItemClickListener(View.OnClickListener clickListener) {
         this.clickListener = clickListener;
@@ -59,12 +61,16 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
         return new BucketListViewHolder(itemView);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull BucketListViewHolder viewHolder, int position) {
 
         Museum museumToDisplay = museumList.get(position);
         Log.d(TAG, "onBindViewHolder" + museumToDisplay.getTitle() + " - " + position);
+
+
         viewHolder.setMuseum(museumToDisplay);
+        viewHolder.itemView.setOnClickListener(clickListener);
     }
 
     @Override
@@ -86,7 +92,7 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
 
-            thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
+            /*thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
             thumbnailButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -108,6 +114,8 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
                     Navigation.findNavController(itemView).navigate(action);
                 }
             });
+
+             */
         }
 
         public void setMuseum(final Museum museumToDisplay) {

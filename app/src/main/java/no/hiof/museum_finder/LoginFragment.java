@@ -62,50 +62,43 @@ public class LoginFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
         signInButton = view.findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
-
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 signIn();
             }
         });
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
         //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.requireContext());
         //updateUI(account);
     }
 
     private void updateUI(GoogleSignInAccount account) {
-        if (account != null) {
-            LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
-            //Navigation.findNavController(requireView()).navigate(action);
-
-            LoginFragmentDirections.ActionLoginFragmentToProfileFragment profileAction = LoginFragmentDirections.actionLoginFragmentToProfileFragment();
-            /*profileAction.setFirstname(account.getGivenName());
-            profileAction.setLastname(account.getFamilyName());
-            profileAction.setEmail(account.getEmail());
-            profileAction.setProfileimage(account.getPhotoUrl().toString());*/
-
-            Navigation.findNavController(requireView()).navigate(profileAction);
-
-            Context context = this.getContext();
-            CharSequence text = "Signed in as: " + account.getEmail();
-            int duration = Toast.LENGTH_SHORT;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
+        if (account == null) {
+            return;
         }
-    }
+        LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
+        //Navigation.findNavController(requireView()).navigate(action);
 
+        //LoginFragmentDirections.ActionLoginFragmentToProfileFragment profileAction = LoginFragmentDirections.actionLoginFragmentToProfileFragment();
+        /*profileAction.setFirstname(account.getGivenName());
+        profileAction.setLastname(account.getFamilyName());
+        profileAction.setEmail(account.getEmail());
+        profileAction.setProfileimage(account.getPhotoUrl().toString());*/
+
+        Navigation.findNavController(requireView()).navigate(action);
+        Context context = this.getContext();
+        CharSequence text = "Signed in as: " + account.getEmail();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -132,6 +125,7 @@ public class LoginFragment extends Fragment {
             
             String lastSignedInEmail = lastSignedInAccount.getEmail();
             String accountToBeSignedIn = account.getEmail();
+
 
             if(!lastSignedInEmail.equals(accountToBeSignedIn)) {
                 if (account.getPhotoUrl().equals(null)) {

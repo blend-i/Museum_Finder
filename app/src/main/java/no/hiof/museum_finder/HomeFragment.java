@@ -4,6 +4,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -61,8 +62,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
         museumList = new ArrayList<>();
         museumUidList = new ArrayList<>();
         firestoreDb = FirebaseFirestore.getInstance();
@@ -134,34 +133,34 @@ public class HomeFragment extends Fragment {
     }
 
     private void setUpRecyclerView() {
-        /*RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), ));
-        museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-         */
-
         recyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumAdapter = new MuseumRecyclerAdapter(this.getContext(), museumList);
+        museumAdapter = new MuseumRecyclerAdapter(getContext(), museumList);
 
-        //museumAdapter.setButtonClickListener(new Button.OnClickListener());
-        /*museumAdapter.setOnItemClickListener(new View.OnClickListener() {
+        System.out.println("getVIEW: " + getContext());
+
+        museumAdapter.setOnItemClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v);
 
-                Museum museum = museumList.get(position);
+
+
+                Log.d(TAG, "CLICKCLICKCLICK");
+
+                /*Museum museum = museumList.get(position);
                 Intent intent = new Intent(HomeFragment.this.getContext(), MuseumDetailFragment.class);
                 intent.putExtra(MuseumDetailFragment.MUSEUM_UID, museum.getUid());
 
                 startActivity(intent);
+                 */
+                //HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
+                //Navigation.findNavController(getView()).navigate(action);
+
             }
         });
-        
-
-*/
 
         recyclerView.setAdapter(museumAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-
     }
 
 

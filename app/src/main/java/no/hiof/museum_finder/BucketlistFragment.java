@@ -49,7 +49,6 @@ public class BucketlistFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         museumList = new ArrayList<>();
         museumUidList = new ArrayList<>();
         firestoreDb = FirebaseFirestore.getInstance();
@@ -111,8 +110,15 @@ public class BucketlistFragment extends Fragment {
     private void setUpRecyclerView() {
         recyclerView = getView().findViewById(R.id.bucketListRecyclerView);
         bucketlistAdapter = new BucketListRecyclerAdapter(this.getContext(), museumList);
-
         recyclerView.setAdapter(bucketlistAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+
+        bucketlistAdapter.setOnItemClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("HEEEEEEEEEEEIIII");
+            }
+        });
     }
 }
