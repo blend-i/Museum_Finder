@@ -56,6 +56,12 @@ public class MuseumDetailFragment extends Fragment {
         museumLocation = view.findViewById(R.id.locationTextView);
         museumOpeningHours = view.findViewById(R.id.openingHoursTextView);
 
+        museumTitle.setVisibility(View.INVISIBLE);
+        museumDescription.setVisibility(View.INVISIBLE);
+        museumImage.setVisibility(View.INVISIBLE);
+        museumLocation.setVisibility(View.INVISIBLE);
+        museumOpeningHours.setVisibility(View.INVISIBLE);
+
         Bundle arguments = getArguments();
         assert arguments != null;
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
@@ -71,6 +77,13 @@ public class MuseumDetailFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
+
+                    museumTitle.setVisibility(View.VISIBLE);
+                    museumDescription.setVisibility(View.VISIBLE);
+                    museumImage.setVisibility(View.VISIBLE);
+                    museumLocation.setVisibility(View.VISIBLE);
+                    museumOpeningHours.setVisibility(View.VISIBLE);
+
                     DocumentSnapshot documentSnapshot = task.getResult();
                     Museum museum = documentSnapshot.toObject(Museum.class);
                     museum.setUid(documentSnapshot.getId());
