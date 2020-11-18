@@ -4,26 +4,32 @@ import java.util.List;
 
 public class Account {
     private String eMail;
-    private BucketList bucketList;
+    private List<Museum> bucketList;
 
-    public Account(String eMail, BucketList bucketList) {
+    public Account(String eMail, List<Museum> bucketList) {
         this.eMail = eMail;
         this.bucketList = bucketList;
     }
 
-    public String geteMail() {
-        return eMail;
+    public Account(String eMail) {
+        this.eMail = eMail;
+
     }
 
-    public BucketList getBucketList() {
-        return bucketList;
+
+    public String geteMail() {
+        return eMail;
     }
 
     public void seteMail(String eMail) {
         this.eMail = eMail;
     }
 
-    public void setBucketList(BucketList bucketList) {
+    public List<Museum> getBucketList() {
+        return bucketList;
+    }
+
+    public void setBucketList(List<Museum> bucketList) {
         this.bucketList = bucketList;
     }
 }

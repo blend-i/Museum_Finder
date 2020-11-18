@@ -10,20 +10,30 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import no.hiof.museum_finder.model.Museum;
 
 import static android.content.ContentValues.TAG;
-
 
 public class MuseumDetailFragment extends Fragment {
     public static final String MUSEUM_UID = "museum_uid";
@@ -32,7 +42,12 @@ public class MuseumDetailFragment extends Fragment {
     private ImageView museumImage;
     private TextView museumLocation;
     private TextView museumOpeningHours;
+    private Button bucketListButton;
+    private FirebaseAuth firebaseAuth;
+    private Museum museum;
+    private FirebaseFirestore fireStoreDb;
 
+    private CollectionReference bucketCollectionReference;
 
     public MuseumDetailFragment() {
         // Required empty public constructor
@@ -45,7 +60,6 @@ public class MuseumDetailFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_museum_detail, container, false);
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -55,6 +69,10 @@ public class MuseumDetailFragment extends Fragment {
         museumImage = view.findViewById(R.id.imageView);
         museumLocation = view.findViewById(R.id.locationTextView);
         museumOpeningHours = view.findViewById(R.id.openingHoursTextView);
+
+        bucketListButton = view.findViewById(R.id.addToBucketListButton);
+
+        fireStoreDb = FirebaseFirestore.getInstance();
 
         museumTitle.setVisibility(View.INVISIBLE);
         museumDescription.setVisibility(View.INVISIBLE);
@@ -69,6 +87,10 @@ public class MuseumDetailFragment extends Fragment {
         //museumDescription.setText(args.getDescription());
 
         final String museumUid = args.getId();
+
+       firebaseAuth = FirebaseAuth.getInstance();
+
+       FirebaseUser user = firebaseAuth.getCurrentUser();
 
         FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
         final DocumentReference museumCollectionReference = firestoreDb.collection("museum").document(museumUid);
@@ -85,7 +107,7 @@ public class MuseumDetailFragment extends Fragment {
                     museumOpeningHours.setVisibility(View.VISIBLE);
 
                     DocumentSnapshot documentSnapshot = task.getResult();
-                    Museum museum = documentSnapshot.toObject(Museum.class);
+                    museum = documentSnapshot.toObject(Museum.class);
                     museum.setUid(documentSnapshot.getId());
 
                     StringBuilder openingHours = new StringBuilder();
@@ -111,6 +133,32 @@ public class MuseumDetailFragment extends Fragment {
                 {
                     Log.d(TAG, "Get failed with", task.getException());
                 }
+            }
+        });
+
+        final DocumentReference userCollectionReference = firestoreDb.collection("account").document(user.getUid());
+
+        bucketCollectionReference = fireStoreDb.collection("account").document(user.getUid()).collection("bucketList");
+
+        bucketListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                userCollectionReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if (documentSnapshot.exists()) {
+                                bucketCollectionReference.add(new Museum(museum.getTitle(), museum.getDescription(), museum.getOpeningHours(), museum.getLocation(), museum.getPosterUrl()));
+                            }   else {
+                                Log.d("TAG", "Could not add bucketlist");
+                            }
+                        } else {
+                            Log.d("TAG", "Task unseccesful");
+                        }
+                    }
+                });
             }
         });
     }

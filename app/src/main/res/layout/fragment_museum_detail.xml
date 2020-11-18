@@ -33,8 +33,8 @@
 
     <TextView
         android:id="@+id/museumDescriptionTextView"
-        android:layout_width="379dp"
-        android:layout_height="204dp"
+        android:layout_width="374dp"
+        android:layout_height="162dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
@@ -64,5 +64,14 @@
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/locationTextView" />
+
+    <Button
+        android:id="@+id/addToBucketListButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:text="Add to bucketlist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/museumDescriptionTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

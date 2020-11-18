@@ -79,7 +79,7 @@ public class LoginFragment extends Fragment {
 
                 }
                 else {
-                    addAccountToDb(new Account(currentUser.getEmail(), new BucketList(new HashMap<String, Museum>())));
+                    addAccountToDb(new Account(currentUser.getEmail()));
                     //addAccountToDb();
                     LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
                     Navigation.findNavController(requireView()).navigate(action);

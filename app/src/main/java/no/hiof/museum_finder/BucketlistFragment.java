@@ -80,6 +80,8 @@ public class BucketlistFragment extends Fragment {
                     System.out.println(documentSnapshots.getData());
                 }
 
+
+
                 /*for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
                     QueryDocumentSnapshot documentSnapshot = documentChange.getDocument();
                     Museum museum = documentSnapshot.toObject(Museum.class);
@@ -128,12 +130,5 @@ public class BucketlistFragment extends Fragment {
         recyclerView.setAdapter(bucketlistAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-
-        bucketlistAdapter.setOnItemClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("HEEEEEEEEEEEIIII");
-            }
-        });
     }
 }

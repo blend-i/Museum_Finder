@@ -135,38 +135,8 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
     }
 
     private void setUpRecyclerView() {
-        /*RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), ));
-        museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-
-
-         */
-
         recyclerView = getView().findViewById(R.id.museumRecyclerView);
         museumAdapter = new MuseumRecyclerAdapter(getContext(), museumList, this);
-
-        System.out.println("getVIEW: " + getContext());
-
-        /*museumAdapter.setOnItemClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = recyclerView.getChildAdapterPosition(v);
-
-
-                Log.d(TAG, "CLICKCLICKCLICK");
-                Museum museum = museumList.get(position);
-                Intent intent = new Intent(HomeFragment.this.getContext(), MuseumDetailFragment.class);
-                intent.putExtra(MuseumDetailFragment.MUSEUM_UID, museum.getUid());
-                startActivity(intent);
-                System.out.println("DET BLE KLIKKA JO");
-                 
-                HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
-                Navigation.findNavController(getView()).navigate(action);
-
-
-            }
-        });*/
-
         recyclerView.setAdapter(museumAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
