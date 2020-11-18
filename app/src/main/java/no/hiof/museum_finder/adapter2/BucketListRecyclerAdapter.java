@@ -92,36 +92,13 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
 
-            /*thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
-            thumbnailButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
-                    action.setTitle(thumbnailTextView.getText().toString());
-                    action.setDescription(descriptionTextView.getText().toString());
-
-                    Navigation.findNavController(itemView).navigate(action);
-                }
-            });
-
-            ImageView imageView = itemView.findViewById(R.id.thumbnailimageView);
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
-                    action.setTitle(thumbnailTextView.getText().toString());
-                    action.setDescription(descriptionTextView.getText().toString());
-                    Navigation.findNavController(itemView).navigate(action);
-                }
-            });
-
-             */
         }
 
         public void setMuseum(final Museum museumToDisplay) {
-            thumbnailTextView.setText(museumToDisplay.getTitle());
-            //thumbnailimageView.setImageResource(museumToDisplay.getUid());
-            descriptionTextView.setText(museumToDisplay.getDescription());
+            if(thumbnailTextView != null && descriptionTextView != null) {
+                thumbnailTextView.setText(museumToDisplay.getTitle());
+                descriptionTextView.setText(museumToDisplay.getDescription());
+            }
 
             String posterUrl = museumToDisplay.getPosterUrl();
 
@@ -129,8 +106,6 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
                 Glide.with(thumbnailimageView.getContext())
                         .load(posterUrl)
                         .into(thumbnailimageView);
-            } else {
-                thumbnailimageView.setImageResource(R.drawable.kon_tiki_museet);
             }
         }
     }

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BucketList {
-    private List<Museum> bucketList;
+    /*private List<Museum> bucketList;
 
     public BucketList(List<Museum> bucketList) {
         this.bucketList = bucketList;
@@ -18,5 +18,7 @@ public class BucketList {
         this.bucketList = bucketList;
     }
 
+
+     */
 
 }
