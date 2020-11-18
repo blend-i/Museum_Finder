@@ -37,7 +37,7 @@ public class BucketlistFragment extends Fragment {
     private RecyclerView recyclerView;
     private FirebaseFirestore firestoreDb;
     private BucketListRecyclerAdapter bucketlistAdapter;
-    private DocumentReference museumCollectionReference;
+    private CollectionReference museumCollectionReference;
     private ListenerRegistration fireStoreListenerRegistration;
     private FirebaseAuth auth;
 
@@ -61,28 +61,22 @@ public class BucketlistFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         FirebaseUser signedInUser = auth.getCurrentUser();
         assert signedInUser != null;
-        museumCollectionReference = firestoreDb.collection("account").document(signedInUser.getUid());
+        System.out.println("SIGNEDIN USER UID: " + signedInUser.getUid());
+        museumCollectionReference = firestoreDb.collection("account").document(signedInUser.getUid()).collection("bucketList");
         setUpRecyclerView();
     }
 
     private void createFireStoreReadListener() {
-        fireStoreListenerRegistration = museumCollectionReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshots, @Nullable FirebaseFirestoreException error) {
 
-                if(error != null) {
-                    Log.w(TAG, "Listen failed", error);
+        fireStoreListenerRegistration = museumCollectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if(e != null) {
+                    Log.w(TAG, "Listen failed", e);
                     return;
                 }
 
-                /*Kan ikke loope gjennom changes på en documentsnapshot, der av kan ikke bruk switch/case for endring :S*/
-                if( documentSnapshots != null && documentSnapshots.exists() ) {
-                    System.out.println(documentSnapshots.getData());
-                }
-
-
-
-                /*for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
+                for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
                     QueryDocumentSnapshot documentSnapshot = documentChange.getDocument();
                     Museum museum = documentSnapshot.toObject(Museum.class);
                     museum.setUid(documentSnapshot.getId());
@@ -103,8 +97,8 @@ public class BucketlistFragment extends Fragment {
                             museumList.set(pos, museum);
                             bucketlistAdapter.notifyItemChanged(pos);
                             break;
-                    }*/
-
+                    }
+                }
             }
         });
     }
