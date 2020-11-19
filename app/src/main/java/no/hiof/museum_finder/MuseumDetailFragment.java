@@ -143,7 +143,7 @@ public class MuseumDetailFragment extends Fragment {
             }
         });
 
-        final DocumentReference userCollectionReference = fireStoreDb.collection("account").document(user.getUid());
+        final DocumentReference userDocumentReference = fireStoreDb.collection("account").document(user.getUid());
 
         bucketCollectionReference = fireStoreDb.collection("account").document(user.getUid()).collection("bucketList");
 
@@ -151,7 +151,7 @@ public class MuseumDetailFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                userCollectionReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                userDocumentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()){
@@ -175,23 +175,45 @@ public class MuseumDetailFragment extends Fragment {
         scaleAnimation.setDuration(500);
         BounceInterpolator bounceInterpolator = new BounceInterpolator();
         scaleAnimation.setInterpolator(bounceInterpolator);
-        final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumUid);
-        favourite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
+
+
+        favourite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 //animation
 
-                if(isChecked) {
-                    System.out.println("CHECKED");
-                } else {
+                if (isChecked) {
+                    setCheckedBucketList(museumUid, true);
                     System.out.println("UNCHECKED");
+                } else {
+                    setCheckedBucketList(museumUid, false);
                 }
                 compoundButton.startAnimation(scaleAnimation);
             }
         });
     }
 
-    private void addToBucketList(CollectionReference userCollectionReference) {
+    private void setCheckedBucketList(final String museumId, final boolean bool) {
+        final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);
+        bucketListSpecificMuseumReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
 
+                    if(!documentSnapshot.exists()) {
+                        /*museum = documentSnapshot.toObject(Museum.class);
+                        museum.setFavorite(bool);*/
+                        bucketCollectionReference.document(museumId).set(new Museum(museum.getTitle(), museum.getDescription(), museum.getOpeningHours(), museum.getLocation(), museum.getPosterUrl(), true));
+
+                        //bucketListSpecificMuseumReference.set(museum);
+                        System.out.println("ADDED TO BUCKETLIST");
+                    } else {
+                        bucketCollectionReference.document(museumId).delete();
+                    }
+                }
+            }
+        });
     }
 }
