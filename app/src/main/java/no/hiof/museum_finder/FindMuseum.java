@@ -2,10 +2,12 @@ package no.hiof.museum_finder;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -63,6 +65,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -94,26 +97,11 @@ public class FindMuseum extends Fragment {
     //Finds the result the user is searching for
     public Button findButton;
 
-    public Context context;
-
     public TextView titleCardView;
     public TextView openingHoursCardView;
     public ImageView imageCardView;
     public TextView locationTextView;
     public TextView ratingTextView;
-
-    private enum WEEKDAY {
-        MONDAY,
-        TUESDAY,
-        WEDNESDAY,
-        THURSDAY,
-        FRIDAY,
-        SATURDAY,
-        SUNDAY
-    }
-
-
-
 
 
     @Override
@@ -142,7 +130,6 @@ public class FindMuseum extends Fragment {
         imageCardView = view.findViewById(R.id.imageCardView);
         locationTextView = view.findViewById(R.id.location);
         ratingTextView = view.findViewById(R.id.ratingTextView);
-        context = getContext();
 
 
         Places.initialize(view.getContext(), "AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc");
@@ -160,8 +147,6 @@ public class FindMuseum extends Fragment {
                 //dont exacly know what this does, but i know i need it
                 //startSearch(text.toString(), true, null, true);
             }
-
-
 
             @Override
             public void onButtonClicked(int buttonCode) {
@@ -188,6 +173,7 @@ public class FindMuseum extends Fragment {
                         .setSessionToken(token)
                         .setQuery(s.toString())
                         .build();
+                System.out.println("DESCRIBE CONTENT: " + predictionsRequest.getTypeFilter().describeContents());
                 // You can use this to restrict search if app is only gonna be used in one country -->  .setCountry("no")
 
                 placesClient.findAutocompletePredictions(predictionsRequest).addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
@@ -244,7 +230,7 @@ public class FindMuseum extends Fragment {
                 }, 200);
 
                 //closes keyboard after user clicks suggestion
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 if(imm != null){
                     imm.hideSoftInputFromWindow(materialSearchBar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }
@@ -267,7 +253,9 @@ public class FindMuseum extends Fragment {
                 );
 
                 FetchPlaceRequest fetchPlaceRequest = FetchPlaceRequest.builder(placeId, placeFields).build();
+
                 placesClient.fetchPlace(fetchPlaceRequest).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
                         final Place place = fetchPlaceResponse.getPlace();
@@ -282,6 +270,7 @@ public class FindMuseum extends Fragment {
                                 public void run() {
                                     //Place place1 = fetchPlaceResponse.getPlace();
                                     List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+                                    assert metadata != null;
                                     PhotoMetadata photoMetadata = metadata.get(0);
 
                                     // Create a FetchPhotoRequest.
@@ -312,7 +301,7 @@ public class FindMuseum extends Fragment {
 
 
                             // Finds what day it is and assigns variable "day" to a number between 0 - 6 for identifying the weekdays.
-                            Calendar calendar = Calendar.getInstance();
+                            /*Calendar calendar = Calendar.getInstance();
                             int day = calendar.get(Calendar.DAY_OF_WEEK);
                             switch (day) {
                                 case Calendar.SUNDAY:
@@ -338,7 +327,22 @@ public class FindMuseum extends Fragment {
                                     break;
                             }
 
-                            openingHoursCardView.setText(place.getOpeningHours().getWeekdayText().get(day));
+                             */
+
+                            LocalDate date = null;
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                date = LocalDate.now().minusDays(1);
+                                date.getDayOfWeek();
+                            }
+
+                            try {
+                                openingHoursCardView.setText(place.getOpeningHours().getWeekdayText().get(date.getDayOfWeek().getValue()));
+                            }catch (Exception e ){
+                                Log.d("Tag", "Could not find opening hours");
+                                openingHoursCardView.setText("Openinghours not available");
+                            }
+
+
                             locationTextView.setText(place.getAddress());
                             titleCardView.setText(place.getName());
 
@@ -376,7 +380,6 @@ public class FindMuseum extends Fragment {
         });
 
         //check if gps is enabeled or not aand then request user to enable it
-
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(5000);
@@ -386,14 +389,14 @@ public class FindMuseum extends Fragment {
         SettingsClient settingsClient = LocationServices.getSettingsClient(this.getContext());
 
         Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
-        task.addOnSuccessListener((Activity) context, new OnSuccessListener<LocationSettingsResponse>() {
+        task.addOnSuccessListener((Activity) getContext(), new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 getDeviceLocation();
             }
         });
 
-        task.addOnFailureListener((Activity) context, new OnFailureListener() {
+        task.addOnFailureListener((Activity) getContext(), new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 if(e instanceof ResolvableApiException) {

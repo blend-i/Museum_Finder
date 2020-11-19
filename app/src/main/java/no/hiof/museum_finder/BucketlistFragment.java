@@ -74,6 +74,7 @@ public class BucketlistFragment extends Fragment {
         if(museumCollectionReference == null) {
             return;
         }
+        try {
             fireStoreListenerRegistration = museumCollectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -110,6 +111,10 @@ public class BucketlistFragment extends Fragment {
                     }
                 }
             });
+        } catch (Exception e) {
+            Log.d("BucketlistFragment", "Could not load bucketlist");
+        }
+
     }
 
     @Override
