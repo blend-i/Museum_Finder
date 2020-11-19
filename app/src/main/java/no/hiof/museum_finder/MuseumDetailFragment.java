@@ -10,9 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +52,7 @@ public class MuseumDetailFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private Museum museum;
     private FirebaseFirestore fireStoreDb;
+    private ToggleButton favourite;
 
     private CollectionReference bucketCollectionReference;
 
@@ -136,7 +143,7 @@ public class MuseumDetailFragment extends Fragment {
             }
         });
 
-        final DocumentReference userCollectionReference = firestoreDb.collection("account").document(user.getUid());
+        final DocumentReference userCollectionReference = fireStoreDb.collection("account").document(user.getUid());
 
         bucketCollectionReference = fireStoreDb.collection("account").document(user.getUid()).collection("bucketList");
 
@@ -150,7 +157,8 @@ public class MuseumDetailFragment extends Fragment {
                         if(task.isSuccessful()){
                             DocumentSnapshot documentSnapshot = task.getResult();
                             if (documentSnapshot.exists()) {
-                                bucketCollectionReference.add(new Museum(museum.getTitle(), museum.getDescription(), museum.getOpeningHours(), museum.getLocation(), museum.getPosterUrl()));
+                                //bucketCollectionReference.add(new Museum(museum.getTitle(), museum.getDescription(), museum.getOpeningHours(), museum.getLocation(), museum.getPosterUrl()));
+                                bucketCollectionReference.document(museumUid).set(new Museum(museum.getTitle(), museum.getDescription(), museum.getOpeningHours(), museum.getLocation(), museum.getPosterUrl(), true));
                             }   else {
                                 Log.d("TAG", "Could not add bucketlist");
                             }
@@ -161,5 +169,29 @@ public class MuseumDetailFragment extends Fragment {
                 });
             }
         });
+
+        favourite = getView().findViewById(R.id.button_favorite);
+        final ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
+        scaleAnimation.setDuration(500);
+        BounceInterpolator bounceInterpolator = new BounceInterpolator();
+        scaleAnimation.setInterpolator(bounceInterpolator);
+        final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumUid);
+        favourite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                //animation
+
+                if(isChecked) {
+                    System.out.println("CHECKED");
+                } else {
+                    System.out.println("UNCHECKED");
+                }
+                compoundButton.startAnimation(scaleAnimation);
+            }
+        });
+    }
+
+    private void addToBucketList(CollectionReference userCollectionReference) {
+
     }
 }
