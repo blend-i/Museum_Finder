@@ -135,6 +135,8 @@ public class MuseumDetailFragment extends Fragment {
                                 .load(museum.getPosterUrl())
                                 .into(museumImage);
                     }
+
+                    checkIfMusuemExistsInBucketList(museumUid);
                 }
                 else
                 {
@@ -202,18 +204,59 @@ public class MuseumDetailFragment extends Fragment {
                 if(task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
 
-                    if(!documentSnapshot.exists()) {
-                        /*museum = documentSnapshot.toObject(Museum.class);
-                        museum.setFavorite(bool);*/
-                        bucketCollectionReference.document(museumId).set(new Museum(museum.getTitle(), museum.getDescription(), museum.getOpeningHours(), museum.getLocation(), museum.getPosterUrl(), true));
+                    if (documentSnapshot.exists()) {
+                        museum = documentSnapshot.toObject(Museum.class);
+                        museum.setFavorite(bool);
+
+                        if(!museum.isFavorite()){
+                            bucketCollectionReference.document(museumId).delete();
+                        }
+                    } else {
+                        bucketCollectionReference.document(museumId).set(museum);
 
                         //bucketListSpecificMuseumReference.set(museum);
                         System.out.println("ADDED TO BUCKETLIST");
-                    } else {
-                        bucketCollectionReference.document(museumId).delete();
                     }
                 }
             }
         });
+    }
+
+    private void checkIfMusuemExistsInBucketList(final String museumId) {
+        final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);
+        bucketListSpecificMuseumReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+
+                    if(documentSnapshot.exists()) {
+                        favourite.setChecked(true);
+                        System.out.println("DOCUMENT EXISTS IN BUCKETLIST");
+                    } else {
+                        System.out.println("Document doesn't exist");
+                    }
+                }
+            }
+        });
+    }
+    
+    enum WEEKDAYS {
+        monday(0),
+        tuesday(1),
+        wednesday(2),
+        thursday(3),
+        friday(4),
+        saturday(5),
+        sunday(6)
+        ;
+
+        private final int weekday;
+
+        WEEKDAYS(int weekday) {
+            this.weekday = weekday;
+        }
+
+        private int getWeekday() { return weekday; };
     }
 }
