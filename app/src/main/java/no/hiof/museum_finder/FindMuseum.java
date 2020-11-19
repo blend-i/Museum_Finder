@@ -65,6 +65,7 @@ import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -98,6 +99,21 @@ public class FindMuseum extends Fragment {
     public TextView titleCardView;
     public TextView openingHoursCardView;
     public ImageView imageCardView;
+    public TextView locationTextView;
+    public TextView ratingTextView;
+
+    private enum WEEKDAY {
+        MONDAY,
+        TUESDAY,
+        WEDNESDAY,
+        THURSDAY,
+        FRIDAY,
+        SATURDAY,
+        SUNDAY
+    }
+
+
+
 
 
     @Override
@@ -124,6 +140,8 @@ public class FindMuseum extends Fragment {
         titleCardView = view.findViewById(R.id.titleCardView);
         openingHoursCardView = view.findViewById(R.id.openingHoursCardView);
         imageCardView = view.findViewById(R.id.imageCardView);
+        locationTextView = view.findViewById(R.id.location);
+        ratingTextView = view.findViewById(R.id.ratingTextView);
         context = getContext();
 
 
@@ -243,6 +261,7 @@ public class FindMuseum extends Fragment {
                         Place.Field.PHOTO_METADATAS,
                         Place.Field.PRICE_LEVEL,
                         Place.Field.TYPES,
+                        Place.Field.NAME,
                         Place.Field.USER_RATINGS_TOTAL,
                         Place.Field.WEBSITE_URI
                 );
@@ -289,7 +308,44 @@ public class FindMuseum extends Fragment {
                                     });
                                 }
                             }).start();
-                            openingHoursCardView.setText(Objects.requireNonNull(Objects.requireNonNull(place.getOpeningHours()).getWeekdayText()).toString());
+                            //openingHoursCardView.setText(Objects.requireNonNull(Objects.requireNonNull(place.getOpeningHours()).getWeekdayText()).toString());
+
+
+                            // Finds what day it is and assigns variable "day" to a number between 0 - 6 for identifying the weekdays.
+                            Calendar calendar = Calendar.getInstance();
+                            int day = calendar.get(Calendar.DAY_OF_WEEK);
+                            switch (day) {
+                                case Calendar.SUNDAY:
+                                    day = 6;
+                                    break;
+                                case Calendar.MONDAY:
+                                    day = 0;
+                                    break;
+                                case Calendar.TUESDAY:
+                                    day = 1;
+                                    break;
+                                case Calendar.WEDNESDAY:
+                                    day = 2;
+                                    break;
+                                case Calendar.THURSDAY:
+                                    day = 3;
+                                    break;
+                                case Calendar.FRIDAY:
+                                    day = 4;
+                                    break;
+                                case Calendar.SATURDAY:
+                                    day = 5;
+                                    break;
+                            }
+
+                            openingHoursCardView.setText(place.getOpeningHours().getWeekdayText().get(day));
+                            locationTextView.setText(place.getAddress());
+                            titleCardView.setText(place.getName());
+
+                            String rating = "Rating: " + place.getRating();
+                            ratingTextView.setText(rating);
+
+
                             /*System.out.println("Gjør det du skal her.");
                             System.out.println("Address: " + place.getAddress());
                             System.out.println("Lat Lng : " + place.getLatLng());
