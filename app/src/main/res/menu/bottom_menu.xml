@@ -14,4 +14,8 @@
         android:id="@+id/bucketlistFragment"
         android:icon="@drawable/ic_action_profile"
         android:title="Bucketlist" />
+    <item
+        android:id="@+id/findMuseum"
+        android:icon="@drawable/ic_action_profile"
+        android:title="Search" />
 </menu>
