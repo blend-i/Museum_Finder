@@ -86,7 +86,6 @@ public class ProfileFragment extends Fragment {
                 });
             }
         });
-
     }
 
     /*private void getAccountInformationFromDb(String documentReference, View view) {
@@ -135,6 +134,5 @@ public class ProfileFragment extends Fragment {
                         }
                     }
                 });
-
     }*/
 }

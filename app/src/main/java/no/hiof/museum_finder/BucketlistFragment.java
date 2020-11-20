@@ -37,12 +37,9 @@ public class BucketlistFragment extends Fragment {
     private List<String> museumUidList;
     private RecyclerView recyclerView;
     private BucketListRecyclerAdapter bucketlistAdapter;
-
     private FirebaseFirestore firestoreDb;
-
     private CollectionReference museumCollectionReference;
     private ListenerRegistration fireStoreListenerRegistration;
-
     private FirebaseAuth auth;
 
     public BucketlistFragment() {
@@ -114,7 +111,6 @@ public class BucketlistFragment extends Fragment {
         } catch (Exception e) {
             Log.d("BucketlistFragment", "Could not load bucketlist");
         }
-
     }
 
     @Override

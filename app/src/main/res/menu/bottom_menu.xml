@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/homeFragment"
         android:icon="@drawable/ic_action_home"
         android:title="Home" />
+
+    <item
+        android:id="@+id/findMuseum"
+        android:icon="@drawable/ic_search"
+        android:title="Search" />
+
+    <item
+        android:id="@+id/bucketlistFragment"
+        android:icon="@drawable/ic_bucketlist"
+        android:title="Bucketlist" />
+
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_action_profile"
         android:title="Profile" />
-
-    <item
-        android:id="@+id/bucketlistFragment"
-        android:icon="@drawable/ic_action_profile"
-        android:title="Bucketlist" />
-    <item
-        android:id="@+id/findMuseum"
-        android:icon="@drawable/ic_action_profile"
-        android:title="Search" />
 </menu>

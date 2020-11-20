@@ -95,7 +95,6 @@ public class FindMuseum extends Fragment {
     public MaterialSearchBar materialSearchBar;
 
     //Finds the result the user is searching for
-    public Button findButton;
 
     public TextView titleCardView;
     public TextView openingHoursCardView;
@@ -123,7 +122,6 @@ public class FindMuseum extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         materialSearchBar = view.findViewById(R.id.searchBar);
-        findButton = view.findViewById(R.id.findButton);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         titleCardView = view.findViewById(R.id.titleCardView);
         openingHoursCardView = view.findViewById(R.id.openingHoursCardView);
@@ -173,7 +171,7 @@ public class FindMuseum extends Fragment {
                         .setSessionToken(token)
                         .setQuery(s.toString())
                         .build();
-                System.out.println("DESCRIBE CONTENT: " + predictionsRequest.getTypeFilter().describeContents());
+
                 // You can use this to restrict search if app is only gonna be used in one country -->  .setCountry("no")
 
                 placesClient.findAutocompletePredictions(predictionsRequest).addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
