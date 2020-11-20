@@ -41,7 +41,7 @@
 
         <TextView
             android:id="@+id/descriptionTextView"
-            android:layout_width="200dp"
+            android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
@@ -50,6 +50,20 @@
             android:text="TextView"
             app:layout_constraintStart_toEndOf="@+id/thumbnailimageView"
             app:layout_constraintTop_toBottomOf="@+id/thumbnailTextView" />
+
+        <ToggleButton
+            android:id="@+id/button_favoriteHome"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/button_favorite"
+            android:checked="false"
+            android:text=""
+            android:textOff=""
+            android:textOn=""
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -13,8 +13,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -38,6 +45,8 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
     private List<String> museumUidList;
     private RecyclerView recyclerView;
     private MuseumRecyclerAdapter museumAdapter;
+    private FirebaseAuth auth;
+    private FirebaseUser currentUser;
 
     //private MuseumRecyclerAdapter.MuseumViewHolder museumViewHolder;
 
@@ -67,6 +76,8 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
         museumList = new ArrayList<>();
         museumUidList = new ArrayList<>();
         firestoreDb = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
 
         museumCollectionReference = firestoreDb.collection("museum");
         /*
@@ -168,5 +179,16 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
         HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment  navigateToDetailFragment = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
         navigateToDetailFragment.setId(museumList.get(position).getUid());
         Navigation.findNavController(requireView()).navigate(navigateToDetailFragment);
+    }
+
+    @Override
+    public void onCardViewToggleButtonCheckedChanged(int position, ToggleButton favourite,boolean isChecked) {
+        if(isChecked) {
+            HeartToggleButtonHandler.setCheckedBucketList(museumList.get(position).getUid(),true, currentUser, firestoreDb);
+            System.out.println("CHECKED");
+        } else {
+            HeartToggleButtonHandler.setCheckedBucketList(museumList.get(position).getUid(),false, currentUser, firestoreDb);
+            System.out.println("UNCHECKED");
+        }
     }
 }
