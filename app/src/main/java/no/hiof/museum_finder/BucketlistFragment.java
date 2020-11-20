@@ -6,6 +6,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,14 +33,16 @@ import no.hiof.museum_finder.model.Museum;
 import static android.content.ContentValues.TAG;
 
 public class BucketlistFragment extends Fragment {
-
     private List<Museum> museumList;
     private List<String> museumUidList;
     private RecyclerView recyclerView;
-    private FirebaseFirestore firestoreDb;
     private BucketListRecyclerAdapter bucketlistAdapter;
-    private DocumentReference museumCollectionReference;
+
+    private FirebaseFirestore firestoreDb;
+
+    private CollectionReference museumCollectionReference;
     private ListenerRegistration fireStoreListenerRegistration;
+
     private FirebaseAuth auth;
 
     public BucketlistFragment() {
@@ -58,53 +62,54 @@ public class BucketlistFragment extends Fragment {
         museumList = new ArrayList<>();
         museumUidList = new ArrayList<>();
         firestoreDb = FirebaseFirestore.getInstance();
+
         auth = FirebaseAuth.getInstance();
         FirebaseUser signedInUser = auth.getCurrentUser();
-        assert signedInUser != null;
-        museumCollectionReference = firestoreDb.collection("account").document(signedInUser.getUid());
+        museumCollectionReference = firestoreDb.collection("account").document(signedInUser.getUid()).collection("bucketList");
+
         setUpRecyclerView();
     }
 
     private void createFireStoreReadListener() {
-        fireStoreListenerRegistration = museumCollectionReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshots, @Nullable FirebaseFirestoreException error) {
+        if(museumCollectionReference == null) {
+            return;
+        }
+            fireStoreListenerRegistration = museumCollectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    if(e != null) {
+                        Log.w(TAG, "Listen failed", e);
+                        return;
+                    }
 
-                if(error != null) {
-                    Log.w(TAG, "Listen failed", error);
-                    return;
+                    assert queryDocumentSnapshots != null;
+                    for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
+                        QueryDocumentSnapshot documentSnapshot = documentChange.getDocument();
+                        Museum museum = documentSnapshot.toObject(Museum.class);
+                        museum.setUid(documentSnapshot.getId());
+                        int pos = museumList.indexOf(museum.getUid());
+
+                        switch (documentChange.getType()) {
+                            case ADDED:
+                                museumList.add(museum);
+                                museumUidList.add(museum.getUid());
+                                bucketlistAdapter.notifyItemInserted(museumList.size() -1);
+                                break;
+                            case REMOVED:
+                                if(museumList.size()!=0){
+                                    museumList.remove(pos);
+                                    museumUidList.remove(pos);
+                                    bucketlistAdapter.notifyItemRemoved(pos);
+                                }
+                                break;
+                            case MODIFIED:
+                                museumList.set(pos, museum);
+                                bucketlistAdapter.notifyItemChanged(pos);
+                                break;
+                        }
+                    }
                 }
-
-                /*Kan ikke loope gjennom changes på en documentsnapshot, der av kan ikke bruk switch/case for endring :S*/
-                if( documentSnapshots != null && documentSnapshots.exists() ) {
-                    System.out.println(documentSnapshots.getData());
-                }
-
-                /*for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
-                    QueryDocumentSnapshot documentSnapshot = documentChange.getDocument();
-                    Museum museum = documentSnapshot.toObject(Museum.class);
-                    museum.setUid(documentSnapshot.getId());
-                    int pos = museumList.indexOf(museum.getUid());
-
-                    switch (documentChange.getType()) {
-                        case ADDED:
-                            museumList.add(museum);
-                            museumUidList.add(museum.getUid());
-                            bucketlistAdapter.notifyItemInserted(museumList.size() -1);
-                            break;
-                        case REMOVED:
-                            museumList.remove(pos);
-                            museumUidList.remove(pos);
-                            bucketlistAdapter.notifyItemRemoved(pos);
-                            break;
-                        case MODIFIED:
-                            museumList.set(pos, museum);
-                            bucketlistAdapter.notifyItemChanged(pos);
-                            break;
-                    }*/
-
-            }
-        });
+            });
     }
 
     @Override
@@ -124,16 +129,8 @@ public class BucketlistFragment extends Fragment {
 
     private void setUpRecyclerView() {
         recyclerView = getView().findViewById(R.id.bucketListRecyclerView);
-        bucketlistAdapter = new BucketListRecyclerAdapter(this.getContext(), museumList);
+        bucketlistAdapter = new BucketListRecyclerAdapter(getContext(), museumList);
         recyclerView.setAdapter(bucketlistAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-
-
-        bucketlistAdapter.setOnItemClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("HEEEEEEEEEEEIIII");
-            }
-        });
     }
 }

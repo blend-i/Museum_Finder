@@ -15,6 +15,7 @@ public class Museum {
     private String openingHours;
     private String location;
     private String posterUrl;
+    private boolean isFavorite;
 
     /*public Museum(int uid, String title, String description) {
         this.uid = uid;
@@ -43,6 +44,16 @@ public class Museum {
         this.location = location;
         this.posterUrl = posterUrl;
     }
+
+    public Museum(String title, String description, String openingHours, String location, String posterUrl, boolean isFavorite) {
+        this.title = title;
+        this.description = description;
+        this.openingHours = openingHours;
+        this.location = location;
+        this.posterUrl = posterUrl;
+        this.isFavorite = isFavorite;
+    }
+
     @Exclude
     public String getUid() {
         return uid;
@@ -84,6 +95,14 @@ public class Museum {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 
     /*public static ArrayList<Museum> getData() {

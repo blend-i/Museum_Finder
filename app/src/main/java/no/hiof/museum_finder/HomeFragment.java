@@ -13,8 +13,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -38,6 +45,8 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
     private List<String> museumUidList;
     private RecyclerView recyclerView;
     private MuseumRecyclerAdapter museumAdapter;
+    private FirebaseAuth auth;
+    private FirebaseUser currentUser;
 
     //private MuseumRecyclerAdapter.MuseumViewHolder museumViewHolder;
 
@@ -67,6 +76,8 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
         museumList = new ArrayList<>();
         museumUidList = new ArrayList<>();
         firestoreDb = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
 
         museumCollectionReference = firestoreDb.collection("museum");
         /*
@@ -135,38 +146,8 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
     }
 
     private void setUpRecyclerView() {
-        /*RecyclerView museumRecyclerView = getView().findViewById(R.id.museumRecyclerView);
-        museumRecyclerView.setAdapter(new MuseumRecyclerAdapter(this.getContext(), ));
-        museumRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-
-
-         */
-
         recyclerView = getView().findViewById(R.id.museumRecyclerView);
         museumAdapter = new MuseumRecyclerAdapter(getContext(), museumList, this);
-
-        System.out.println("getVIEW: " + getContext());
-
-        /*museumAdapter.setOnItemClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = recyclerView.getChildAdapterPosition(v);
-
-
-                Log.d(TAG, "CLICKCLICKCLICK");
-                Museum museum = museumList.get(position);
-                Intent intent = new Intent(HomeFragment.this.getContext(), MuseumDetailFragment.class);
-                intent.putExtra(MuseumDetailFragment.MUSEUM_UID, museum.getUid());
-                startActivity(intent);
-                System.out.println("DET BLE KLIKKA JO");
-                 
-                HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment action = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
-                Navigation.findNavController(getView()).navigate(action);
-
-
-            }
-        });*/
-
         recyclerView.setAdapter(museumAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
@@ -198,5 +179,16 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
         HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment  navigateToDetailFragment = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
         navigateToDetailFragment.setId(museumList.get(position).getUid());
         Navigation.findNavController(requireView()).navigate(navigateToDetailFragment);
+    }
+
+    @Override
+    public void onCardViewToggleButtonCheckedChanged(int position, ToggleButton favourite,boolean isChecked) {
+        if(isChecked) {
+            HeartToggleButtonHandler.setCheckedBucketList(museumList.get(position).getUid(),true, currentUser, firestoreDb);
+            System.out.println("CHECKED");
+        } else {
+            HeartToggleButtonHandler.setCheckedBucketList(museumList.get(position).getUid(),false, currentUser, firestoreDb);
+            System.out.println("UNCHECKED");
+        }
     }
 }

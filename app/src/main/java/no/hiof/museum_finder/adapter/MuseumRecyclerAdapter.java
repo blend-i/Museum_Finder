@@ -5,12 +5,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -18,7 +21,6 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import no.hiof.museum_finder.CardViewClickManager;
-import no.hiof.museum_finder.HomeFragmentDirections;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
 
@@ -39,7 +41,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
     private List<Museum> museumList;
     private LayoutInflater inflater;
     private CardViewClickManager cardViewClickManager;
-
+    private ToggleButton favouriteButton;
     private View.OnClickListener clickListener;
 
     public void setOnItemClickListener(View.OnClickListener clickListener) {
@@ -72,9 +74,9 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
         viewHolder.setMuseum(museumToDisplay);
 
 
-        if(clickListener != null) {
+        /*if(clickListener != null) {
             viewHolder.itemView.setOnClickListener(clickListener);
-        }
+        }*/
     }
 
     @Override
@@ -94,6 +96,8 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            favouriteButton = itemView.findViewById(R.id.button_favoriteHome);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -101,6 +105,27 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
                 }
             });
 
+            /*favouriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cardViewClickManager.onCardViewButtonClick(getAdapterPosition());
+                }
+
+            });*/
+
+            final ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
+            scaleAnimation.setDuration(500);
+            BounceInterpolator bounceInterpolator = new BounceInterpolator();
+            scaleAnimation.setInterpolator(bounceInterpolator);
+
+            favouriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    cardViewClickManager.onCardViewToggleButtonCheckedChanged(getAdapterPosition(), favouriteButton, isChecked);
+                    //animation
+                    compoundButton.startAnimation(scaleAnimation);
+                }
+            });
             /*thumbnailButton = itemView.findViewById(R.id.thumbnailButton);
             thumbnailButton.setOnClickListener(new View.OnClickListener() {
                 @Override
