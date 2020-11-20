@@ -51,7 +51,6 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
     //private MuseumRecyclerAdapter.MuseumViewHolder museumViewHolder;
 
     private FirebaseFirestore firestoreDb;
-
     private CollectionReference museumCollectionReference;
     private ListenerRegistration fireStoreListenerRegistration;
 
@@ -61,13 +60,11 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
-
     }
 
     @Override
@@ -87,10 +84,8 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
         HomeFragmentArgs args = HomeFragmentArgs.fromBundle(arguments);
         textView.setText(args.getUsername());
          */
-
         //generateTestData();
         setUpRecyclerView();
-
     }
 
     private void createFireStoreReadListener() {

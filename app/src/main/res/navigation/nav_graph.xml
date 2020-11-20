@@ -29,6 +29,12 @@
         <action
             android:id="@+id/action_homeFragment_to_museumDetailFragment"
             app:destination="@id/museumDetail" />
+        <action
+            android:id="@+id/action_homeFragment_to_bucketlistFragment"
+            app:destination="@id/bucketlistFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_findMuseum"
+            app:destination="@id/findMuseum" />
     </fragment>
     <fragment
         android:id="@+id/museumDetail"
@@ -51,6 +57,9 @@
             android:name="Id"
             app:argType="string"
             android:defaultValue="Museum Id" />
+        <action
+            android:id="@+id/action_museumDetail_to_bucketlistFragment"
+            app:destination="@id/bucketlistFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -83,4 +92,9 @@
         android:name="no.hiof.museum_finder.BucketlistFragment"
         android:label="fragment_bucketlist"
         tools:layout="@layout/fragment_bucketlist" />
+    <fragment
+        android:id="@+id/findMuseum"
+        android:name="no.hiof.museum_finder.FindMuseum"
+        android:label="fragment_find_museum"
+        tools:layout="@layout/fragment_find_museum" />
 </navigation>
