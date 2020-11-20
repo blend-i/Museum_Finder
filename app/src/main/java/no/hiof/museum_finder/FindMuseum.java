@@ -264,12 +264,9 @@ public class FindMuseum extends Fragment {
 
                         LatLng latLng = place.getLatLng();
                         if(latLng != null){
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Place place1 = fetchPlaceResponse.getPlace();
+                                    try {
                                     List<PhotoMetadata> metadata = place.getPhotoMetadatas();
-                                    assert metadata != null;
+
                                     PhotoMetadata photoMetadata = metadata.get(0);
 
                                     // Create a FetchPhotoRequest.
@@ -294,8 +291,12 @@ public class FindMuseum extends Fragment {
                                             }
                                         }
                                     });
-                                }
-                            }).start();
+
+                                    } catch (Exception e) {
+                                        Log.d("Photometadata", "Cant find photometadata");
+                                        imageCardView.setBackgroundResource(R.drawable.nophoto);
+                                    }
+
                             //openingHoursCardView.setText(Objects.requireNonNull(Objects.requireNonNull(place.getOpeningHours()).getWeekdayText()).toString());
 
 
