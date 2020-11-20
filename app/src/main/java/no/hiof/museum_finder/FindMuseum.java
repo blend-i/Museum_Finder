@@ -247,7 +247,8 @@ public class FindMuseum extends Fragment {
                         Place.Field.TYPES,
                         Place.Field.NAME,
                         Place.Field.USER_RATINGS_TOTAL,
-                        Place.Field.WEBSITE_URI
+                        Place.Field.WEBSITE_URI,
+                        Place.Field.ID
                 );
 
                 FetchPlaceRequest fetchPlaceRequest = FetchPlaceRequest.builder(placeId, placeFields).build();
@@ -328,7 +329,7 @@ public class FindMuseum extends Fragment {
                              */
 
                             LocalDate date = null;
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                 date = LocalDate.now().minusDays(1);
                                 date.getDayOfWeek();
                             }
@@ -339,6 +340,8 @@ public class FindMuseum extends Fragment {
                                 Log.d("Tag", "Could not find opening hours");
                                 openingHoursCardView.setText("Openinghours not available");
                             }
+
+                            //System.out.println("BUSINESS ID: " + place.getId());
 
 
                             locationTextView.setText(place.getAddress());
