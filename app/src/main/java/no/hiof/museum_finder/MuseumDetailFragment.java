@@ -1,5 +1,7 @@
 package no.hiof.museum_finder;
 
+import android.app.SharedElementCallback;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,7 @@ import android.widget.ToggleButton;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.transition.MaterialContainerTransform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -61,6 +64,18 @@ public class MuseumDetailFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
+        materialContainerTransform.setDrawingViewId(R.id.fragment);
+        materialContainerTransform.setDuration(300);
+        materialContainerTransform.setScrimColor(Color.TRANSPARENT);
+        materialContainerTransform.setAllContainerColors(Color.TRANSPARENT);
+        setSharedElementEnterTransition(materialContainerTransform);
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -90,8 +105,17 @@ public class MuseumDetailFragment extends Fragment {
         Bundle arguments = getArguments();
         assert arguments != null;
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
-        //museumTitle.setText(args.getTitle());
-        //museumDescription.setText(args.getDescription());
+        /*museumTitle.setText(args.getTitle());
+        museumDescription.setText(args.getDescription());
+        museumOpeningHours.setText(args.getOpeningHours());
+        museumLocation.setText(args.getLocation());
+
+        //args.getPosterUrl();
+        if (!args.getPosterUrl().isEmpty()) {
+            Glide.with(museumImage.getContext())
+                    .load(args.getPosterUrl())
+                    .into(museumImage);
+        }*/
 
         final String museumUid = args.getId();
 
@@ -144,6 +168,8 @@ public class MuseumDetailFragment extends Fragment {
                 }
             }
         });
+
+
 
         final DocumentReference userDocumentReference = fireStoreDb.collection("account").document(user.getUid());
 

@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="170dp"
             android:adjustViewBounds="true"
-            android:contentDescription="Bilde av et museum"
+            android:contentDescription="@string/bilde_av_et_museum"
             android:scaleType="fitXY"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.017"

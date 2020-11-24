@@ -81,9 +81,10 @@ public class LoginFragment extends Fragment {
                 else {
                     addAccountToDb(new Account(currentUser.getEmail()));
                     //addAccountToDb();
-                    LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
-                    Navigation.findNavController(requireView()).navigate(action);
+                    //LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
+                    Navigation.findNavController(requireView()).navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment());
                     Log.d("signedin", Objects.requireNonNull(currentUser.getEmail()));
+
                 }
             }
         };

@@ -22,10 +22,10 @@
         android:name="no.hiof.museum_finder.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
-        <argument
+        <!--<argument
             android:name="username"
             app:argType="string"
-            android:defaultValue="Username" />
+            android:defaultValue="Username" />-->
         <action
             android:id="@+id/action_homeFragment_to_museumDetailFragment"
             app:destination="@id/museumDetail" />
@@ -52,6 +52,14 @@
         <argument
             android:name="PosterUrl"
             android:defaultValue="Image"
+            app:argType="string" />
+        <argument
+            android:name="OpeningHours"
+            android:defaultValue="Museum opening hours"
+            app:argType="string" />
+        <argument
+            android:name="Location"
+            android:defaultValue="Museums location"
             app:argType="string" />
         <argument
             android:name="Id"
