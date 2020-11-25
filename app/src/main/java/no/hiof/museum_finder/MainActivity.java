@@ -143,4 +143,5 @@ public class MainActivity extends AppCompatActivity {
     public void toMuseumDetail(View view) {
         //startActivity(new Intent(MainActivity.this, MuseumDetailsApi.class));
     }
+
 }

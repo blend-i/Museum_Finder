@@ -3,20 +3,24 @@
     <item
         android:id="@+id/homeFragment"
         android:icon="@drawable/ic_action_home"
-        android:title="Home" />
+        android:title="@string/home_navigation" />
 
     <item
         android:id="@+id/findMuseum"
         android:icon="@drawable/ic_search"
-        android:title="Search" />
+        android:title="@string/search_navigation" />
 
     <item
         android:id="@+id/bucketlistFragment"
         android:icon="@drawable/ic_bucketlist"
-        android:title="Bucketlist" />
+        android:title="@string/bucketlist_navigation" />
+    <item
+        android:id="@+id/map"
+        android:icon="@drawable/ic_baseline_map_24"
+        android:title="@string/map_navigation" />
 
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_action_profile"
-        android:title="Profile" />
+        android:title="@string/profile_navigation" />
 </menu>
