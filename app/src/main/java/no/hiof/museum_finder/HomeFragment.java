@@ -220,5 +220,4 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
             System.out.println("UNCHECKED");
         }
     }
-
 }

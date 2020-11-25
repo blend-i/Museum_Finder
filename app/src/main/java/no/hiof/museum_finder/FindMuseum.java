@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -102,6 +103,8 @@ public class FindMuseum extends Fragment {
     public TextView locationTextView;
     public TextView ratingTextView;
 
+    private RatingBar ratingBar;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,7 +130,8 @@ public class FindMuseum extends Fragment {
         openingHoursCardView = view.findViewById(R.id.openingHoursCardView);
         imageCardView = view.findViewById(R.id.imageCardView);
         locationTextView = view.findViewById(R.id.location);
-        ratingTextView = view.findViewById(R.id.ratingTextView);
+
+        ratingBar = view.findViewById(R.id.ratingBar);
 
 
         Places.initialize(view.getContext(), "AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc");
@@ -349,7 +353,8 @@ public class FindMuseum extends Fragment {
                             titleCardView.setText(place.getName());
 
                             String rating = "Rating: " + place.getRating();
-                            ratingTextView.setText(rating);
+                            ratingBar.setNumStars(5);
+                            ratingBar.setRating(place.getRating().floatValue());
 
 
                             /*System.out.println("Gjør det du skal her.");
