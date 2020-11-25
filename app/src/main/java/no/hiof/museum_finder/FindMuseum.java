@@ -130,7 +130,7 @@ public class FindMuseum extends Fragment {
         openingHoursCardView = view.findViewById(R.id.openingHoursCardView);
         imageCardView = view.findViewById(R.id.imageCardView);
         locationTextView = view.findViewById(R.id.location);
-
+        ratingTextView = view.findViewById(R.id.ratingTextView2);
         ratingBar = view.findViewById(R.id.ratingBar);
 
 
@@ -352,10 +352,10 @@ public class FindMuseum extends Fragment {
                             locationTextView.setText(place.getAddress());
                             titleCardView.setText(place.getName());
 
-                            String rating = "Rating: " + place.getRating();
                             ratingBar.setNumStars(5);
                             ratingBar.setRating(place.getRating().floatValue());
-
+                            ratingBar.setAlpha(1);
+                            ratingTextView.setText(" / " +place.getRating().toString());
 
                             /*System.out.println("Gjør det du skal her.");
                             System.out.println("Address: " + place.getAddress());
