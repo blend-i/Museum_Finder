@@ -105,6 +105,10 @@ public class Museum {
         isFavorite = favorite;
     }
 
+    public void setPosterUrl(String posterUrl) {
+        this.posterUrl = posterUrl;
+    }
+
     /*public static ArrayList<Museum> getData() {
         ArrayList<Museum> dataList = new ArrayList<>();
 
