@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import no.hiof.museum_finder.CardViewClickManager;
 import no.hiof.museum_finder.HomeFragmentDirections;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
@@ -41,15 +42,17 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
     private List<Museum> museumList;
     private LayoutInflater inflater;
     public View.OnClickListener clickListener;
+    private CardViewClickManager cardViewClickManager;
 
     public void setOnItemClickListener(View.OnClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
-    public BucketListRecyclerAdapter(Context context, List<Museum> museumList) {
+    public BucketListRecyclerAdapter(Context context, List<Museum> museumList, CardViewClickManager cardViewClickManager) {
         //Lager en inflater basert på den konteksten man er i
         this.inflater = LayoutInflater.from(context);
         this.museumList = museumList;
+        this.cardViewClickManager = cardViewClickManager;
     }
 
     @NonNull
@@ -70,7 +73,8 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
 
 
         viewHolder.setMuseum(museumToDisplay);
-        viewHolder.itemView.setOnClickListener(clickListener);
+        //.itemView.setOnClickListener(clickListener);
+        viewHolder.itemView.setTransitionName(museumToDisplay.getUid());
     }
 
     @Override
@@ -91,6 +95,13 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cardViewClickManager.onCardViewClick(getAdapterPosition(), v);
+                }
+            });
 
         }
 

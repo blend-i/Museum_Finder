@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -36,6 +37,7 @@ Da får viewholder en instant av lista i form av view og da kan hente ut de enkl
  */
 
 public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAdapter.MuseumViewHolder> {
+
     private static final String TAG = no.hiof.museum_finder.adapter.MuseumRecyclerAdapter.class.getSimpleName();
 
     private List<Museum> museumList;
@@ -67,11 +69,12 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
 
     @Override
     public void onBindViewHolder(@NonNull MuseumViewHolder viewHolder, int position) {
-
+        final
         Museum museumToDisplay = museumList.get(position);
         Log.d(TAG, "onBindViewHolder" + museumToDisplay.getTitle() + " - " + position);
 
         viewHolder.setMuseum(museumToDisplay);
+        viewHolder.itemView.setTransitionName(museumToDisplay.getUid());
 
 
         /*if(clickListener != null) {
@@ -101,7 +104,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    cardViewClickManager.onCardViewClick(getAdapterPosition());
+                    cardViewClickManager.onCardViewClick(getAdapterPosition(), v);
                 }
             });
 

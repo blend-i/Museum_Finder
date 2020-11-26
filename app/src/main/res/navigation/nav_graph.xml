@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment"
+            app:enterAnim="@anim/fade_in_right"
+            app:exitAnim="@anim/fade_out_left" />
         <action
             android:id="@+id/action_loginFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
@@ -22,16 +24,13 @@
         android:name="no.hiof.museum_finder.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
-        <argument
+        <!--<argument
             android:name="username"
             app:argType="string"
-            android:defaultValue="Username" />
+            android:defaultValue="Username" />-->
         <action
             android:id="@+id/action_homeFragment_to_museumDetailFragment"
             app:destination="@id/museumDetail" />
-        <action
-            android:id="@+id/action_homeFragment_to_bucketlistFragment"
-            app:destination="@id/bucketlistFragment" />
         <action
             android:id="@+id/action_homeFragment_to_findMuseum"
             app:destination="@id/findMuseum" />
@@ -54,12 +53,17 @@
             android:defaultValue="Image"
             app:argType="string" />
         <argument
+            android:name="OpeningHours"
+            android:defaultValue="Museum opening hours"
+            app:argType="string" />
+        <argument
+            android:name="Location"
+            android:defaultValue="Museums location"
+            app:argType="string" />
+        <argument
             android:name="Id"
             app:argType="string"
             android:defaultValue="Museum Id" />
-        <action
-            android:id="@+id/action_museumDetail_to_bucketlistFragment"
-            app:destination="@id/bucketlistFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -91,7 +95,11 @@
         android:id="@+id/bucketlistFragment"
         android:name="no.hiof.museum_finder.BucketlistFragment"
         android:label="fragment_bucketlist"
-        tools:layout="@layout/fragment_bucketlist" />
+        tools:layout="@layout/fragment_bucketlist" >
+        <action
+            android:id="@+id/action_bucketlistFragment_to_museumDetail"
+            app:destination="@id/museumDetail" />
+    </fragment>
     <fragment
         android:id="@+id/findMuseum"
         android:name="no.hiof.museum_finder.FindMuseum"
