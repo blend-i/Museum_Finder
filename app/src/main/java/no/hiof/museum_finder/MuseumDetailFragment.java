@@ -185,7 +185,6 @@ public class MuseumDetailFragment extends Fragment {
         scaleAnimation.setInterpolator(bounceInterpolator);
 
 
-
         favourite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {

@@ -1,5 +1,6 @@
 package no.hiof.museum_finder;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -7,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.FragmentNavigator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -168,7 +170,17 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
         recyclerView = getView().findViewById(R.id.museumRecyclerView);
         museumAdapter = new MuseumRecyclerAdapter(getContext(), museumList, this);
         recyclerView.setAdapter(museumAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            //Do some stuff
+            recyclerView.setLayoutManager(new GridLayoutManager(this.getContext(), 2));
+        }
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            //Do some stuff
+            recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        }
 
     }
 
