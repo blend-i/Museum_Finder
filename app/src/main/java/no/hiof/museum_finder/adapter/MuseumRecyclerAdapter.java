@@ -37,6 +37,7 @@ Da får viewholder en instant av lista i form av view og da kan hente ut de enkl
  */
 
 public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAdapter.MuseumViewHolder> {
+
     private static final String TAG = no.hiof.museum_finder.adapter.MuseumRecyclerAdapter.class.getSimpleName();
 
     private List<Museum> museumList;

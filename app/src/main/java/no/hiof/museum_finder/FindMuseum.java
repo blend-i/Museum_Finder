@@ -102,14 +102,11 @@ public class FindMuseum extends Fragment {
     public ImageView imageCardView;
     public TextView locationTextView;
     public TextView ratingTextView;
-
     private RatingBar ratingBar;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @SuppressLint("MissingPermission")
