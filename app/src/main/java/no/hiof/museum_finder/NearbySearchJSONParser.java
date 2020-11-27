@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class JsonParser {
+public class NearbySearchJSONParser {
     private HashMap<String, String> parseJsonObject(JSONObject jsonObject) {
         HashMap<String, String> dataList = new HashMap<>();
 

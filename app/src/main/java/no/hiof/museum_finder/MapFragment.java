@@ -56,12 +56,9 @@ public class MapFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+
         mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
-        Log.d("onCreateView", "I onCreateView");
-
-
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-
 
         if(EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             getCurrentLocation();
@@ -75,7 +72,16 @@ public class MapFragment extends Fragment {
         return view;
     }
 
-
+    /**
+     * Method called if the app has the ACCESS_FINE_LOCATION.
+     * Creates a Location task that tries to retrieve last location from the FusedLocationProviderClient,
+     * which has a onSuccessListener, if the task is successful get latitude and longitude of the devices
+     * last location, create a new instance of NearbyMuseumTask and pass a nearbysearch URL on execution of
+     * the task (this to download museum data, parse the data and set markers on the map for every museum
+     * within the specified radius of the device in use). Lastly retrieve the supportMapFragment, when the
+     * map is ready set the maps ui settings (gestures and controls) and animate to the location based on
+     * current latitude and current longitude (current location of the device).
+     */
     @SuppressLint("MissingPermission")
     @AfterPermissionGranted(PERMISSION_LOCATION_ID)
     private void getCurrentLocation() {
@@ -88,7 +94,12 @@ public class MapFragment extends Fragment {
                     currentLong = location.getLongitude();
 
                     String placeType = "museum";
-                    String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + currentLat + "," + currentLong + "&radius=5000&type=" + placeType + "&key=" + getResources().getString(R.string.maps_api_key);
+                    int radius = 50000;
+                    String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
+                            "?location=" + currentLat + "," + currentLong +
+                            "&radius=" + radius +
+                            "&type=" + placeType +
+                            "&key=" + getResources().getString(R.string.maps_api_key);
 
                     new NearbyMuseumTask().execute(url);
 
@@ -111,7 +122,6 @@ public class MapFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == 44) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocation();
@@ -119,7 +129,13 @@ public class MapFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Local class NearbyMuseumTask that inherits from AsyncTask to handle the download
+     * of the museum data that will be retrieved through the downloadUrl method, this happens
+     * in the background and passes the first string from AsyncTasks params to the downloadUrl
+     * method, and returns the museumData. On post execution create a new instance of
+     * MuseumDataParserTask to execute the parsing operation on the museumData retrieved.
+     */
     private class NearbyMuseumTask extends AsyncTask<String, Integer, String> {
         @Override
         protected String doInBackground(String... strings) {
@@ -135,10 +151,20 @@ public class MapFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String museumData) {
-            new MuseumParserTask().execute(museumData);
+            new MuseumDataParserTask().execute(museumData);
         }
     }
 
+
+    /**
+     * Method that handles the download of the data based on the URL passed in. In the process
+     * it initializes a HttpURLConnection on the URL passed in to the method, gets the input stream
+     * and passes it to a buffered reader and appends data to a string builder while the buffered
+     * reader has lines to read.
+     * @param downloadUrl - nearby places url to be downloaded
+     * @return - data retrieved from the download
+     * @throws IOException - if download fails
+     */
     private String downloadUrl(String downloadUrl) throws IOException {
         URL url = new URL(downloadUrl);
 
@@ -161,16 +187,24 @@ public class MapFragment extends Fragment {
         return  museumData;
     }
 
-    private class MuseumParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
+    /**
+     * Local class MuseumDataParserTask inherits from AsyncTask to handle JSON parsing
+     * (utilizes the JsonParser class) of the museum data in the background
+     * (The data retrieved in method donwloadUrl) on post execution: clear the map, loop
+     * over the museum data, for every museum add a marker to the map based on the location (LatLng),
+     * and set the title of the the marker = name of the museum and set the marker icon like
+     * (ic_museum_marker from drawable resources).
+     */
+    private class MuseumDataParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
         @Override
         protected List<HashMap<String, String>> doInBackground(String... strings) {
-            JsonParser jsonParser = new JsonParser();
+            NearbySearchJSONParser nearbySearchJSONParser = new NearbySearchJSONParser();
 
             List<HashMap<String, String>> mapList = null;
             JSONObject jsonObject = null;
             try {
                 jsonObject = new JSONObject(strings[0]);
-                mapList = jsonParser.parseResult(jsonObject);
+                mapList = nearbySearchJSONParser.parseResult(jsonObject);
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
             }
@@ -198,6 +232,11 @@ public class MapFragment extends Fragment {
         }
     }
 
+    /**
+     * Method to enable gestures and controls in Google Maps
+     * Gestures: enabled all gestures enabled (zoom, scroll, tilt, rotate)
+     * Controls: enabled Zoom, Compass and MyLocation controls
+     */
     @SuppressLint("MissingPermission")
     @AfterPermissionGranted(PERMISSION_LOCATION_ID)
     private void setMapUISettings() {
@@ -211,13 +250,13 @@ public class MapFragment extends Fragment {
 
             }
         });
+
         map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
                 return false;
             }
         });
-
 
         if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION))
             map.setMyLocationEnabled(true);
