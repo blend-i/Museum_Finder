@@ -298,34 +298,6 @@ public class FindMuseum extends Fragment {
 
                             //openingHoursCardView.setText(Objects.requireNonNull(Objects.requireNonNull(place.getOpeningHours()).getWeekdayText()).toString());
 
-                            // Finds what day it is and assigns variable "day" to a number between 0 - 6 for identifying the weekdays.
-                            /*Calendar calendar = Calendar.getInstance();
-                            int day = calendar.get(Calendar.DAY_OF_WEEK);
-                            switch (day) {
-                                case Calendar.SUNDAY:
-                                    day = 6;
-                                    break;
-                                case Calendar.MONDAY:
-                                    day = 0;
-                                    break;
-                                case Calendar.TUESDAY:
-                                    day = 1;
-                                    break;
-                                case Calendar.WEDNESDAY:
-                                    day = 2;
-                                    break;
-                                case Calendar.THURSDAY:
-                                    day = 3;
-                                    break;
-                                case Calendar.FRIDAY:
-                                    day = 4;
-                                    break;
-                                case Calendar.SATURDAY:
-                                    day = 5;
-                                    break;
-                            }
-                             */
-
                             LocalDate date = null;
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                 date = LocalDate.now().minusDays(1);

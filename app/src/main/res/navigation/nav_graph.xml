@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph.xml"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/homeFragmentApi">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -105,4 +105,9 @@
         android:name="no.hiof.museum_finder.FindMuseum"
         android:label="fragment_find_museum"
         tools:layout="@layout/fragment_find_museum" />
+    <fragment
+        android:id="@+id/homeFragmentApi"
+        android:name="no.hiof.museum_finder.HomeFragmentApi"
+        android:label="fragment_home_api"
+        tools:layout="@layout/fragment_home_api" />
 </navigation>
