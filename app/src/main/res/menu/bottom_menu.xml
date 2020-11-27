@@ -15,7 +15,7 @@
         android:icon="@drawable/ic_bucketlist"
         android:title="@string/bucketlist_navigation" />
     <item
-        android:id="@+id/map"
+        android:id="@+id/mapFragment"
         android:icon="@drawable/ic_baseline_map_24"
         android:title="@string/map_navigation" />
 
