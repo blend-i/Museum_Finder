@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,18 +49,7 @@ public class MapFragment extends Fragment {
     private GoogleMap map;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double currentLat, currentLong;
-    private String URL1;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapFragment);
-
-        //
-
-        //mapFragment = SupportMapFragment.newInstance();
-        //getChildFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.map, mapFragment, "tag").commit();
-    }
 
     @Nullable
     @Override
@@ -81,14 +71,6 @@ public class MapFragment extends Fragment {
             getCurrentLocation();
             EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        Log.d("onCreate", "I onCreate");
-
-        String placeType = "museum";
-
-        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" + "?location=" +
-                currentLat + "," + currentLong + "&radius=5000" + "&types=museum" + "AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc";
-
-        System.out.println("CURRENT LOCATION" + currentLat + "," +currentLong);
 
         return view;
     }
@@ -105,15 +87,18 @@ public class MapFragment extends Fragment {
                     currentLat = location.getLatitude();
                     currentLong = location.getLongitude();
 
-                    new NearbyMuseumTask().execute("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + currentLat + "," + currentLong + "&radius=5000&type=museum&key=" + getResources().getString(R.string.maps_api_key));
+                    String placeType = "museum";
+                    String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + currentLat + "," + currentLong + "&radius=5000&type=" + placeType + "&key=" + getResources().getString(R.string.maps_api_key);
+
+                    new NearbyMuseumTask().execute(url);
 
                     mapFragment.getMapAsync(new OnMapReadyCallback() {
                         @Override
                         public void onMapReady(GoogleMap googleMap) {
                             map = googleMap;
+                            setMapUISettings();
 
                             map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                    //new LatLng(currentLat, currentLong), 10
                                     new LatLng(currentLat,currentLong), 12
                             ));
                         }
@@ -158,16 +143,14 @@ public class MapFragment extends Fragment {
         URL url = new URL(downloadUrl);
 
         HttpURLConnection httpURLConnection= (HttpURLConnection) url.openConnection();
-
         httpURLConnection.connect();
 
         InputStream urlInputStream =  httpURLConnection.getInputStream();
-
         BufferedReader museumDataReader = new BufferedReader(new InputStreamReader(urlInputStream));
 
         StringBuilder museumDataBuilder = new StringBuilder();
-
         String line = "";
+        
         while( (line = museumDataReader.readLine()) != null ) {
             museumDataBuilder.append(line);
         }
@@ -209,8 +192,38 @@ public class MapFragment extends Fragment {
                 MarkerOptions options = new MarkerOptions();
                 options.position(latLng);
                 options.title(name);
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_museum_marker));
                 map.addMarker(options);
             }
         }
     }
+
+    @SuppressLint("MissingPermission")
+    @AfterPermissionGranted(PERMISSION_LOCATION_ID)
+    private void setMapUISettings() {
+        map.getUiSettings().setZoomControlsEnabled(true);
+        map.getUiSettings().setCompassEnabled(true);
+        map.getUiSettings().setAllGesturesEnabled(true);
+
+        map.setOnMyLocationClickListener(new GoogleMap.OnMyLocationClickListener() {
+            @Override
+            public void onMyLocationClick(@NonNull Location location) {
+
+            }
+        });
+        map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                return false;
+            }
+        });
+
+
+        if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION))
+            map.setMyLocationEnabled(true);
+        else
+            EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+
+
 }
