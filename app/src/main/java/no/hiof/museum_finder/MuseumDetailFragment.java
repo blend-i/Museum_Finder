@@ -111,7 +111,7 @@ public class MuseumDetailFragment extends Fragment {
         museumTitle.setText(args.getTitle());
         //museumDescription.setText(args.getDescription());
         museumOpeningHours.setText(args.getOpeningHours().equals("true") ? "Open" : "Closed");
-        //museumLocation.setText(args.getLocation());
+        museumLocation.setText(args.getLocation());
         museumRating.setRating(Float.parseFloat(args.getRating()));
 
         System.out.println("ARGSDATA: " + args.getTitle() + " " + args.getOpeningHours() + " " + args.getPhotoUrl());

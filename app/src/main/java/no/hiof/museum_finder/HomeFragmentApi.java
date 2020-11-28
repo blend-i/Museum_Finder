@@ -2,6 +2,8 @@ package no.hiof.museum_finder;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,6 +41,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 
 import no.hiof.museum_finder.adapter3.MuseumRecyclerAdapterApi;
@@ -214,6 +217,8 @@ public class HomeFragmentApi extends Fragment {
 
         @Override
         public void onCardViewClick(int position, View v) {
+            String location = reverseGeoCode(museumArrayList.get(position).getLat(), museumArrayList.get(position).getLng());
+
             MaterialElevationScale exitTransition = new MaterialElevationScale(false);
             exitTransition.setDuration(300);
 
@@ -229,9 +234,27 @@ public class HomeFragmentApi extends Fragment {
             navigateToDetailFragment.setPhotoUrl(museumArrayList.get(position).getPhoto());
             navigateToDetailFragment.setRating(museumArrayList.get(position).getRating());
             navigateToDetailFragment.setTitle(museumArrayList.get(position).getTitle());
+            navigateToDetailFragment.setLocation(location);
             Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
             setExitTransition(exitTransition);
             setReenterTransition(reenterTransition);
+        }
+
+        public String reverseGeoCode(double lat, double lng) {
+            Geocoder geocoder;
+            List<Address> addresses = null;
+            geocoder = new Geocoder(getContext(), Locale.getDefault());
+
+            //double latitude = Double.parseDouble(lat);
+            //double longitude = Double.parseDouble(lng);
+            //using latitude and longitude from last location to pinpoint address
+            try {
+                addresses = geocoder.getFromLocation(lat, lng, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return addresses.get(0).getAddressLine(0);
         }
 
         @Override
