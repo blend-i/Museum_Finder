@@ -96,7 +96,6 @@ public class FindMuseum extends Fragment {
     public MaterialSearchBar materialSearchBar;
 
     //Finds the result the user is searching for
-
     public TextView titleCardView;
     public TextView openingHoursCardView;
     public ImageView imageCardView;
@@ -300,36 +299,6 @@ public class FindMuseum extends Fragment {
 
                             //openingHoursCardView.setText(Objects.requireNonNull(Objects.requireNonNull(place.getOpeningHours()).getWeekdayText()).toString());
 
-
-                            // Finds what day it is and assigns variable "day" to a number between 0 - 6 for identifying the weekdays.
-                            /*Calendar calendar = Calendar.getInstance();
-                            int day = calendar.get(Calendar.DAY_OF_WEEK);
-                            switch (day) {
-                                case Calendar.SUNDAY:
-                                    day = 6;
-                                    break;
-                                case Calendar.MONDAY:
-                                    day = 0;
-                                    break;
-                                case Calendar.TUESDAY:
-                                    day = 1;
-                                    break;
-                                case Calendar.WEDNESDAY:
-                                    day = 2;
-                                    break;
-                                case Calendar.THURSDAY:
-                                    day = 3;
-                                    break;
-                                case Calendar.FRIDAY:
-                                    day = 4;
-                                    break;
-                                case Calendar.SATURDAY:
-                                    day = 5;
-                                    break;
-                            }
-
-                             */
-
                             LocalDate date = null;
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                 date = LocalDate.now().minusDays(1);
@@ -344,7 +313,6 @@ public class FindMuseum extends Fragment {
                             }
 
                             //System.out.println("BUSINESS ID: " + place.getId());
-
 
                             locationTextView.setText(place.getAddress());
                             titleCardView.setText(place.getName());
@@ -379,7 +347,6 @@ public class FindMuseum extends Fragment {
 
             @Override
             public void OnItemDeleteListener(int position, View v) {
-
             }
         });
 
@@ -466,7 +433,6 @@ public class FindMuseum extends Fragment {
                                 System.out.println("Country: " + country);
                             }
                         }).start();
-
                     }
                     // if location is null, then we need to update the information
                     else {
@@ -493,14 +459,12 @@ public class FindMuseum extends Fragment {
                                         Geocoder geocoder;
                                         List<Address> addresses = null;
                                         geocoder = new Geocoder(getContext(), Locale.getDefault());
-
                                         //using latitude and longitude from last location to pinpoint address
                                         try {
                                             addresses = geocoder.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-
                                         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
                                         String city = addresses.get(0).getLocality();
                                         String state = addresses.get(0).getAdminArea();
