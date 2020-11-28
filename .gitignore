@@ -118,3 +118,5 @@ lint/tmp/
 /build
 /captures
 /projectFilesBackup
+/secure.properties
+secure.properties
