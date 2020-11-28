@@ -107,7 +107,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
                     cardViewClickManager.onCardViewClick(getAdapterPosition(), v);
                 }
             });
-
+            
             /*favouriteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -153,6 +153,7 @@ public class MuseumRecyclerAdapter extends RecyclerView.Adapter<MuseumRecyclerAd
             });*/
 
         }
+
 
         public void setMuseum(final Museum museumToDisplay) {
             thumbnailTextView.setText(museumToDisplay.getTitle());

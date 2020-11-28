@@ -8,4 +8,11 @@
     <string name="museum_card_detail_transition_name">museum_card_detail</string>
 
     <string name="bilde_av_et_museum">Bilde av et museum</string>
+
+    <!--Navigation-->
+    <string name="home_navigation">Home</string>
+    <string name="search_navigation">Search</string>
+    <string name="bucketlist_navigation">Bucketlist</string>
+    <string name="map_navigation">Map</string>
+    <string name="profile_navigation">Profile</string>
 </resources>
