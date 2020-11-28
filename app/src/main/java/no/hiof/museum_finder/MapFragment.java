@@ -46,7 +46,7 @@ public class MapFragment extends Fragment {
 
     private final int PERMISSION_LOCATION_ID = 1;
     private SupportMapFragment mapFragment;
-    private GoogleMap map;
+    private static GoogleMap map;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double currentLat, currentLong;
 
@@ -136,7 +136,7 @@ public class MapFragment extends Fragment {
      * method, and returns the museumData. On post execution create a new instance of
      * MuseumDataParserTask to execute the parsing operation on the museumData retrieved.
      */
-    private class NearbyMuseumTask extends AsyncTask<String, Integer, String> {
+    private static class NearbyMuseumTask extends AsyncTask<String, Integer, String> {
         @Override
         protected String doInBackground(String... strings) {
             String museumData = null;
@@ -165,7 +165,7 @@ public class MapFragment extends Fragment {
      * @return - data retrieved from the download
      * @throws IOException - if download fails
      */
-    private String downloadUrl(String downloadUrl) throws IOException {
+    private static String downloadUrl(String downloadUrl) throws IOException {
         URL url = new URL(downloadUrl);
 
         HttpURLConnection httpURLConnection= (HttpURLConnection) url.openConnection();
@@ -192,10 +192,11 @@ public class MapFragment extends Fragment {
      * (utilizes the JsonParser class) of the museum data in the background
      * (The data retrieved in method donwloadUrl) on post execution: clear the map, loop
      * over the museum data, for every museum add a marker to the map based on the location (LatLng),
-     * and set the title of the the marker = name of the museum and set the marker icon like
+     * and set the title of the the marker = name of the museum, a snippet that shows if the museum
+     * is currently open / closed and set the marker icon like
      * (ic_museum_marker from drawable resources).
      */
-    private class MuseumDataParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
+    private static class MuseumDataParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
         @Override
         protected List<HashMap<String, String>> doInBackground(String... strings) {
             NearbySearchJSONParser nearbySearchJSONParser = new NearbySearchJSONParser();
@@ -218,16 +219,32 @@ public class MapFragment extends Fragment {
 
             for(int i = 0; i < hashMaps.size(); i++) {
                 HashMap<String, String> hashMapList = hashMaps.get(i);
-                double lat = Double.parseDouble(hashMapList.get("lat"));
-                double lng = Double.parseDouble(hashMapList.get("lng"));
-                String name = hashMapList.get("name");
-                LatLng latLng = new LatLng(lat,lng);
 
-                MarkerOptions options = new MarkerOptions();
-                options.position(latLng);
-                options.title(name);
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_museum_marker));
-                map.addMarker(options);
+                try {
+                    double lat = Double.parseDouble(hashMapList.get("lat"));
+                    double lng = Double.parseDouble(hashMapList.get("lng"));
+                    String openNow = hashMapList.get("openNow");
+                    String name = hashMapList.get("name");
+                    LatLng latLng = new LatLng(lat,lng);
+
+                    if(openNow == "true") {
+                        openNow = "open";
+                    } else {
+                        openNow = "closed";
+                    }
+
+                    MarkerOptions options = new MarkerOptions();
+                    options.position(latLng);
+                    options.title(name);
+                    options.snippet("currently: " + openNow);
+                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_museum_marker3));
+                    map.addMarker(options);
+
+                } catch (NullPointerException exception) {
+                    exception.printStackTrace();
+                }
+
+
             }
         }
     }
