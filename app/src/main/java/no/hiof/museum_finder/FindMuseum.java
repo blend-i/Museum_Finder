@@ -129,7 +129,8 @@ public class FindMuseum extends Fragment {
         ratingTextView = view.findViewById(R.id.ratingTextView2);
         ratingBar = view.findViewById(R.id.ratingBar);
 
-        Places.initialize(view.getContext(), "AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc");
+
+        Places.initialize(view.getContext(), getResources().getString(R.string.maps_api_key));
         placesClient = Places.createClient(getContext());
         final AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
 

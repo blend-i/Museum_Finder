@@ -62,8 +62,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
                 Toast.makeText(MainActivity.this, "permission GRANTED", Toast.LENGTH_SHORT).show();
                 // Initialize the SDK
-                String apiKey = "AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc";
-                Places.initialize(getApplicationContext(), apiKey);
+                Places.initialize(getApplicationContext(), getResources().getString(R.string.maps_api_key));
 
                 // Create a new PlacesClient instance
                 PlacesClient placesClient = Places.createClient(MainActivity.this);
@@ -143,4 +142,5 @@ public class MainActivity extends AppCompatActivity {
     public void toMuseumDetail(View view) {
         //startActivity(new Intent(MainActivity.this, MuseumDetailsApi.class));
     }
+
 }
