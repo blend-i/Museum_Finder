@@ -67,17 +67,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/button_favoriteHome"
-                    android:layout_marginStart="8dp"
-                    android:text="Rating"
-                    android:textSize="14dp"
-                    />
-
                 <ToggleButton
                     android:id="@+id/button_favoriteHome"
                     android:layout_alignParentEnd="true"
@@ -93,6 +82,17 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <RatingBar
+                    android:id="@+id/ratingBarApi"
+                    android:layout_width="240dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="false"
+                    android:max="5"
+                    android:padding="0dp"
+                    android:scaleX="0.4"
+                    android:scaleY="0.4"
+                    android:stepSize="0.5" />
 
             </RelativeLayout>
 

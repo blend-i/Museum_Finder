@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -82,12 +83,14 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
         private ImageView thumbnailimageView;
         private TextView descriptionTextView;
         private Button thumbnailButton;
+        private RatingBar ratingBar;
 
         public MuseumViewHolderApi(@NonNull final View itemView) {
             super(itemView);
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            ratingBar = itemView.findViewById(R.id.ratingBarApi);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -132,7 +135,7 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
                 descriptionTextView.setText("Closed");
             }
 
-
+            ratingBar.setRating(Float.parseFloat(rating));
 
         }
     }
