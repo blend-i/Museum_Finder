@@ -306,15 +306,17 @@ public class FindMuseum extends Fragment {
                             }
 
                             //System.out.println("BUSINESS ID: " + place.getId());
+                            try {
+                                locationTextView.setText(place.getAddress());
+                                titleCardView.setText(place.getName());
 
-                            locationTextView.setText(place.getAddress());
-                            titleCardView.setText(place.getName());
-
-                            ratingBar.setNumStars(5);
-                            ratingBar.setRating(place.getRating().floatValue());
-                            ratingBar.setAlpha(1);
-                            ratingTextView.setText(" / " +place.getRating().toString());
-
+                                ratingBar.setNumStars(5);
+                                ratingBar.setRating(place.getRating().floatValue());
+                                ratingBar.setAlpha(1);
+                                ratingTextView.setText(" / " + place.getRating().toString());
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
                             /*System.out.println("Gjør det du skal her.");
                             System.out.println("Address: " + place.getAddress());
                             System.out.println("Lat Lng : " + place.getLatLng());

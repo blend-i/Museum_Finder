@@ -58,12 +58,14 @@
         android:layout_marginTop="16dp"
         android:focusable="auto"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:mt_borderlessRippleEnabled="true"
+        app:mt_dividerColor="#FFFFFF"
         app:mt_hint="Search..."
         app:mt_maxSuggestionsCount="10"
+        app:mt_placeholder="search.."
+        app:mt_searchBarColor="#E1E0E3"
         app:mt_speechMode="true" />
 
     <RatingBar
