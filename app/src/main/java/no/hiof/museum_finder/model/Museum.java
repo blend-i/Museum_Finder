@@ -209,7 +209,6 @@ public class Museum {
     public String getRating() {
         return rating;
     }
-
     public void setPosterUrl(String posterUrl) {
         this.posterUrl = posterUrl;
 
