@@ -1,5 +1,6 @@
 package no.hiof.museum_finder;
 
+import android.app.Activity;
 import android.app.SharedElementCallback;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -66,6 +68,7 @@ public class MuseumDetailFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
         materialContainerTransform.setDrawingViewId(R.id.fragment);
