@@ -1,10 +1,5 @@
 package no.hiof.museum_finder.model;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.firebase.database.Exclude;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
 
 import no.hiof.museum_finder.R;
 
@@ -20,7 +15,7 @@ public class Museum {
     private boolean isFavorite;
     private double lat;
     private double lng;
-    private String openBool;
+    private String open;
     private String photo;
     private String placeId;
     private String rating;
@@ -55,36 +50,36 @@ public class Museum {
     }
      */
 
-    public Museum(String title, String openBool, double lat, double lng) {
+    public Museum(String title, String open, double lat, double lng) {
         this.title = title;
         this.lat = lat;
         this.lng = lng;
-        this.openBool = openBool;
+        this.open = open;
     }
 
-    public Museum(String title, String openBool, String photo, double lat, double lng) {
+    public Museum(String title, String open, String photo, double lat, double lng) {
         this.title = title;
         this.lat = lat;
         this.lng = lng;
-        this.openBool = openBool;
+        this.open = open;
         this.photo = photo;
     }
 
-    public Museum(String title, String openBool, String photo, String placeId, double lat, double lng) {
+    public Museum(String title, String open, String photo, String placeId, double lat, double lng) {
         this.title = title;
         this.lat = lat;
         this.lng = lng;
-        this.openBool = openBool;
+        this.open = open;
         this.photo = photo;
         this.placeId = placeId;
     }
 
 
-    public Museum(String title, String openBool, String photo, String rating, String placeId, double lat, double lng) {
+    public Museum(String title, String open, String photo, String rating, String placeId, double lat, double lng) {
         this.title = title;
         this.lat = lat;
         this.lng = lng;
-        this.openBool = openBool;
+        this.open = open;
         this.photo = photo;
         this.placeId = placeId;
         this.rating = rating;
@@ -178,8 +173,8 @@ public class Museum {
         this.lng = lng;
     }
 
-    public String isOpenBool() {
-        return openBool;
+    public String getOpen() {
+        return open;
     }
 
     public String getPlaceId() {

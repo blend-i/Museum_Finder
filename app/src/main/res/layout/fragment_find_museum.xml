@@ -67,7 +67,7 @@
         app:mt_speechMode="true" />
 
     <RatingBar
-        android:id="@+id/ratingBar"
+        android:id="@+id/ratingBarDetail"
         style="@android:attr/ratingBarStyleSmall"
         android:layout_width="239dp"
         android:layout_height="40dp"

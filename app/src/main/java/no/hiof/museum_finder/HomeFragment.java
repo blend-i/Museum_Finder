@@ -205,7 +205,7 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
         FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder().addSharedElement(view, museumCardDetailTransitionName).build();
         System.out.println(museumList.get(position).getTitle());
         HomeFragmentDirections.ActionHomeFragmentToMuseumDetailFragment  navigateToDetailFragment = HomeFragmentDirections.actionHomeFragmentToMuseumDetailFragment();
-        navigateToDetailFragment.setId(museumList.get(position).getUid());
+        navigateToDetailFragment.setPlaceId(museumList.get(position).getUid());
         Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
         setExitTransition(exitTransition);
         setReenterTransition(reenterTransition);

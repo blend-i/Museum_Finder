@@ -16,7 +16,6 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -70,7 +69,8 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
         Log.d(TAG, "onBindViewHolder" + museumToDisplay.getTitle() + " - " + position);
 
         viewHolder.setMuseum(museumToDisplay);
-        viewHolder.itemView.setTransitionName(museumToDisplay.getUid());
+        viewHolder.itemView.setTransitionName(museumToDisplay.getPlaceId());
+        System.out.println("MUSEUMID" + museumToDisplay.getUid());
     }
 
     @Override
@@ -129,7 +129,7 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             }
 
             //sets if museum open or closed
-            if(museumToDisplay.isOpenBool().equals("true")) {
+            if(museumToDisplay.getOpen().equals("true")) {
                 descriptionTextView.setText("Open");
             } else {
                 descriptionTextView.setText("Closed");

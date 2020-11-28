@@ -22,6 +22,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -55,6 +56,7 @@ public class MuseumDetailFragment extends Fragment {
     private ImageView museumImage;
     private TextView museumLocation;
     private TextView museumOpeningHours;
+    private RatingBar museumRating;
     private FirebaseAuth firebaseAuth;
     private Museum museum;
     private FirebaseFirestore fireStoreDb;
@@ -93,31 +95,41 @@ public class MuseumDetailFragment extends Fragment {
         museumImage = view.findViewById(R.id.imageView);
         museumLocation = view.findViewById(R.id.locationTextView);
         museumOpeningHours = view.findViewById(R.id.openingHoursTextView);
+        museumRating = view.findViewById(R.id.ratingBarDetail);
 
-        museumTitle.setVisibility(View.INVISIBLE);
+        /*museumTitle.setVisibility(View.INVISIBLE);
         museumDescription.setVisibility(View.INVISIBLE);
         museumImage.setVisibility(View.INVISIBLE);
         museumLocation.setVisibility(View.INVISIBLE);
-        museumOpeningHours.setVisibility(View.INVISIBLE);
+        museumOpeningHours.setVisibility(View.INVISIBLE);*/
 
         fireStoreDb = FirebaseFirestore.getInstance();
 
         Bundle arguments = getArguments();
         assert arguments != null;
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
-        /*museumTitle.setText(args.getTitle());
-        museumDescription.setText(args.getDescription());
-        museumOpeningHours.setText(args.getOpeningHours());
-        museumLocation.setText(args.getLocation());
+        museumTitle.setText(args.getTitle());
+        //museumDescription.setText(args.getDescription());
+        museumOpeningHours.setText(args.getOpeningHours().equals("true") ? "Open" : "Closed");
+        //museumLocation.setText(args.getLocation());
+        museumRating.setRating(Float.parseFloat(args.getRating()));
+
+        System.out.println("ARGSDATA: " + args.getTitle() + " " + args.getOpeningHours() + " " + args.getPhotoUrl());
 
         //args.getPosterUrl();
-        if (!args.getPosterUrl().isEmpty()) {
-            Glide.with(museumImage.getContext())
-                    .load(args.getPosterUrl())
-                    .into(museumImage);
-        }*/
+        if (!args.getPhotoUrl().isEmpty()) {
 
-        final String museumUid = args.getId();
+            String url = "https://maps.googleapis.com/maps/api/place/photo" +
+                    "?maxwidth=" + 400 +
+                    "&photoreference=" + args.getPhotoUrl() +
+                    "&key=AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc";
+
+            Glide.with(museumImage.getContext())
+                    .load(url)
+                    .into(museumImage);
+        }
+
+        /*final String museumUid = args.getId();
 
        firebaseAuth = FirebaseAuth.getInstance();
 
@@ -176,9 +188,9 @@ public class MuseumDetailFragment extends Fragment {
                     Log.d(TAG, "Get failed with", task.getException());
                 }
             }
-        });
+        });*/
 
-        bucketCollectionReference = fireStoreDb.collection("account").document(user.getUid()).collection("bucketList");
+        /*bucketCollectionReference = fireStoreDb.collection("account").document(user.getUid()).collection("bucketList");
 
 
         favourite = getView().findViewById(R.id.button_favorite);
@@ -247,5 +259,5 @@ public class MuseumDetailFragment extends Fragment {
                 }
             }
         });
-    }
-}
+    }*/
+} }

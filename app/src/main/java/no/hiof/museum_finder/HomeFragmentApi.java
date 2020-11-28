@@ -2,52 +2,30 @@ package no.hiof.museum_finder;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.FragmentNavigator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPhotoRequest;
-import com.google.android.libraries.places.api.net.FetchPhotoResponse;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.transition.MaterialElevationScale;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,24 +37,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.SmartLocation;
-import no.hiof.museum_finder.adapter.MuseumRecyclerAdapter;
 
 import no.hiof.museum_finder.adapter3.MuseumRecyclerAdapterApi;
 import no.hiof.museum_finder.model.Museum;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class HomeFragmentApi extends Fragment {
 
@@ -86,6 +54,7 @@ public class HomeFragmentApi extends Fragment {
     private MuseumRecyclerAdapterApi museumAdapter;
     private RecyclerView recyclerView;
     private PlacesClient placesClient;
+    private List<Museum> museumArrayList;
 
 
     @Nullable
@@ -212,7 +181,7 @@ public class HomeFragmentApi extends Fragment {
         protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
             //map.clear();
 
-            List<Museum> museumArrayList = new ArrayList<>();
+            museumArrayList = new ArrayList<>();
 
             System.out.println("HASHMAPS: " + hashMaps);
 
@@ -245,7 +214,24 @@ public class HomeFragmentApi extends Fragment {
 
         @Override
         public void onCardViewClick(int position, View v) {
-            System.out.println("hei");
+            MaterialElevationScale exitTransition = new MaterialElevationScale(false);
+            exitTransition.setDuration(300);
+
+            MaterialElevationScale reenterTransition = new MaterialElevationScale(true);
+            reenterTransition.setDuration(300);
+
+            String museumCardDetailTransitionName = getString(R.string.museum_card_detail_transition_name);
+            FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder().addSharedElement(v, museumCardDetailTransitionName).build();
+            //System.out.println(museumList.get(position).getTitle());
+            HomeFragmentApiDirections.ActionHomeFragmentApiToMuseumDetail navigateToDetailFragment = HomeFragmentApiDirections.actionHomeFragmentApiToMuseumDetail();
+            navigateToDetailFragment.setPlaceId(museumArrayList.get(position).getPlaceId());
+            navigateToDetailFragment.setOpeningHours(museumArrayList.get(position).getOpen());
+            navigateToDetailFragment.setPhotoUrl(museumArrayList.get(position).getPhoto());
+            navigateToDetailFragment.setRating(museumArrayList.get(position).getRating());
+            navigateToDetailFragment.setTitle(museumArrayList.get(position).getTitle());
+            Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
+            setExitTransition(exitTransition);
+            setReenterTransition(reenterTransition);
         }
 
         @Override
