@@ -209,7 +209,6 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
         Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
         setExitTransition(exitTransition);
         setReenterTransition(reenterTransition);
-
     }
 
     @Override
@@ -222,5 +221,4 @@ public class HomeFragment extends Fragment implements CardViewClickManager {
             System.out.println("UNCHECKED");
         }
     }
-
 }

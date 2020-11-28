@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -101,12 +102,11 @@ public class FindMuseum extends Fragment {
     public ImageView imageCardView;
     public TextView locationTextView;
     public TextView ratingTextView;
-
+    private RatingBar ratingBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @SuppressLint("MissingPermission")
@@ -127,7 +127,8 @@ public class FindMuseum extends Fragment {
         openingHoursCardView = view.findViewById(R.id.openingHoursCardView);
         imageCardView = view.findViewById(R.id.imageCardView);
         locationTextView = view.findViewById(R.id.location);
-        ratingTextView = view.findViewById(R.id.ratingTextView);
+        ratingTextView = view.findViewById(R.id.ratingTextView2);
+        ratingBar = view.findViewById(R.id.ratingBar);
 
 
         Places.initialize(view.getContext(), getResources().getString(R.string.maps_api_key));
@@ -348,9 +349,10 @@ public class FindMuseum extends Fragment {
                             locationTextView.setText(place.getAddress());
                             titleCardView.setText(place.getName());
 
-                            String rating = "Rating: " + place.getRating();
-                            ratingTextView.setText(rating);
-
+                            ratingBar.setNumStars(5);
+                            ratingBar.setRating(place.getRating().floatValue());
+                            ratingBar.setAlpha(1);
+                            ratingTextView.setText(" / " +place.getRating().toString());
 
                             /*System.out.println("Gjør det du skal her.");
                             System.out.println("Address: " + place.getAddress());

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.FragmentNavigator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,7 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
+import com.google.android.material.transition.MaterialElevationScale;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -32,7 +36,7 @@ import no.hiof.museum_finder.adapter2.BucketListRecyclerAdapter;
 import no.hiof.museum_finder.model.Museum;
 import static android.content.ContentValues.TAG;
 
-public class BucketlistFragment extends Fragment {
+public class BucketlistFragment extends Fragment implements CardViewClickManager{
     private List<Museum> museumList;
     private List<String> museumUidList;
     private RecyclerView recyclerView;
@@ -130,8 +134,28 @@ public class BucketlistFragment extends Fragment {
 
     private void setUpRecyclerView() {
         recyclerView = getView().findViewById(R.id.bucketListRecyclerView);
-        bucketlistAdapter = new BucketListRecyclerAdapter(getContext(), museumList);
+        bucketlistAdapter = new BucketListRecyclerAdapter(getContext(), museumList, this);
         recyclerView.setAdapter(bucketlistAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+    }
+
+    @Override
+    public void onCardViewClick(int position, View view) {
+        MaterialElevationScale exitTransition = new MaterialElevationScale(false);
+        exitTransition.setDuration(300);
+
+        MaterialElevationScale reenterTransition = new MaterialElevationScale(true);
+        reenterTransition.setDuration(300);
+
+        String museumCardDetailTransitionName = getString(R.string.museum_card_detail_transition_name);
+        FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder().addSharedElement(view, museumCardDetailTransitionName).build();
+        System.out.println(museumList.get(position).getTitle());
+        BucketlistFragmentDirections.ActionBucketlistFragmentToMuseumDetail  navigateToDetailFragment = BucketlistFragmentDirections.actionBucketlistFragmentToMuseumDetail();
+        navigateToDetailFragment.setId(museumList.get(position).getUid());
+        Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
+    }
+
+    @Override
+    public void onCardViewToggleButtonCheckedChanged(int position, ToggleButton favourite, boolean isChecked) {
     }
 }
