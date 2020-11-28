@@ -70,7 +70,6 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
 
         viewHolder.setMuseum(museumToDisplay);
         viewHolder.itemView.setTransitionName(museumToDisplay.getPlaceId());
-        System.out.println("MUSEUMID" + museumToDisplay.getUid());
     }
 
     @Override

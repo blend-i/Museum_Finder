@@ -84,6 +84,11 @@ public class MuseumDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Bundle arguments = getArguments();
+        assert arguments != null;
+        MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
+
+        museum = new Museum(args.getTitle(), "Museum description", args.getLocation(), args.getOpeningHours(),args.getPhotoUrl(), args.getPlaceId(), args.getRating());
         return inflater.inflate(R.layout.fragment_museum_detail, container, false);
     }
 
@@ -108,20 +113,20 @@ public class MuseumDetailFragment extends Fragment {
         Bundle arguments = getArguments();
         assert arguments != null;
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
-        museumTitle.setText(args.getTitle());
+        museumTitle.setText(museum.getTitle());
         //museumDescription.setText(args.getDescription());
-        museumOpeningHours.setText(args.getOpeningHours().equals("true") ? "Open" : "Closed");
-        museumLocation.setText(args.getLocation());
-        museumRating.setRating(Float.parseFloat(args.getRating()));
+        museumOpeningHours.setText(museum.getOpen().equals("true") ? "Open" : "Closed");
+        museumLocation.setText(museum.getLocation());
+        museumRating.setRating(Float.parseFloat(museum.getRating()));
 
         System.out.println("ARGSDATA: " + args.getTitle() + " " + args.getOpeningHours() + " " + args.getPhotoUrl());
 
         //args.getPosterUrl();
-        if (!args.getPhotoUrl().isEmpty()) {
+        if (!museum.getPhoto().isEmpty()) {
 
             String url = "https://maps.googleapis.com/maps/api/place/photo" +
                     "?maxwidth=" + 400 +
-                    "&photoreference=" + args.getPhotoUrl() +
+                    "&photoreference=" + museum.getPhoto() +
                     "&key=AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc";
 
             Glide.with(museumImage.getContext())
@@ -129,6 +134,7 @@ public class MuseumDetailFragment extends Fragment {
                     .into(museumImage);
         }
 
+        System.out.println("MUSEUMID " + museum.getPlaceId());
         /*final String museumUid = args.getId();
 
        firebaseAuth = FirebaseAuth.getInstance();
@@ -190,7 +196,13 @@ public class MuseumDetailFragment extends Fragment {
             }
         });*/
 
-        /*bucketCollectionReference = fireStoreDb.collection("account").document(user.getUid()).collection("bucketList");
+        final String museumUid = args.getPlaceId();
+
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+        bucketCollectionReference = fireStoreDb.collection("account").document(user.getUid()).collection("bucketList");
 
 
         favourite = getView().findViewById(R.id.button_favorite);
@@ -214,7 +226,10 @@ public class MuseumDetailFragment extends Fragment {
                 compoundButton.startAnimation(scaleAnimation);
             }
         });
+
+        checkIfMusuemExistsInBucketList(args.getPlaceId());
     }
+
 
     private void setCheckedBucketList(final String museumId, final boolean bool) {
         final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);
@@ -228,6 +243,7 @@ public class MuseumDetailFragment extends Fragment {
                         museum = documentSnapshot.toObject(Museum.class);
                         museum.setFavorite(bool);
 
+
                         if(!museum.isFavorite()){
                             bucketCollectionReference.document(museumId).delete();
                         }
@@ -240,6 +256,8 @@ public class MuseumDetailFragment extends Fragment {
                 }
             }
         });
+
+
     }
 
     private void checkIfMusuemExistsInBucketList(final String museumId) {
@@ -259,5 +277,5 @@ public class MuseumDetailFragment extends Fragment {
                 }
             }
         });
-    }*/
-} }
+    }
+}
