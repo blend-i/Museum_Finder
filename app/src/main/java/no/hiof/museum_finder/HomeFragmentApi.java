@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -26,6 +27,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,8 +37,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,6 +59,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -73,7 +85,7 @@ public class HomeFragmentApi extends Fragment {
     private double currentLat, currentLong;
     private MuseumRecyclerAdapterApi museumAdapter;
     private RecyclerView recyclerView;
-
+    private PlacesClient placesClient;
 
 
     @Nullable
@@ -82,6 +94,7 @@ public class HomeFragmentApi extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        placesClient = Places.createClient(getContext());
 
         if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             getCurrentLocation();
@@ -111,7 +124,7 @@ public class HomeFragmentApi extends Fragment {
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                if(location != null) {
+                if (location != null) {
                     currentLat = location.getLatitude();
                     currentLong = location.getLongitude();
 
@@ -124,7 +137,6 @@ public class HomeFragmentApi extends Fragment {
                             "&key=AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc"; //+ getResources().getString(R.string.maps_api_key);
 
                     new NearbyMuseumTask().execute(url);
-
                 }
             }
         });
@@ -157,27 +169,25 @@ public class HomeFragmentApi extends Fragment {
     }
 
 
-
     private String downloadUrl(String downloadUrl) throws IOException {
         URL url = new URL(downloadUrl);
 
-        HttpURLConnection httpURLConnection= (HttpURLConnection) url.openConnection();
+        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         httpURLConnection.connect();
 
-        InputStream urlInputStream =  httpURLConnection.getInputStream();
+        InputStream urlInputStream = httpURLConnection.getInputStream();
         BufferedReader museumDataReader = new BufferedReader(new InputStreamReader(urlInputStream));
 
         StringBuilder museumDataBuilder = new StringBuilder();
         String line = "";
 
-        while( (line = museumDataReader.readLine()) != null ) {
+        while ((line = museumDataReader.readLine()) != null) {
             museumDataBuilder.append(line);
         }
 
         String museumData = museumDataBuilder.toString();
         museumDataReader.close();
-
-        return  museumData;
+        return museumData;
     }
 
 
@@ -195,47 +205,42 @@ public class HomeFragmentApi extends Fragment {
                 jsonException.printStackTrace();
             }
 
-            System.out.println("MAPLIST: " + mapList);
-
             return mapList;
         }
+
         @Override
         protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
             //map.clear();
 
             List<Museum> museumArrayList = new ArrayList<>();
 
-            for(int i = 0; i < hashMaps.size(); i++) {
+            System.out.println("HASHMAPS: " + hashMaps);
+
+            for (int i = 0; i < hashMaps.size(); i++) {
                 HashMap<String, String> hashMapList = hashMaps.get(i);
-                double lat = Double.parseDouble(hashMapList.get("lat"));
-                double lng = Double.parseDouble(hashMapList.get("lng"));
+                //String description = hashMapList.get("openHours");
+
+                String open = hashMapList.get("open");
                 String name = hashMapList.get("name");
-                String description = hashMapList.get("description");
+                String photo = hashMapList.get("photo");
+                String placeId = hashMapList.get("placeId");
 
-                LatLng latLng = new LatLng(lat,lng);
-
-
-                museumArrayList.add(new Museum(name, description, lat, lng));
-
-                /*
-                MarkerOptions options = new MarkerOptions();
-                options.position(latLng);
-                options.title(name);
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_museum_marker));
-                map.addMarker(options);
-
-                 */
-
-                for (Museum m : museumArrayList) {
-                    System.out.println(m.name);
+                try {
+                    double lat = Double.parseDouble(hashMapList.get("lat"));
+                    double lng = Double.parseDouble(hashMapList.get("lng"));
+                    museumArrayList.add(new Museum(name, open,photo, placeId, lat, lng));
+                } catch (Exception e) {
+                    System.out.println(e);
                 }
-                recyclerView = getView().findViewById(R.id.museumRecyclerViewApi);
-                museumAdapter = new MuseumRecyclerAdapterApi(getContext(), museumArrayList, this);
-                recyclerView.setAdapter(museumAdapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             }
 
+            recyclerView = getView().findViewById(R.id.museumRecyclerViewApi);
+            museumAdapter = new MuseumRecyclerAdapterApi(getContext(), museumArrayList, this);
+            recyclerView.setAdapter(museumAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
+
+
 
         @Override
         public void onCardViewClick(int position, View v) {

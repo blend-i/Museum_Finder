@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -30,11 +31,9 @@ Fra context så lager vi en inflater. Denne inflateren bruker vi for å få et v
 Det viewet bruker vi til å opprette new Viewholder slik at hver gang recyclerView finner ut at den trenger ny viewholder så sier den til adapteren "lag en ny viewholder til meg"
 Da får viewholder en instant av lista i form av view og da kan hente ut de enkle viewene.
 
-
  */
 
 public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecyclerAdapterApi.MuseumViewHolderApi> {
-
     private static final String TAG = MuseumRecyclerAdapterApi.class.getSimpleName();
 
     private List<Museum> museumList;
@@ -69,9 +68,7 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
         Museum museumToDisplay = museumList.get(position);
         Log.d(TAG, "onBindViewHolder" + museumToDisplay.getTitle() + " - " + position);
 
-
         viewHolder.setMuseum(museumToDisplay);
-        //.itemView.setOnClickListener(clickListener);
         viewHolder.itemView.setTransitionName(museumToDisplay.getUid());
     }
 
@@ -81,17 +78,15 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
     }
 
     public class MuseumViewHolderApi extends RecyclerView.ViewHolder {
-
         private TextView thumbnailTextView;
-        //private ImageView thumbnailimageView;
+        private ImageView thumbnailimageView;
         private TextView descriptionTextView;
         private Button thumbnailButton;
-
 
         public MuseumViewHolderApi(@NonNull final View itemView) {
             super(itemView);
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
-            //thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
+            thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -100,27 +95,45 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
                     cardViewClickManager.onCardViewClick(getAdapterPosition(), v);
                 }
             });
-
         }
 
         public void setMuseum(final Museum museumToDisplay) {
-            /*
+           /*
             if(thumbnailTextView != null && descriptionTextView != null) {
                 thumbnailTextView.setText(museumToDisplay.getTitle());
                 descriptionTextView.setText(museumToDisplay.getDescription());
             }
+            */
+            String posterUrl = museumToDisplay.getPhoto();
 
-            String posterUrl = museumToDisplay.getPosterUrl();
+            String rating = museumToDisplay.getRating();
 
+            String url = "https://maps.googleapis.com/maps/api/place/photo" +
+                    "?maxwidth=" + 400 +
+                    "&photoreference=" + posterUrl +
+                    "&key=AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc";
+
+            System.out.println("POSTERURL FRA ADAPTER: " + posterUrl);
+
+            //sets the title
+            thumbnailTextView.setText(museumToDisplay.getTitle());
+
+            //sets the photo of museum in cardview
             if(posterUrl != null && !posterUrl.equals("")) {
                 Glide.with(thumbnailimageView.getContext())
-                        .load(posterUrl)
+                        .load(url)
                         .into(thumbnailimageView);
             }
 
-             */
-            thumbnailTextView.setText(museumToDisplay.getTitle());
-            descriptionTextView.setText(museumToDisplay.getDescription());
+            //sets if museum open or closed
+            if(museumToDisplay.isOpenBool().equals("true")) {
+                descriptionTextView.setText("Open");
+            } else {
+                descriptionTextView.setText("Closed");
+            }
+
+
+
         }
     }
 }

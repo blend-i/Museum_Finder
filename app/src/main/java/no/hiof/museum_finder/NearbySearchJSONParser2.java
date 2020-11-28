@@ -27,14 +27,25 @@ public class NearbySearchJSONParser2 {
             String longitude = jsonObject.getJSONObject("geometry")
                     .getJSONObject("location").getString("lng");
 
+            String open = jsonObject.getJSONObject("opening_hours").getString("open_now");
+
+            String photo = jsonObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
+            String rating = jsonObject.getString("rating");
+
+            String placeId = jsonObject.getString("place_id");
+
+            dataList.put("open", open);
             dataList.put("name", name);
             dataList.put("lat", latitude);
             dataList.put("lng", longitude);
+            dataList.put("photo", photo);
+            dataList.put("placeId", placeId);
+            dataList.put("rating", rating);
+
 
         } catch (JSONException jsonException) {
             jsonException.printStackTrace();
         }
-
         return dataList;
     }
 
@@ -56,7 +67,6 @@ public class NearbySearchJSONParser2 {
                 jsonException.printStackTrace();
             }
         }
-
         return datalist;
     }
 

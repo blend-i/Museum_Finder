@@ -1,4 +1,5 @@
 package no.hiof.museum_finder.model;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.firebase.database.Exclude;
 
 import java.lang.reflect.Array;
@@ -8,6 +9,7 @@ import java.util.List;
 import no.hiof.museum_finder.R;
 
 public class Museum {
+
     @Exclude
     private String uid;
     private String title;
@@ -16,9 +18,12 @@ public class Museum {
     private String location;
     private String posterUrl;
     private boolean isFavorite;
-
     private double lat;
     private double lng;
+    private String openBool;
+    private String photo;
+    private String placeId;
+    private String rating;
 
     /*public Museum(int uid, String title, String description) {
         this.uid = uid;
@@ -26,20 +31,16 @@ public class Museum {
         this.description = description;
         //this.posterUrl = posterUrl;
     }
-
      */
 
     public String name, address, distance, duration;
 
     public Museum(String name, String address, String distance, String duration) {
-
         this.name = name;
         this.address = address;
         this.distance = distance;
         this.duration = duration;
     }
-
-
 
     public Museum () {
 
@@ -52,15 +53,45 @@ public class Museum {
         this.openingHours = openingHours;
         this.location = location;
     }
-
      */
 
-    public Museum(String title, String description, double lat, double lng) {
+    public Museum(String title, String openBool, double lat, double lng) {
         this.title = title;
         this.lat = lat;
         this.lng = lng;
-        this.description = description;
+        this.openBool = openBool;
     }
+
+    public Museum(String title, String openBool, String photo, double lat, double lng) {
+        this.title = title;
+        this.lat = lat;
+        this.lng = lng;
+        this.openBool = openBool;
+        this.photo = photo;
+    }
+
+    public Museum(String title, String openBool, String photo, String placeId, double lat, double lng) {
+        this.title = title;
+        this.lat = lat;
+        this.lng = lng;
+        this.openBool = openBool;
+        this.photo = photo;
+        this.placeId = placeId;
+    }
+
+
+    public Museum(String title, String openBool, String photo, String rating, String placeId, double lat, double lng) {
+        this.title = title;
+        this.lat = lat;
+        this.lng = lng;
+        this.openBool = openBool;
+        this.photo = photo;
+        this.placeId = placeId;
+        this.rating = rating;
+    }
+
+
+
 
     public Museum(String title, String description, String openingHours, String location, String posterUrl) {
         this.uid = "";
@@ -145,6 +176,38 @@ public class Museum {
 
     public void setLng(double lng) {
         this.lng = lng;
+    }
+
+    public String isOpenBool() {
+        return openBool;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public String getRating() {
+        return rating;
     }
 
     /*public static ArrayList<Museum> getData() {
