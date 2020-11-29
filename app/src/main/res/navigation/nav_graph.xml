@@ -50,6 +50,10 @@
             android:name="Rating"
             app:argType="string"
             android:defaultValue="Museum Rating" />
+        <argument
+            android:name="Distance"
+            android:defaultValue="0 km"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"

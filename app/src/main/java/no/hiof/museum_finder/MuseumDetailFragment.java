@@ -2,11 +2,11 @@ package no.hiof.museum_finder;
 
 import android.graphics.Color;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,19 +31,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import no.hiof.museum_finder.model.Museum;
 
-
 public class MuseumDetailFragment extends Fragment {
     private TextView museumTitle;
     private TextView museumDescription;
     private ImageView museumImage;
     private TextView museumLocation;
     private TextView museumOpeningHours;
+    private TextView distanceTextView;
     private RatingBar museumRating;
     private FirebaseAuth firebaseAuth;
     private Museum museum;
     private FirebaseFirestore fireStoreDb;
     private ToggleButton favourite;
     private CollectionReference bucketCollectionReference;
+
 
     public MuseumDetailFragment() {
         // Required empty public constructor
@@ -83,6 +83,18 @@ public class MuseumDetailFragment extends Fragment {
         museumLocation = view.findViewById(R.id.locationTextView);
         museumOpeningHours = view.findViewById(R.id.openingHoursTextView);
         museumRating = view.findViewById(R.id.ratingBarDetail);
+        distanceTextView = view.findViewById(R.id.distanceTextViewInDetail);
+
+
+        try {
+            Bundle arguments = getArguments();
+            assert arguments != null;
+            MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
+            distanceTextView.setText(args.getDistance());
+        } catch (NullPointerException e) {
+            Log.d("MuseumDetailFragment", e.getMessage());
+        }
+
 
         fireStoreDb = FirebaseFirestore.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
@@ -132,7 +144,6 @@ public class MuseumDetailFragment extends Fragment {
         });
         checkIfMusuemExistsInBucketList(museum.getPlaceId());
     }
-
 
     private void setCheckedBucketList(final String museumId, final boolean bool) {
         final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);

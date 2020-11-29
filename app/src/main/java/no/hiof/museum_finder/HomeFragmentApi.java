@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -60,12 +61,15 @@ public class HomeFragmentApi extends Fragment {
     private RecyclerView recyclerView;
     private PlacesClient placesClient;
     private List<Museum> museumArrayList;
+    private TextView distanceTextView;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
+
+
 
         try {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
@@ -86,6 +90,13 @@ public class HomeFragmentApi extends Fragment {
             EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
         }
         return view;
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        distanceTextView = view.findViewById(R.id.distanceTextView);
     }
 
     /**
@@ -192,10 +203,7 @@ public class HomeFragmentApi extends Fragment {
 
         @Override
         protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
-            //map.clear();
-
             museumArrayList = new ArrayList<>();
-
             System.out.println("HASHMAPS: " + hashMaps);
 
             for (int i = 0; i < hashMaps.size(); i++) {
@@ -233,10 +241,14 @@ public class HomeFragmentApi extends Fragment {
             }
         }
 
-
-
         @Override
         public void onCardViewClick(int position, View v) {
+
+        }
+
+        @Override
+        public void onCardViewClick(int position, View v, String distance) {
+
             String location = reverseGeoCode(museumArrayList.get(position).getLat(), museumArrayList.get(position).getLng());
 
             MaterialElevationScale exitTransition = new MaterialElevationScale(false);
@@ -254,6 +266,7 @@ public class HomeFragmentApi extends Fragment {
             navigateToDetailFragment.setPhotoUrl(museumArrayList.get(position).getPhoto());
             navigateToDetailFragment.setRating(museumArrayList.get(position).getRating());
             navigateToDetailFragment.setTitle(museumArrayList.get(position).getTitle());
+            navigateToDetailFragment.setDistance(distance);
             navigateToDetailFragment.setLocation(location);
             Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
             setExitTransition(exitTransition);

@@ -108,7 +108,7 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    cardViewClickManager.onCardViewClick(getAdapterPosition(), v);
+                    cardViewClickManager.onCardViewClick(getAdapterPosition(), v, distance.getText().toString());
                 }
             });
         }

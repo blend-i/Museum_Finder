@@ -178,6 +178,11 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
     }
 
     @Override
+    public void onCardViewClick(int position, View v, String distance) {
+
+    }
+
+    @Override
     public void onCardViewToggleButtonCheckedChanged(int position, ToggleButton favourite, boolean isChecked) {
     }
 
