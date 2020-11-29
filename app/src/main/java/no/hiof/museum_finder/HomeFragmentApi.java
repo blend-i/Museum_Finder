@@ -2,6 +2,7 @@ package no.hiof.museum_finder;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -18,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.FragmentNavigator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -215,7 +217,17 @@ public class HomeFragmentApi extends Fragment {
             recyclerView = getView().findViewById(R.id.museumRecyclerViewApi);
             museumAdapter = new MuseumRecyclerAdapterApi(getContext(), museumArrayList, this);
             recyclerView.setAdapter(museumAdapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                //Do some stuff
+                recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+            }
+
+            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+                //Do some stuff
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            }
         }
 
 
