@@ -70,7 +70,6 @@ public class HomeFragmentApi extends Fragment {
         try {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
             placesClient = Places.createClient(getContext());
-        } 
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
