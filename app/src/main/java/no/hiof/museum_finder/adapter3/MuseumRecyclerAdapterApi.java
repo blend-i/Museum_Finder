@@ -57,7 +57,6 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
     public MuseumViewHolderApi onCreateViewHolder(@NonNull ViewGroup parent, int position) {
         Log.d(TAG, "onCreateViewHolder");
         View itemView = inflater.inflate(R.layout.museum_list_item, parent, false);
-
         return new MuseumViewHolderApi(itemView);
     }
 
@@ -100,12 +99,6 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
         }
 
         public void setMuseum(final Museum museumToDisplay) {
-           /*
-            if(thumbnailTextView != null && descriptionTextView != null) {
-                thumbnailTextView.setText(museumToDisplay.getTitle());
-                descriptionTextView.setText(museumToDisplay.getDescription());
-            }
-            */
             String posterUrl = museumToDisplay.getPhoto();
 
             String rating = museumToDisplay.getRating();
