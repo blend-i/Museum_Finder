@@ -142,13 +142,12 @@ public class FindMuseum extends Fragment {
 
             @Override
             public void onSearchConfirmed(CharSequence text) {
-                //dont exacly know what this does, but i know i need it
-                //startSearch(text.toString(), true, null, true);
+
             }
 
             @Override
             public void onButtonClicked(int buttonCode) {
-                //this function is called whne you click the button on the search bar. this may be the "back" button or the hamburger menu like button
+                //this function is called when you click the button on the search bar. this may be the "back" button or the hamburger menu like button
                 if(buttonCode == MaterialSearchBar.BUTTON_NAVIGATION) {
                     //for example open or close navigation drawer
                 } else if(buttonCode == MaterialSearchBar.BUTTON_BACK) {
@@ -244,11 +243,11 @@ public class FindMuseum extends Fragment {
                         Place.Field.BUSINESS_STATUS,
                         Place.Field.PHOTO_METADATAS,
                         Place.Field.PRICE_LEVEL,
-                        Place.Field.TYPES,
                         Place.Field.NAME,
                         Place.Field.USER_RATINGS_TOTAL,
                         Place.Field.WEBSITE_URI,
-                        Place.Field.ID
+                        Place.Field.ID,
+                        Place.Field.TYPES
                 );
 
                 FetchPlaceRequest fetchPlaceRequest = FetchPlaceRequest.builder(placeId, placeFields).build();

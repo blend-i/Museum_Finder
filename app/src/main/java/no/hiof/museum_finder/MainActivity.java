@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_NavBar);
         NavigationUI.setupWithNavController(bottomNavigationView, controller);
 
-        Dexter.withContext(MainActivity.this).withPermission(ACCESS_FINE_LOCATION).withListener(new PermissionListener() {
+        /*Dexter.withContext(MainActivity.this).withPermission(ACCESS_FINE_LOCATION).withListener(new PermissionListener() {
             @Override
             public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
                 Toast.makeText(MainActivity.this, "permission GRANTED", Toast.LENGTH_SHORT).show();
@@ -135,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
         }).check();
     }
 
+         */
+
+        /*
     private void getLocationPermission() {
         System.out.println("getLocationPermission: need permission");
     }
@@ -143,4 +146,7 @@ public class MainActivity extends AppCompatActivity {
         //startActivity(new Intent(MainActivity.this, MuseumDetailsApi.class));
     }
 
+         */
+
+    }
 }
