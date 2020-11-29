@@ -34,6 +34,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
+
             <TextView
                 android:id="@+id/thumbnailTextView"
                 style="@style/TextAppearance.MaterialComponents.Headline6"
@@ -61,6 +63,14 @@
                 android:text="TextView"
                 app:layout_constraintStart_toEndOf="@+id/thumbnailimageView"
                 app:layout_constraintTop_toBottomOf="@+id/thumbnailTextView" />
+
+            <TextView
+                android:id="@+id/distanceTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toEndOf="@+id/thumbnailTextView"
+                android:text="TextView" />
 
 
             <RelativeLayout
