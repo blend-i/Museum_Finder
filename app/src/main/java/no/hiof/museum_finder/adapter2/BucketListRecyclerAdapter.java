@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,20 +21,9 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import no.hiof.museum_finder.CardViewClickManager;
-import no.hiof.museum_finder.HomeFragmentDirections;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
 
-/*
-Det som skjer her:
-
-Vi har en konstruktør som tar imot context og en liste med dyr.
-Fra context så lager vi en inflater. Denne inflateren bruker vi for å få et view basert på vår xml.
-Det viewet bruker vi til å opprette new Viewholder slik at hver gang recyclerView finner ut at den trenger ny viewholder så sier den til adapteren "lag en ny viewholder til meg"
-Da får viewholder en instant av lista i form av view og da kan hente ut de enkle viewene.
-
-
- */
 
 public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRecyclerAdapter.BucketListViewHolder> {
 
@@ -74,7 +64,7 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
 
         viewHolder.setMuseum(museumToDisplay);
         //.itemView.setOnClickListener(clickListener);
-        viewHolder.itemView.setTransitionName(museumToDisplay.getUid());
+        viewHolder.itemView.setTransitionName(museumToDisplay.getPlaceId());
     }
 
     @Override
@@ -84,10 +74,10 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
 
     public class BucketListViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView thumbnailTextView;
-        private ImageView thumbnailimageView;
-        private TextView descriptionTextView;
-        private Button thumbnailButton;
+        private final TextView thumbnailTextView;
+        private final ImageView thumbnailimageView;
+        private final TextView descriptionTextView;
+        private final RatingBar ratingBar;
 
 
         public BucketListViewHolder(@NonNull final View itemView) {
@@ -95,6 +85,7 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            ratingBar = itemView.findViewById(R.id.ratingBarApi);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -106,16 +97,29 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
         }
 
         public void setMuseum(final Museum museumToDisplay) {
+            try {
+                String rating = museumToDisplay.getRating();
+                ratingBar.setRating(Float.parseFloat(rating));
+            } catch (NullPointerException exception) {
+                exception.printStackTrace();
+            }
+
             if(thumbnailTextView != null && descriptionTextView != null) {
                 thumbnailTextView.setText(museumToDisplay.getTitle());
                 descriptionTextView.setText(museumToDisplay.getDescription());
             }
 
-            String posterUrl = museumToDisplay.getPosterUrl();
+            String posterUrl = museumToDisplay.getPhoto();
+
+            String url = "https://maps.googleapis.com/maps/api/place/photo" +
+                    "?maxwidth=" + 400 +
+                    "&photoreference=" + posterUrl +
+                    "&key=AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc";
+
 
             if(posterUrl != null && !posterUrl.equals("")) {
                 Glide.with(thumbnailimageView.getContext())
-                        .load(posterUrl)
+                        .load(url)
                         .into(thumbnailimageView);
             }
         }

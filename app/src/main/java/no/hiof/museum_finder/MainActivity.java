@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // A local method to request required permissions;
                     // See https://developer.android.com/training/permissions/requesting
-                    getLocationPermission();
+                    Log.d("MainActivity", "permission denied, need permission");
                 }
             }
 
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder
                             .setTitle("Permission Denied")
-                            .setMessage("Permission to access device location is permanently denied. you need to go to settings to allow the permission")
+                            .setMessage("Permission to access device location is denied. Go to settings to allow the permission")
                             .setNegativeButton("Cancel", null)
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override

@@ -1,11 +1,15 @@
 package no.hiof.museum_finder;
 
+import android.content.res.Configuration;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.FragmentNavigator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,9 +33,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import no.hiof.museum_finder.adapter.MuseumRecyclerAdapter;
+import java.util.Locale;
+
 import no.hiof.museum_finder.adapter2.BucketListRecyclerAdapter;
 import no.hiof.museum_finder.model.Museum;
 import static android.content.ContentValues.TAG;
@@ -88,13 +95,13 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
                     for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
                         QueryDocumentSnapshot documentSnapshot = documentChange.getDocument();
                         Museum museum = documentSnapshot.toObject(Museum.class);
-                        museum.setUid(documentSnapshot.getId());
-                        int pos = museumList.indexOf(museum.getUid());
+                        museum.setPlaceId(documentSnapshot.getId());
+                        int pos = museumList.indexOf(museum.getPlaceId());
 
                         switch (documentChange.getType()) {
                             case ADDED:
                                 museumList.add(museum);
-                                museumUidList.add(museum.getUid());
+                                museumUidList.add(museum.getPlaceId());
                                 bucketlistAdapter.notifyItemInserted(museumList.size() -1);
                                 break;
                             case REMOVED:
@@ -136,7 +143,17 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
         recyclerView = getView().findViewById(R.id.bucketListRecyclerView);
         bucketlistAdapter = new BucketListRecyclerAdapter(getContext(), museumList, this);
         recyclerView.setAdapter(bucketlistAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        //recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            //Do some stuff
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        }
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            //Do some stuff
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        }
     }
 
     @Override
@@ -151,11 +168,17 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
         FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder().addSharedElement(view, museumCardDetailTransitionName).build();
         System.out.println(museumList.get(position).getTitle());
         BucketlistFragmentDirections.ActionBucketlistFragmentToMuseumDetail  navigateToDetailFragment = BucketlistFragmentDirections.actionBucketlistFragmentToMuseumDetail();
-        navigateToDetailFragment.setId(museumList.get(position).getUid());
+        navigateToDetailFragment.setPlaceId(museumList.get(position).getPlaceId());
+        navigateToDetailFragment.setOpeningHours(museumList.get(position).getOpen());
+        navigateToDetailFragment.setPhotoUrl(museumList.get(position).getPhoto());
+        navigateToDetailFragment.setRating(museumList.get(position).getRating());
+        navigateToDetailFragment.setTitle(museumList.get(position).getTitle());
+        navigateToDetailFragment.setLocation(museumList.get(position).getLocation());
         Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
     }
 
     @Override
     public void onCardViewToggleButtonCheckedChanged(int position, ToggleButton favourite, boolean isChecked) {
     }
+
 }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph.xml"
-    app:startDestination="@id/homeFragmentApi">
+    app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -11,29 +11,11 @@
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
-            android:id="@+id/action_loginFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:enterAnim="@anim/fade_in_right"
-            app:exitAnim="@anim/fade_out_left" />
-        <action
             android:id="@+id/action_loginFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/homeFragment"
-        android:name="no.hiof.museum_finder.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
-        <!--<argument
-            android:name="username"
-            app:argType="string"
-            android:defaultValue="Username" />-->
         <action
-            android:id="@+id/action_homeFragment_to_museumDetailFragment"
-            app:destination="@id/museumDetail" />
-        <action
-            android:id="@+id/action_homeFragment_to_findMuseum"
-            app:destination="@id/findMuseum" />
+            android:id="@+id/action_loginFragment_to_homeFragmentApi"
+            app:destination="@id/homeFragmentApi" />
     </fragment>
     <fragment
         android:id="@+id/museumDetail"
@@ -49,7 +31,7 @@
             android:defaultValue="Description of museum"
             app:argType="string" />
         <argument
-            android:name="PosterUrl"
+            android:name="PhotoUrl"
             android:defaultValue="Image"
             app:argType="string" />
         <argument
@@ -61,9 +43,13 @@
             android:defaultValue="Museums location"
             app:argType="string" />
         <argument
-            android:name="Id"
+            android:name="PlaceId"
             app:argType="string"
             android:defaultValue="Museum Id" />
+        <argument
+            android:name="Rating"
+            app:argType="string"
+            android:defaultValue="Museum Rating" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -110,7 +96,11 @@
         android:id="@+id/homeFragmentApi"
         android:name="no.hiof.museum_finder.HomeFragmentApi"
         android:label="fragment_home_api"
-        tools:layout="@layout/fragment_home_api" />
+        tools:layout="@layout/fragment_home_api" >
+        <action
+            android:id="@+id/action_homeFragmentApi_to_museumDetail"
+            app:destination="@id/museumDetail" />
+    </fragment>
 
   <fragment
         android:id="@+id/mapFragment"
