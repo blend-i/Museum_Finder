@@ -65,8 +65,12 @@ public class HomeFragmentApi extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-        placesClient = Places.createClient(getContext());
+        try {
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+            placesClient = Places.createClient(getContext());
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
 
         if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             getCurrentLocation();
@@ -201,7 +205,7 @@ public class HomeFragmentApi extends Fragment {
                 try {
                     double lat = Double.parseDouble(hashMapList.get("lat"));
                     double lng = Double.parseDouble(hashMapList.get("lng"));
-                    museumArrayList.add(new Museum(name, open, photo, rating,  placeId, lat, lng));
+                    museumArrayList.add(new Museum(name, open,  photo, rating,  placeId, lat, lng));
                 } catch (Exception e) {
                     System.out.println(e);
                 }

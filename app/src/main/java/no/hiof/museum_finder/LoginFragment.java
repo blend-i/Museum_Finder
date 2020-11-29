@@ -66,7 +66,8 @@ public class LoginFragment extends Fragment {
                         public void run() {
                             List<AuthUI.IdpConfig> providers = Arrays.asList(
                                     new AuthUI.IdpConfig.EmailBuilder().build(),
-                                    new AuthUI.IdpConfig.GoogleBuilder().build());
+                                    new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                    new AuthUI.IdpConfig.AnonymousBuilder().build());
 
                             startActivityForResult(
                                     AuthUI.getInstance()
@@ -83,7 +84,7 @@ public class LoginFragment extends Fragment {
                     //addAccountToDb();
                     //LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
                     Navigation.findNavController(requireView()).navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragmentApi());
-                    Log.d("signedin", Objects.requireNonNull(currentUser.getEmail()));
+                    //Log.d("signedin", Objects.requireNonNull(currentUser.getEmail()));
 
                 }
             }
