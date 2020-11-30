@@ -69,17 +69,12 @@ public class HomeFragmentApi extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
 
-
-
         try {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
             placesClient = Places.createClient(getContext());
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
-
-
-
 
         if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             getCurrentLocation();
@@ -282,7 +277,7 @@ public class HomeFragmentApi extends Fragment {
             //double longitude = Double.parseDouble(lng);
             //using latitude and longitude from last location to pinpoint address
             try {
-                addresses = geocoder.getFromLocation(lat, lng, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                addresses = geocoder.getFromLocation(lat, lng, 5); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
             } catch (IOException e) {
                 e.printStackTrace();
             }

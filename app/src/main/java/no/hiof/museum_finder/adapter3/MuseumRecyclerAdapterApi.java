@@ -93,7 +93,14 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
         private FusedLocationProviderClient fusedLocationProviderClient;
         private double originLat;
         private double originLng;
+        private double lat;
+        private double  lng;
 
+        //Suppressing here
+        @SuppressLint("MissingPermission") Task<Location> task;
+
+
+        @SuppressLint("MissingPermission")
         public MuseumViewHolderApi(@NonNull final View itemView) {
             super(itemView);
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
@@ -104,6 +111,19 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(itemView.getContext());
             originLat = 0;
             originLng = 0;
+            requestQueue = Volley.newRequestQueue(itemView.getContext());
+            task = fusedLocationProviderClient.getLastLocation();
+
+            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    originLat = location.getLatitude();
+                    originLng = location.getLongitude();
+                    jsonParseAndDisplayDistanceInKm(originLat,originLng,lat,lng);
+                }
+            });
+
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -114,31 +134,18 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
         }
 
         public void setMuseum(final Museum museumToDisplay) {
-            requestQueue = Volley.newRequestQueue(itemView.getContext());
 
             String posterUrl = museumToDisplay.getPhoto();
             String rating = museumToDisplay.getRating();
 
-            double lat = museumToDisplay.getLat();
-            double lng = museumToDisplay.getLng();
+             lat = museumToDisplay.getLat();
+             lng = museumToDisplay.getLng();
 
             String photoUrl = "https://maps.googleapis.com/maps/api/place/photo" +
                     "?maxwidth=" + 400 +
                     "&photoreference=" + posterUrl +
                     "&key=" + itemView.getResources().getString(R.string.maps_api_key);
 
-            //Suppressing here
-            @SuppressLint("MissingPermission") Task<Location> task = fusedLocationProviderClient.getLastLocation();
-
-            task.addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    originLat = location.getLatitude();
-                    originLng = location.getLongitude();
-
-                    jsonParseAndDisplayDistanceInKm(originLat, originLng, lat, lng);
-                }
-            });
 
             //sets the title
             thumbnailTextView.setText(museumToDisplay.getTitle());
@@ -160,7 +167,9 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             ratingBar.setRating(Float.parseFloat(rating));
         }
 
+
         private void jsonParseAndDisplayDistanceInKm(double origin_lat, double origin_lng, double destination_lat, double destination_lng) {
+            System.out.println("ORIGIN LAT: " + origin_lat + " " + origin_lng);
             String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+origin_lat+","+origin_lng+"&destinations="+ destination_lat + "," + destination_lng+"&key="+itemView.getResources().getString(R.string.maps_api_key);
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
