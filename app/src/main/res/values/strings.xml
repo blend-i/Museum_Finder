@@ -15,4 +15,5 @@
     <string name="bucketlist_navigation">Bucketlist</string>
     <string name="map_navigation">Map</string>
     <string name="profile_navigation">Profile</string>
+    <string name="no_description">Could not retrieve description resources from WikiPedia</string>
 </resources>

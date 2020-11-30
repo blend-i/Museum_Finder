@@ -23,6 +23,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,8 +48,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.SortedMap;
 
 
 import no.hiof.museum_finder.adapter3.MuseumRecyclerAdapterApi;
@@ -73,8 +81,6 @@ public class HomeFragmentApi extends Fragment {
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
-
-
 
 
         if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -200,15 +206,14 @@ public class HomeFragmentApi extends Fragment {
 
             for (int i = 0; i < hashMaps.size(); i++) {
                 HashMap<String, String> hashMapList = hashMaps.get(i);
+                //WikiJSONParser wikiJSONParser = new WikiJSONParser();
                 //String description = hashMapList.get("openHours");
-
-                String open = hashMapList.get("open");
-                String name = hashMapList.get("name");
-                String photo = hashMapList.get("photo");
-                String placeId = hashMapList.get("placeId");
-                String rating = hashMapList.get("rating");
-
                 try {
+                    String open = hashMapList.get("open");
+                    String name = hashMapList.get("name");
+                    String photo = hashMapList.get("photo");
+                    String placeId = hashMapList.get("placeId");
+                    String rating = hashMapList.get("rating");
                     double lat = Double.parseDouble(hashMapList.get("lat"));
                     double lng = Double.parseDouble(hashMapList.get("lng"));
                     museumArrayList.add(new Museum(name, open,  photo, rating,  placeId, lat, lng));

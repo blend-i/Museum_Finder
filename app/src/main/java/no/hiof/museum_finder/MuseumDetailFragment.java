@@ -26,6 +26,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -61,6 +63,7 @@ public class MuseumDetailFragment extends Fragment {
     private Museum museum;
     private FirebaseFirestore fireStoreDb;
     private ToggleButton favourite;
+    private RequestQueue requestQueue;
 
     private CollectionReference bucketCollectionReference;
 
@@ -84,11 +87,14 @@ public class MuseumDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        requestQueue = Volley.newRequestQueue(requireContext());
+
+
         Bundle arguments = getArguments();
         assert arguments != null;
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
 
-        museum = new Museum(args.getTitle(), "Museum description", args.getLocation(), args.getOpeningHours(),args.getPhotoUrl(), args.getPlaceId(), args.getRating());
+        museum = new Museum(args.getTitle(), args.getLocation(), args.getOpeningHours(),args.getPhotoUrl(), args.getPlaceId(), args.getRating());
         return inflater.inflate(R.layout.fragment_museum_detail, container, false);
     }
 
@@ -96,11 +102,18 @@ public class MuseumDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         museumTitle = view.findViewById(R.id.museumTitleTextView);
-        museumDescription = view.findViewById(R.id.museumDescriptionTextView);
         museumImage = view.findViewById(R.id.imageView);
         museumLocation = view.findViewById(R.id.locationTextView);
         museumOpeningHours = view.findViewById(R.id.openingHoursTextView);
         museumRating = view.findViewById(R.id.ratingBarDetail);
+        museumDescription = getView().findViewById(R.id.museumDescriptionTextView);
+
+        Bundle arguments = getArguments();
+        assert arguments != null;
+        MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
+
+        WikiJSONParser wikiJSONParser = new WikiJSONParser();
+        wikiJSONParser.parseWikiData(args.getTitle(), requestQueue, museumDescription);
 
         /*museumTitle.setVisibility(View.INVISIBLE);
         museumDescription.setVisibility(View.INVISIBLE);
@@ -110,9 +123,6 @@ public class MuseumDetailFragment extends Fragment {
 
         fireStoreDb = FirebaseFirestore.getInstance();
 
-        Bundle arguments = getArguments();
-        assert arguments != null;
-        MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
         museumTitle.setText(museum.getTitle());
         //museumDescription.setText(args.getDescription());
         museumOpeningHours.setText(museum.getOpen().equals("true") ? "Open" : "Closed");
