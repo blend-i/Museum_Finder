@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -68,6 +69,7 @@ public class HomeFragmentApi extends Fragment {
     private RecyclerView recyclerView;
     private PlacesClient placesClient;
     private List<Museum> museumArrayList;
+    private TextView distanceTextView;
 
 
     @Nullable
@@ -82,7 +84,6 @@ public class HomeFragmentApi extends Fragment {
             e.printStackTrace();
         }
 
-
         if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             getCurrentLocation();
             Log.d("HAS PERMISSION", "HAR PERMISSION");
@@ -92,6 +93,13 @@ public class HomeFragmentApi extends Fragment {
             EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
         }
         return view;
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        distanceTextView = view.findViewById(R.id.distanceTextView);
     }
 
     /**
@@ -121,7 +129,7 @@ public class HomeFragmentApi extends Fragment {
                             "?location=" + currentLat + "," + currentLong +
                             "&radius=" + radius +
                             "&type=" + placeType +
-                            "&key=AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc"; //+ getResources().getString(R.string.maps_api_key);
+                            "&key="+ getResources().getString(R.string.maps_api_key);
 
                     new NearbyMuseumTask().execute(url);
                 }
@@ -198,10 +206,7 @@ public class HomeFragmentApi extends Fragment {
 
         @Override
         protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
-            //map.clear();
-
             museumArrayList = new ArrayList<>();
-
             System.out.println("HASHMAPS: " + hashMaps);
 
             for (int i = 0; i < hashMaps.size(); i++) {
@@ -222,6 +227,7 @@ public class HomeFragmentApi extends Fragment {
                 }
             }
 
+
             recyclerView = getView().findViewById(R.id.museumRecyclerViewApi);
             museumAdapter = new MuseumRecyclerAdapterApi(getContext(), museumArrayList, this);
             recyclerView.setAdapter(museumAdapter);
@@ -238,10 +244,14 @@ public class HomeFragmentApi extends Fragment {
             }
         }
 
-
-
         @Override
         public void onCardViewClick(int position, View v) {
+
+        }
+
+        @Override
+        public void onCardViewClick(int position, View v, String distance) {
+
             String location = reverseGeoCode(museumArrayList.get(position).getLat(), museumArrayList.get(position).getLng());
 
             MaterialElevationScale exitTransition = new MaterialElevationScale(false);
@@ -259,6 +269,9 @@ public class HomeFragmentApi extends Fragment {
             navigateToDetailFragment.setPhotoUrl(museumArrayList.get(position).getPhoto());
             navigateToDetailFragment.setRating(museumArrayList.get(position).getRating());
             navigateToDetailFragment.setTitle(museumArrayList.get(position).getTitle());
+            navigateToDetailFragment.setLat(String.valueOf(museumArrayList.get(position).getLat()));
+            navigateToDetailFragment.setLng(String.valueOf(museumArrayList.get(position).getLng()));
+            navigateToDetailFragment.setDistance(distance);
             navigateToDetailFragment.setLocation(location);
             Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
             setExitTransition(exitTransition);
@@ -274,7 +287,7 @@ public class HomeFragmentApi extends Fragment {
             //double longitude = Double.parseDouble(lng);
             //using latitude and longitude from last location to pinpoint address
             try {
-                addresses = geocoder.getFromLocation(lat, lng, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                addresses = geocoder.getFromLocation(lat, lng, 5); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
             } catch (IOException e) {
                 e.printStackTrace();
             }
