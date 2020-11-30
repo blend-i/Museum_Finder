@@ -5,17 +5,17 @@
     android:id="@+id/cardViewContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:layout_marginTop="8dp"
     android:clickable="true"
     android:focusable="true"
-    android:layout_margin="8dp"
     app:cardCornerRadius="4dp">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/thumbnailimageView"
@@ -29,10 +29,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/norsk_folkemuseum" />
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
 
             <TextView
                 android:id="@+id/thumbnailTextView"
@@ -41,67 +43,64 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
                 android:text="Et museum"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/thumbnailimageView"
                 app:layout_constraintTop_toTopOf="parent" />
 
+
             <TextView
-                android:id="@+id/descriptionTextView"
-                android:layout_width="170dp"
-                android:fontFamily="sans-serif-light"
-                android:textColor="@color/cardview_dark_background"
-                android:layout_marginBottom="8dp"
+                android:id="@+id/distanceTextView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:maxLength="60"
-                android:maxLines="2"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="16dp"
                 android:text="TextView"
-                app:layout_constraintStart_toEndOf="@+id/thumbnailimageView"
-                app:layout_constraintTop_toBottomOf="@+id/thumbnailTextView" />
+                app:layout_constraintStart_toEndOf="@+id/thumbnailTextView" />
 
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
 
-                <ToggleButton
-                    android:id="@+id/button_favoriteHome"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/button_favorite"
-                    android:checked="false"
-                    android:text=""
-                    android:textOff=""
-                    android:textOn=""
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                <TextView
+                    android:id="@+id/descriptionTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@+id/ratingBarApi"
+                    android:fontFamily="sans-serif-light"
+                    android:maxLength="60"
+                    android:maxLines="2"
+                    android:text="TextView"
+                    android:textColor="@color/cardview_dark_background"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <RatingBar
                     android:id="@+id/ratingBarApi"
-                    android:layout_width="240dp"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="false"
+                    android:layout_marginEnd="8dp"
+                    android:background="#FFFFFF"
                     android:max="5"
-                    android:padding="0dp"
-                    android:scaleX="0.4"
-                    android:scaleY="0.4"
-                    android:stepSize="0.5" />
+                    android:stepSize="0.5"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </RelativeLayout>
-
-
-
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </LinearLayout>
-
 
 
     </LinearLayout>

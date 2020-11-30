@@ -64,6 +64,19 @@ public class Museum {
         this.rating = rating;
     }
 
+    public Museum(String title, String description, String location, String open, String photo, String placeId, String rating, double lat, double lng) {
+        this.title = title;
+        this.description = description;
+        this.location = location;
+        this.open = open;
+        this.photo = photo;
+        this.placeId = placeId;
+        this.rating = rating;
+        this.lat = lat;
+        this.lng = lng;
+    }
+
+
     public String getTitle() {
         return title;
     }

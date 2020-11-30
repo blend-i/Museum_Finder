@@ -1,6 +1,9 @@
 package no.hiof.museum_finder.adapter3;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.location.Location;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,27 +18,31 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
 import no.hiof.museum_finder.CardViewClickManager;
+import no.hiof.museum_finder.DistanceJsonParser;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
 
-/*
-Det som skjer her:
-
-Vi har en konstruktør som tar imot context og en liste med dyr.
-Fra context så lager vi en inflater. Denne inflateren bruker vi for å få et view basert på vår xml.
-Det viewet bruker vi til å opprette new Viewholder slik at hver gang recyclerView finner ut at den trenger ny viewholder så sier den til adapteren "lag en ny viewholder til meg"
-Da får viewholder en instant av lista i form av view og da kan hente ut de enkle viewene.
-
- */
-
 public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecyclerAdapterApi.MuseumViewHolderApi> {
     private static final String TAG = MuseumRecyclerAdapterApi.class.getSimpleName();
-
     private List<Museum> museumList;
     private LayoutInflater inflater;
     public View.OnClickListener clickListener;
@@ -79,56 +86,86 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
     public class MuseumViewHolderApi extends RecyclerView.ViewHolder {
         private TextView thumbnailTextView;
         private ImageView thumbnailimageView;
-        private TextView descriptionTextView;
+        private TextView openingHoursTextView;
         private Button thumbnailButton;
         private RatingBar ratingBar;
+        private TextView distance;
+        private RequestQueue requestQueue;
+        private FusedLocationProviderClient fusedLocationProviderClient;
+        private double originLat;
+        private double originLng;
+        private double lat;
+        private double  lng;
 
+        //Suppressing here
+        @SuppressLint("MissingPermission") Task<Location> task;
+
+
+        @SuppressLint("MissingPermission")
         public MuseumViewHolderApi(@NonNull final View itemView) {
             super(itemView);
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
-            descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            openingHoursTextView = itemView.findViewById(R.id.descriptionTextView);
             ratingBar = itemView.findViewById(R.id.ratingBarApi);
+            distance = itemView.findViewById(R.id.distanceTextView);
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(itemView.getContext());
+            originLat = 0;
+            originLng = 0;
+            requestQueue = Volley.newRequestQueue(itemView.getContext());
+            task = fusedLocationProviderClient.getLastLocation();
+
+            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    originLat = location.getLatitude();
+                    originLng = location.getLongitude();
+                    new DistanceJsonParser().jsonParseAndDisplayDistanceInKm(originLat, originLng, lat, lng, distance, requestQueue, itemView.getResources().getString(R.string.maps_api_key));
+                }
+            });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    cardViewClickManager.onCardViewClick(getAdapterPosition(), v);
+                    cardViewClickManager.onCardViewClick(getAdapterPosition(), v, distance.getText().toString());
                 }
             });
         }
 
         public void setMuseum(final Museum museumToDisplay) {
-            String posterUrl = museumToDisplay.getPhoto();
 
+            String posterUrl = museumToDisplay.getPhoto();
             String rating = museumToDisplay.getRating();
 
-            String url = "https://maps.googleapis.com/maps/api/place/photo" +
+            lat = museumToDisplay.getLat();
+            lng = museumToDisplay.getLng();
+
+            String photoUrl = "https://maps.googleapis.com/maps/api/place/photo" +
                     "?maxwidth=" + 400 +
                     "&photoreference=" + posterUrl +
-                    "&key=AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc";
+                    "&key=" + itemView.getResources().getString(R.string.maps_api_key);
 
-            System.out.println("POSTERURL FRA ADAPTER: " + posterUrl);
 
             //sets the title
             thumbnailTextView.setText(museumToDisplay.getTitle());
 
             //sets the photo of museum in cardview
-            if(posterUrl != null && !posterUrl.equals("")) {
+            if (posterUrl != null && !posterUrl.equals("")) {
                 Glide.with(thumbnailimageView.getContext())
-                        .load(url)
+                        .load(photoUrl)
                         .into(thumbnailimageView);
             }
 
             //sets if museum open or closed
-            if(museumToDisplay.getOpen().equals("true")) {
-                descriptionTextView.setText("Open");
+            if (museumToDisplay.getOpen().equals("true")) {
+                openingHoursTextView.setText("Open");
+                openingHoursTextView.setTextColor(Color.GREEN);
             } else {
-                descriptionTextView.setText("Closed");
+                openingHoursTextView.setText("Closed");
+                openingHoursTextView.setTextColor(Color.RED);
             }
 
             ratingBar.setRating(Float.parseFloat(rating));
-
         }
     }
 }
