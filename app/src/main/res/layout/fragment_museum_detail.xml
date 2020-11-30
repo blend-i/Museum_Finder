@@ -30,13 +30,10 @@
 
                         <TextView
                             android:id="@+id/museumTitleTextView"
-                            android:layout_width="300dp"
+                            android:layout_width="320dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="8dp"
-                            android:ems="10"
-                            android:gravity="left"
-                            android:inputType="textPersonName"
                             android:text="Museum Tittel"
                             android:textColor="#000000"
                             android:textSize="24sp"
@@ -61,13 +58,11 @@
 
                         <TextView
                             android:id="@+id/locationTextView"
-                            android:layout_width="wrap_content"
+                            android:layout_width="320dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
                             android:text="TextView"
-                            app:layout_constraintBottom_toTopOf="@+id/openingHoursTextView"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/museumTitleTextView" />
 
@@ -76,10 +71,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
-                            android:layout_marginTop="9dp"
+                            android:layout_marginTop="8dp"
                             android:text="TextView"
+                            android:textStyle="bold"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/locationTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/distanceTextViewInDetail" />
 
                         <TextView
                             android:id="@+id/distanceTextViewInDetail"
@@ -89,7 +85,7 @@
                             android:layout_marginTop="8dp"
                             android:text="TextView"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/openingHoursTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/locationTextView" />
 
                         <ToggleButton
                             android:id="@+id/button_favorite"
@@ -119,7 +115,7 @@
                             android:transformPivotX="0dp"
                             android:transformPivotY="0dp"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/distanceTextViewInDetail" />
+                            app:layout_constraintTop_toBottomOf="@+id/openingHoursTextView" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 

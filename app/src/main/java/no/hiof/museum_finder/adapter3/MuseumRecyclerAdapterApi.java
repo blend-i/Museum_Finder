@@ -2,6 +2,7 @@ package no.hiof.museum_finder.adapter3;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.util.Log;
@@ -36,12 +37,12 @@ import org.json.JSONObject;
 import java.util.List;
 
 import no.hiof.museum_finder.CardViewClickManager;
+import no.hiof.museum_finder.DistanceJsonParser;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
 
 public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecyclerAdapterApi.MuseumViewHolderApi> {
     private static final String TAG = MuseumRecyclerAdapterApi.class.getSimpleName();
-
     private List<Museum> museumList;
     private LayoutInflater inflater;
     public View.OnClickListener clickListener;
@@ -119,11 +120,9 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
                 public void onSuccess(Location location) {
                     originLat = location.getLatitude();
                     originLng = location.getLongitude();
-                    jsonParseAndDisplayDistanceInKm(originLat,originLng,lat,lng);
+                    new DistanceJsonParser().jsonParseAndDisplayDistanceInKm(originLat, originLng, lat, lng, distance, requestQueue, itemView.getResources().getString(R.string.maps_api_key));
                 }
             });
-
-
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -140,8 +139,6 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
 
             lat = museumToDisplay.getLat();
             lng = museumToDisplay.getLng();
-
-
 
             String photoUrl = "https://maps.googleapis.com/maps/api/place/photo" +
                     "?maxwidth=" + 400 +
@@ -162,42 +159,13 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             //sets if museum open or closed
             if (museumToDisplay.getOpen().equals("true")) {
                 openingHoursTextView.setText("Open");
+                openingHoursTextView.setTextColor(Color.GREEN);
             } else {
                 openingHoursTextView.setText("Closed");
+                openingHoursTextView.setTextColor(Color.RED);
             }
 
             ratingBar.setRating(Float.parseFloat(rating));
-        }
-
-
-        private void jsonParseAndDisplayDistanceInKm(double origin_lat, double origin_lng, double destination_lat, double destination_lng) {
-            System.out.println("ORIGIN LAT: " + origin_lat + " " + origin_lng);
-            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+origin_lat+","+origin_lng+"&destinations="+ destination_lat + "," + destination_lng+"&key="+itemView.getResources().getString(R.string.maps_api_key);
-
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        JSONArray jsonArray = response.getJSONArray("rows");
-                        JSONObject elements = jsonArray.getJSONObject(0);
-                        JSONArray elementsArray = elements.getJSONArray("elements");
-                        JSONObject distanceAndDuration = elementsArray.getJSONObject(0);
-                        String meters = distanceAndDuration.getJSONObject("distance").getString("value");
-
-                        distance.setText((Integer.parseInt(meters) / 1000) + " km away");
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        System.out.println("ERROR I ADAPTER");
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }
-            });
-            requestQueue.add(request);
         }
     }
 }

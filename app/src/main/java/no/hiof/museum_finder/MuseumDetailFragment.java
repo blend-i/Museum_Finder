@@ -52,7 +52,6 @@ public class MuseumDetailFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
         materialContainerTransform.setDrawingViewId(R.id.fragment);
@@ -101,7 +100,14 @@ public class MuseumDetailFragment extends Fragment {
 
         museumTitle.setText(museum.getTitle());
         //museumDescription.setText(args.getDescription());
-        museumOpeningHours.setText(museum.getOpen().equals("true") ? "Open" : "Closed");
+        //sets if museum open or closed
+        if (museum.getOpen().equals("true")) {
+            museumOpeningHours.setText("Open");
+            museumOpeningHours.setTextColor(Color.GREEN);
+        } else {
+            museumOpeningHours.setText("Closed");
+            museumOpeningHours.setTextColor(Color.RED);
+        }
         museumLocation.setText(museum.getLocation());
         museumRating.setRating(Float.parseFloat(museum.getRating()));
 

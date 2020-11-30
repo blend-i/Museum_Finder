@@ -2,6 +2,7 @@ package no.hiof.museum_finder.adapter2;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.util.Log;
@@ -35,6 +36,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import no.hiof.museum_finder.CardViewClickManager;
+import no.hiof.museum_finder.DistanceJsonParser;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
 
@@ -42,7 +44,6 @@ import no.hiof.museum_finder.model.Museum;
 public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRecyclerAdapter.BucketListViewHolder> {
 
     private static final String TAG = BucketListRecyclerAdapter.class.getSimpleName();
-
     private List<Museum> museumList;
     private LayoutInflater inflater;
     public View.OnClickListener clickListener;
@@ -74,7 +75,6 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
 
         Museum museumToDisplay = museumList.get(position);
         Log.d(TAG, "onBindViewHolder" + museumToDisplay.getTitle() + " - " + position);
-
 
         viewHolder.setMuseum(museumToDisplay);
         //.itemView.setOnClickListener(clickListener);
@@ -113,7 +113,6 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             ratingBar = itemView.findViewById(R.id.ratingBarApi);
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(itemView.getContext());
             distance = itemView.findViewById(R.id.distanceTextView);
-
             originLat = 0;
             originLng = 0;
             requestQueue = Volley.newRequestQueue(itemView.getContext());
@@ -124,10 +123,10 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
                 public void onSuccess(Location location) {
                     originLat = location.getLatitude();
                     originLng = location.getLongitude();
-                    jsonParseAndDisplayDistanceInKm(originLat,originLng,lat,lng);
+                    //jsonParseAndDisplayDistanceInKm(originLat,originLng,lat,lng);
+                    new DistanceJsonParser().jsonParseAndDisplayDistanceInKm(originLat, originLng, lat, lng, distance, requestQueue, itemView.getResources().getString(R.string.maps_api_key));
                 }
             });
-
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -135,7 +134,6 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
                     cardViewClickManager.onCardViewClick(getAdapterPosition(), v, distance.getText().toString());
                 }
             });
-
         }
 
         public void setMuseum(final Museum museumToDisplay) {
@@ -153,11 +151,11 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             //sets if museum open or closed
             if (museumToDisplay.getOpen().equals("true")) {
                 openingHoursTextView.setText("Open");
+                openingHoursTextView.setTextColor(Color.GREEN);
             } else {
                 openingHoursTextView.setText("Closed");
+                openingHoursTextView.setTextColor(Color.RED);
             }
-
-
             String posterUrl = museumToDisplay.getPhoto();
 
             String url = "https://maps.googleapis.com/maps/api/place/photo" +
@@ -172,37 +170,6 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
                         .into(thumbnailimageView);
             }
             ratingBar.setRating(Float.parseFloat(museumToDisplay.getRating()));
-        }
-
-        private void jsonParseAndDisplayDistanceInKm(double origin_lat, double origin_lng, double destination_lat, double destination_lng) {
-            System.out.println("ORIGIN LAT: " + origin_lat + " " + origin_lng);
-            System.out.println("DEST LAT: " + destination_lat + " " + destination_lng);
-            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+origin_lat+","+origin_lng+"&destinations="+ destination_lat + "," + destination_lng+"&key="+itemView.getResources().getString(R.string.maps_api_key);
-
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        JSONArray jsonArray = response.getJSONArray("rows");
-                        JSONObject elements = jsonArray.getJSONObject(0);
-                        JSONArray elementsArray = elements.getJSONArray("elements");
-                        JSONObject distanceAndDuration = elementsArray.getJSONObject(0);
-                        String meters = distanceAndDuration.getJSONObject("distance").getString("value");
-
-                        distance.setText((Integer.parseInt(meters) / 1000) + " km away");
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        System.out.println("ERROR I ADAPTER");
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }
-            });
-            requestQueue.add(request);
         }
     }
 }

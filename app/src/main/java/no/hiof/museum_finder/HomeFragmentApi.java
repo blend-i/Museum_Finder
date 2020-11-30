@@ -220,6 +220,7 @@ public class HomeFragmentApi extends Fragment {
                 }
             }
 
+
             recyclerView = getView().findViewById(R.id.museumRecyclerViewApi);
             museumAdapter = new MuseumRecyclerAdapterApi(getContext(), museumArrayList, this);
             recyclerView.setAdapter(museumAdapter);
