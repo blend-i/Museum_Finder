@@ -33,6 +33,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import no.hiof.museum_finder.exceptions.NoLocationException;
 import no.hiof.museum_finder.model.Museum;
 
 public class MuseumDetailFragment extends Fragment {
@@ -99,8 +100,13 @@ public class MuseumDetailFragment extends Fragment {
         WikiJSONParser wikiJSONParser = new WikiJSONParser();
         wikiJSONParser.parseWikiData(args.getTitle(), requestQueue, museumDescription);
 
+
         distanceTextView = view.findViewById(R.id.distanceTextViewInDetail);
         distanceTextView.setText(args.getDistance());
+
+        if (distanceTextView.getText().equals("TextView")) {
+            distanceTextView.setText("Could not find distance. Please enable location settings.");
+        }
 
 
         fireStoreDb = FirebaseFirestore.getInstance();
