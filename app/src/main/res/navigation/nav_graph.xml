@@ -119,5 +119,4 @@
         android:name="no.hiof.museum_finder.MapFragment"
         android:label="fragment_find_museum"
         tools:layout="@layout/fragment_map" />
-
 </navigation>

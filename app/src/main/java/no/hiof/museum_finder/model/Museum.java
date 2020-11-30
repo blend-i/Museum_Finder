@@ -54,9 +54,19 @@ public class Museum {
         this.rating = rating;
     }
 
-    public Museum(String title, String description, String location, String open, String photo, String placeId, String rating) {
+    public Museum(String title, String description, String open, String photo, String rating, String placeId, double lat, double lng ) {
         this.title = title;
         this.description = description;
+        this.lat = lat;
+        this.lng = lng;
+        this.open = open;
+        this.photo = photo;
+        this.placeId = placeId;
+        this.rating = rating;
+    }
+
+    public Museum(String title, String location, String open, String photo, String placeId, String rating) {
+        this.title = title;
         this.location = location;
         this.open = open;
         this.photo = photo;
