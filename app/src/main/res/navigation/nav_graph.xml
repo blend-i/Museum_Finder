@@ -54,6 +54,14 @@
             android:name="Distance"
             android:defaultValue="0 km"
             app:argType="string" />
+        <argument
+            android:name="lat"
+            android:defaultValue="0.0"
+            app:argType="string" />
+        <argument
+            android:name="lng"
+            android:defaultValue="0.0"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"

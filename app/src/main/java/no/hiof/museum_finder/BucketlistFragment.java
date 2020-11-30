@@ -157,7 +157,8 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
     }
 
     @Override
-    public void onCardViewClick(int position, View view) {
+    public void onCardViewClick(int position, View view, String distance) {
+
         MaterialElevationScale exitTransition = new MaterialElevationScale(false);
         exitTransition.setDuration(300);
 
@@ -172,13 +173,14 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
         navigateToDetailFragment.setOpeningHours(museumList.get(position).getOpen());
         navigateToDetailFragment.setPhotoUrl(museumList.get(position).getPhoto());
         navigateToDetailFragment.setRating(museumList.get(position).getRating());
+        navigateToDetailFragment.setDistance(distance);
         navigateToDetailFragment.setTitle(museumList.get(position).getTitle());
         navigateToDetailFragment.setLocation(museumList.get(position).getLocation());
         Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
     }
 
     @Override
-    public void onCardViewClick(int position, View v, String distance) {
+    public void onCardViewClick(int position, View v) {
 
     }
 

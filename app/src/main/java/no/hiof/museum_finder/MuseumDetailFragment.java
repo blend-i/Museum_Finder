@@ -70,7 +70,7 @@ public class MuseumDetailFragment extends Fragment {
         assert arguments != null;
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
 
-        museum = new Museum(args.getTitle(), "Museum description", args.getLocation(), args.getOpeningHours(), args.getPhotoUrl(), args.getPlaceId(), args.getRating());
+        museum = new Museum(args.getTitle(), "Museum description", args.getLocation(), args.getOpeningHours(), args.getPhotoUrl(), args.getPlaceId(), args.getRating(), Double.parseDouble(args.getLat()), Double.parseDouble(args.getLng()));
         return inflater.inflate(R.layout.fragment_museum_detail, container, false);
     }
 

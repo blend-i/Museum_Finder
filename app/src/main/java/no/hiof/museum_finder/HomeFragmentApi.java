@@ -121,7 +121,7 @@ public class HomeFragmentApi extends Fragment {
                             "?location=" + currentLat + "," + currentLong +
                             "&radius=" + radius +
                             "&type=" + placeType +
-                            "&key=AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc"; //+ getResources().getString(R.string.maps_api_key);
+                            "&key="+ getResources().getString(R.string.maps_api_key);
 
                     new NearbyMuseumTask().execute(url);
                 }
@@ -261,6 +261,8 @@ public class HomeFragmentApi extends Fragment {
             navigateToDetailFragment.setPhotoUrl(museumArrayList.get(position).getPhoto());
             navigateToDetailFragment.setRating(museumArrayList.get(position).getRating());
             navigateToDetailFragment.setTitle(museumArrayList.get(position).getTitle());
+            navigateToDetailFragment.setLat(String.valueOf(museumArrayList.get(position).getLat()));
+            navigateToDetailFragment.setLng(String.valueOf(museumArrayList.get(position).getLng()));
             navigateToDetailFragment.setDistance(distance);
             navigateToDetailFragment.setLocation(location);
             Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);

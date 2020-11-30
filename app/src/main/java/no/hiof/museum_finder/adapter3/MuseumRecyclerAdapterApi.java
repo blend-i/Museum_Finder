@@ -85,7 +85,7 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
     public class MuseumViewHolderApi extends RecyclerView.ViewHolder {
         private TextView thumbnailTextView;
         private ImageView thumbnailimageView;
-        private TextView descriptionTextView;
+        private TextView openingHoursTextView;
         private Button thumbnailButton;
         private RatingBar ratingBar;
         private TextView distance;
@@ -105,7 +105,7 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             super(itemView);
             thumbnailTextView = itemView.findViewById(R.id.thumbnailTextView);
             thumbnailimageView = itemView.findViewById(R.id.thumbnailimageView);
-            descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            openingHoursTextView = itemView.findViewById(R.id.descriptionTextView);
             ratingBar = itemView.findViewById(R.id.ratingBarApi);
             distance = itemView.findViewById(R.id.distanceTextView);
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(itemView.getContext());
@@ -138,8 +138,10 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             String posterUrl = museumToDisplay.getPhoto();
             String rating = museumToDisplay.getRating();
 
-             lat = museumToDisplay.getLat();
-             lng = museumToDisplay.getLng();
+            lat = museumToDisplay.getLat();
+            lng = museumToDisplay.getLng();
+
+
 
             String photoUrl = "https://maps.googleapis.com/maps/api/place/photo" +
                     "?maxwidth=" + 400 +
@@ -159,9 +161,9 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
 
             //sets if museum open or closed
             if (museumToDisplay.getOpen().equals("true")) {
-                descriptionTextView.setText("Open");
+                openingHoursTextView.setText("Open");
             } else {
-                descriptionTextView.setText("Closed");
+                openingHoursTextView.setText("Closed");
             }
 
             ratingBar.setRating(Float.parseFloat(rating));
