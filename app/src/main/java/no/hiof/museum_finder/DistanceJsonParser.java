@@ -26,6 +26,7 @@ public class DistanceJsonParser {
                     JSONObject distanceAndDuration = elementsArray.getJSONObject(0);
                     String meters = distanceAndDuration.getJSONObject("distance").getString("value");
 
+
                     distance.setText((Integer.parseInt(meters) / 1000) + " km away");
 
                 } catch (JSONException e) {

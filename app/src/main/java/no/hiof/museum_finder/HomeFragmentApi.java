@@ -104,6 +104,8 @@ public class HomeFragmentApi extends Fragment {
         getCurrentLocation();
     }
 
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
