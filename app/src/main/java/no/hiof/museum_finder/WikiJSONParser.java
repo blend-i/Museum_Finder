@@ -25,7 +25,18 @@ public class WikiJSONParser {
      * @return - The parsed title
      */
     private String parseTitle(String title) {
-        return title.replace(" ", "_");
+        String name;
+        String name2;
+
+        if(title.contains("&")) {
+            name = title.replace("&", "and");
+            name = name.replace(" ", "_");
+            System.out.println(name);
+        } else {
+            name = title.replace(" ", "_");
+        }
+
+        return name;
     }
 
     /**
