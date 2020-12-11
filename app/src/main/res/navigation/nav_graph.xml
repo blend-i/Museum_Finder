@@ -112,6 +112,9 @@
         <action
             android:id="@+id/action_homeFragmentApi_to_museumDetail"
             app:destination="@id/museumDetail" />
+        <action
+            android:id="@+id/action_homeFragmentApi_self"
+            app:destination="@id/homeFragmentApi" />
     </fragment>
 
   <fragment

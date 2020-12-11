@@ -2,9 +2,12 @@ package no.hiof.museum_finder;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,6 +20,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -78,18 +83,39 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     private List<Museum> museumArrayList;
     private TextView distanceTextView;
 
-    private ConnectivityManager connectivityManager;
-    private NetworkInfo networkInfo;
-
-
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
 
+            ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            //Get active network info
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
+            //Check network status
+            if(networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
+                Dialog dialog = new Dialog(getContext());
+                dialog.setContentView(R.layout.no_internet_dialog);
+
+                dialog.setCanceledOnTouchOutside(false);
+
+                dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT);
+
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
+
+                Button tryAgainButton = dialog.findViewById(R.id.tryAgainButton);
+                tryAgainButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Navigation.findNavController(requireView()).navigate(HomeFragmentApiDirections.actionHomeFragmentApiSelf());
+                        dialog.cancel();
+                    }
+                });
+                dialog.show();
+            return view;
+        } else {
             try {
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
                 placesClient = Places.createClient(getContext());
@@ -106,6 +132,7 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                 getCurrentLocation();
             }
             return view;
+        }
 
     }
 
@@ -114,7 +141,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         getCurrentLocation();
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
