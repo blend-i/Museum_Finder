@@ -98,7 +98,7 @@ public class MuseumDetailFragment extends Fragment {
         MuseumDetailFragmentArgs args = MuseumDetailFragmentArgs.fromBundle(arguments);
 
         WikiJSONParser wikiJSONParser = new WikiJSONParser();
-        wikiJSONParser.parseWikiData(args.getTitle(), requestQueue, museumDescription);
+        wikiJSONParser.parseWikiData(args.getTitle(), requestQueue, museumDescription, getContext());
 
 
         distanceTextView = view.findViewById(R.id.distanceTextViewInDetail);
