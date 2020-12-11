@@ -1,6 +1,11 @@
 package no.hiof.museum_finder;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
@@ -48,49 +54,50 @@ public class LoginFragment extends Fragment {
     private final String TAG = LoginFragment.class.getSimpleName();
     private final int RC_SIGN_IN = 1;
     private final Context context = this.getContext();
+    private ConnectivityManager connectivityManager;
+    private NetworkInfo networkInfo;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        auth = FirebaseAuth.getInstance();
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser currentUser = auth.getCurrentUser();
-                if (currentUser == null) {
+            auth = FirebaseAuth.getInstance();
+            authStateListener = new FirebaseAuth.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                    FirebaseUser currentUser = auth.getCurrentUser();
+                    if (currentUser == null) {
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            List<AuthUI.IdpConfig> providers = Arrays.asList(
-                                    new AuthUI.IdpConfig.EmailBuilder().build(),
-                                    new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                    new AuthUI.IdpConfig.AnonymousBuilder().build());
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                List<AuthUI.IdpConfig> providers = Arrays.asList(
+                                        new AuthUI.IdpConfig.EmailBuilder().build(),
+                                        new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                        new AuthUI.IdpConfig.AnonymousBuilder().build());
 
-                            startActivityForResult(
-                                    AuthUI.getInstance()
-                                            .createSignInIntentBuilder()
-                                            .setAvailableProviders(providers)
-                                            .build(),
-                                    RC_SIGN_IN);
-                        }
-                    }).start();
+                                startActivityForResult(
+                                        AuthUI.getInstance()
+                                                .createSignInIntentBuilder()
+                                                .setAvailableProviders(providers)
+                                                .build(),
+                                        RC_SIGN_IN);
+                            }
+                        }).start();
 
+                    } else {
+                        addAccountToDb(new Account(currentUser.getEmail()));
+                        //addAccountToDb();
+                        //LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
+                        Navigation.findNavController(requireView()).navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragmentApi());
+                        //Log.d("signedin", Objects.requireNonNull(currentUser.getEmail()));
+
+                    }
                 }
-                else {
-                    addAccountToDb(new Account(currentUser.getEmail()));
-                    //addAccountToDb();
-                    //LoginFragmentDirections.ActionLoginFragmentToHomeFragment action =  LoginFragmentDirections.actionLoginFragmentToHomeFragment();
-                    Navigation.findNavController(requireView()).navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragmentApi());
-                    //Log.d("signedin", Objects.requireNonNull(currentUser.getEmail()));
+            };
+        }
 
-                }
-            }
-        };
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -124,8 +131,12 @@ public class LoginFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        auth.addAuthStateListener(authStateListener);
-    }
+            try {
+                auth.addAuthStateListener(authStateListener);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
 
     @Override
     public void onPause() {

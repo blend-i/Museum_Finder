@@ -2,11 +2,17 @@ package no.hiof.museum_finder;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +20,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -63,7 +72,7 @@ import no.hiof.museum_finder.model.Museum;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class HomeFragmentApi extends Fragment {
+public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnNetworkActiveListener {
 
     private final int PERMISSION_LOCATION_ID = 1;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -74,28 +83,57 @@ public class HomeFragmentApi extends Fragment {
     private List<Museum> museumArrayList;
     private TextView distanceTextView;
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
 
-        try {
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-            placesClient = Places.createClient(getContext());
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
+            ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            //Get active network info
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+            //Check network status
+            if(networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
+                Dialog dialog = new Dialog(getContext());
+                dialog.setContentView(R.layout.no_internet_dialog);
+
+                dialog.setCanceledOnTouchOutside(false);
+
+                dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT);
+
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
+
+                Button tryAgainButton = dialog.findViewById(R.id.tryAgainButton);
+                tryAgainButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Navigation.findNavController(requireView()).navigate(HomeFragmentApiDirections.actionHomeFragmentApiSelf());
+                        dialog.cancel();
+                    }
+                });
+                dialog.show();
+            return view;
+        } else {
+            try {
+                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+                placesClient = Places.createClient(getContext());
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+
+            if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                getCurrentLocation();
+                Log.d("HAS PERMISSION", "HAR PERMISSION");
+            } else {
+                Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
+                EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
+                getCurrentLocation();
+            }
+            return view;
         }
 
-        if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-            getCurrentLocation();
-            Log.d("HAS PERMISSION", "HAR PERMISSION");
-        } else {
-            Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
-            EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
-            getCurrentLocation();
-        }
-        return view;
     }
 
     @Override
@@ -103,8 +141,6 @@ public class HomeFragmentApi extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         getCurrentLocation();
     }
-
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -145,6 +181,11 @@ public class HomeFragmentApi extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onNetworkActive() {
+        System.out.println("NETWORK ACTIVE");
     }
 
     /**

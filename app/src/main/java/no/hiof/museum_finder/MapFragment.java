@@ -2,19 +2,28 @@ package no.hiof.museum_finder;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -55,23 +64,51 @@ public class MapFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        //Get active network info
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
+        //Check network status
+        if(networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
+            Dialog dialog = new Dialog(getContext());
+            dialog.setContentView(R.layout.no_internet_dialog);
 
-        if(EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-            getCurrentLocation();
-            Log.d("HAS PERMISSION", "HAR PERMISSION");
+            dialog.setCanceledOnTouchOutside(false);
+
+            dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT);
+
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
+
+            Button tryAgainButton = dialog.findViewById(R.id.tryAgainButton);
+            tryAgainButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Navigation.findNavController(requireView()).navigate(MapFragmentDirections.actionMapFragmentSelf());
+                    dialog.cancel();
+                }
+            });
+            dialog.show();
+            return view;
+
         } else {
-            Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
-            getCurrentLocation();
-            EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
-        }
 
-        return view;
+            mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+
+            if(EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                getCurrentLocation();
+                Log.d("HAS PERMISSION", "HAR PERMISSION");
+            } else {
+                Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
+                getCurrentLocation();
+                EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+            return view;
+        }
     }
 
     /**
