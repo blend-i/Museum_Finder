@@ -80,7 +80,12 @@ public class MainActivity extends AppCompatActivity {
                 recreate();
                 }
             });
-            dialog.show();
+            try {
+                dialog.show();
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
 
         } else {
             setContentView(R.layout.activity_main);
