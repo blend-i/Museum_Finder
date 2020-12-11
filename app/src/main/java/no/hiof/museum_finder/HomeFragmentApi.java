@@ -170,7 +170,7 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                     currentLong = location.getLongitude();
 
                     String placeType = "museum";
-                    int radius = 50000;
+                    int radius = ProfileFragment.getRadius();
                     String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
                             "?location=" + currentLat + "," + currentLong +
                             "&radius=" + radius +
