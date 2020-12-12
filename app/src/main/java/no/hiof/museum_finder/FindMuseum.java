@@ -255,6 +255,8 @@ public class FindMuseum extends Fragment {
                 //this needs to be sent to google places api and request it to return the latitude and longitude so we can find the actual address
                 //and information regarding the address.
 
+                favourite.setChecked(false);
+
                 if (position >= predictionList.size()) {
                     return;
                 }
