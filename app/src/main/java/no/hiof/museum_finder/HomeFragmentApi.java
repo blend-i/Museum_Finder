@@ -291,14 +291,14 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                 //String description = hashMapList.get("openHours");
 
                 try {
-                    //String open = hashMapList.get("open");
+                    String open = hashMapList.get("open");
                     String name = hashMapList.get("name");
                     String photo = hashMapList.get("photo");
                     String placeId = hashMapList.get("placeId");
                     String rating = hashMapList.get("rating");
                     double lat = Double.parseDouble(hashMapList.get("lat"));
                     double lng = Double.parseDouble(hashMapList.get("lng"));
-                    museumArrayList.add(new Museum(name, "open",  photo, rating,  placeId, lat, lng));
+                    museumArrayList.add(new Museum(name, open,  photo, rating,  placeId, lat, lng));
 
                 } catch (Exception e) {
                     System.out.println(e);

@@ -32,6 +32,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -97,6 +99,8 @@ public class FindMuseum extends Fragment {
     public TextView locationTextView;
     public TextView ratingTextView;
     private RatingBar ratingBar;
+    private RequestQueue requestQueue;
+    private TextView description;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,7 +127,8 @@ public class FindMuseum extends Fragment {
         locationTextView = view.findViewById(R.id.location);
         ratingTextView = view.findViewById(R.id.ratingTextView2);
         ratingBar = view.findViewById(R.id.ratingBarDetail);
-
+        requestQueue = Volley.newRequestQueue(requireContext());
+        description = view.findViewById(R.id.descriptionFindMuseum);
 
         Places.initialize(view.getContext(), getResources().getString(R.string.maps_api_key));
         placesClient = Places.createClient(getContext());
@@ -182,13 +187,14 @@ public class FindMuseum extends Fragment {
                                     }
                                 };
 
-                                // TODO: 22/10/2020  Here you should use an adapter to display the predictions! i will try with arraylist as for now
                                 List<String> suggestionsList = new ArrayList<>();
                                 for (int i = 0; i <predictionList.size() ; i++) {
                                     AutocompletePrediction prediction = predictionList.get(i);
 
                                     System.out.println("PLACETYPES: " + prediction.getPlaceTypes());
-
+                                    /**
+                                     * Checks if placetype is museum
+                                     */
                                     for (int j = 0; j <prediction.getPlaceTypes().size() ; j++) {
                                         if (prediction.getPlaceTypes().get(j).name().equals("MUSEUM")) {
                                             suggestionsList.add(prediction.getFullText(null).toString());
@@ -334,6 +340,13 @@ public class FindMuseum extends Fragment {
                                 ratingBar.setAlpha(1);
                                 ratingTextView.setText(" / " + place.getRating().toString());
                             } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                WikiJSONParser wikiJSONParser = new WikiJSONParser();
+                                wikiJSONParser.parseWikiData(place.getName(), requestQueue, description, getContext());
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             /*System.out.println("Gjør det du skal her.");

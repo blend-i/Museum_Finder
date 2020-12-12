@@ -168,7 +168,8 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             if (museumToDisplay.getOpen().equals("true")) {
                 openingHoursTextView.setText("Open");
                 openingHoursTextView.setTextColor(Color.GREEN);
-            } else {
+            }
+            else {
                 openingHoursTextView.setText("Closed");
                 openingHoursTextView.setTextColor(Color.RED);
             }
