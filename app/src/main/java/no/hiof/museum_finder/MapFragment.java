@@ -133,7 +133,7 @@ public class MapFragment extends Fragment {
                     currentLong = location.getLongitude();
 
                     String placeType = "museum";
-                    int radius = 50000;
+                    int radius = 3000;
                     String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
                             "?location=" + currentLat + "," + currentLong +
                             "&radius=" + radius +
@@ -178,6 +178,7 @@ public class MapFragment extends Fragment {
 
             try {
                 museumData = downloadUrl(strings[0]);
+                System.out.println("LLO");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -240,11 +241,13 @@ public class MapFragment extends Fragment {
             JSONObject jsonObject = null;
             try {
                 jsonObject = new JSONObject(strings[0]);
+                System.out.println("HAHAHAH " + jsonObject);
                 mapList = nearbySearchJSONParser.parseResult(jsonObject);
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
             }
 
+            System.out.println("MIENNA" + mapList);
             return mapList;
         }
 
@@ -258,13 +261,17 @@ public class MapFragment extends Fragment {
                 try {
                     double lat = Double.parseDouble(hashMapList.get("lat"));
                     double lng = Double.parseDouble(hashMapList.get("lng"));
-                    String openNow = hashMapList.get("openNow");
+                    String openNow;
+
+                    openNow = hashMapList.get("openNow");
+
+
                     String name = hashMapList.get("name");
                     LatLng latLng = new LatLng(lat,lng);
 
-                    if(openNow == "true") {
+                    if(openNow.equals("true")) {
                         openNow = "open";
-                    } else {
+                    } else if(openNow.equals("false")) {
                         openNow = "closed";
                     }
 
