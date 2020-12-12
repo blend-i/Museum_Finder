@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,83 +12,69 @@
         android:layout_height="match_parent"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/openingHoursCardView"
-                android:layout_width="406dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageCardView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/location" />
 
             <TextView
                 android:id="@+id/titleCardView"
-                android:layout_width="406dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:textSize="30sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageCardView"
-                app:layout_constraintTop_toBottomOf="@+id/searchBar" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageCardView" />
 
             <TextView
                 android:id="@+id/location"
-                android:layout_width="406dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageCardView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/titleCardView" />
 
             <ImageView
                 android:id="@+id/imageCardView"
                 android:layout_width="406dp"
-                android:layout_height="280dp"
-                android:layout_marginStart="12dp"
+                android:layout_height="180dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="20dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/searchBar"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@+id/searchBar" />
 
             <com.mancj.materialsearchbar.MaterialSearchBar
                 android:id="@+id/searchBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="14dp"
+                android:layout_marginTop="16dp"
                 android:focusable="auto"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.571"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:mt_dividerColor="#FFFFFF"
                 app:mt_hint="Search..."
                 app:mt_maxSuggestionsCount="10"
                 app:mt_placeholder="search.."
                 app:mt_searchBarColor="#E1E0E3"
-                app:mt_speechMode="true" />
+                app:mt_speechMode="true"
+                tools:layout_editor_absoluteX="14dp" />
 
             <RatingBar
                 android:id="@+id/ratingBarDetail"
                 style="@android:attr/ratingBarStyleSmall"
                 android:layout_width="239dp"
                 android:layout_height="40dp"
-                android:layout_marginStart="45dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
                 android:alpha="0"
                 android:isIndicator="true"
                 android:max="5"
@@ -95,34 +82,29 @@
                 android:scaleY=".5"
                 android:transformPivotX="0dp"
                 android:transformPivotY="0dp"
-                app:layout_constraintStart_toEndOf="@+id/imageCardView"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/openingHoursCardView" />
 
             <TextView
                 android:id="@+id/ratingTextView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="9dp"
-                android:layout_marginEnd="300dp"
+                android:layout_marginTop="26dp"
+                android:layout_marginEnd="450dp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/openingHoursCardView" />
-
 
             <TextView
                 android:id="@+id/descriptionFindMuseum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageCardView" />
-
+                app:layout_constraintTop_toBottomOf="@+id/ratingBarDetail" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
