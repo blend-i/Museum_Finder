@@ -178,6 +178,7 @@ public class MapFragment extends Fragment {
 
             try {
                 museumData = downloadUrl(strings[0]);
+                System.out.println("MUSEUMDATA: " + museumData);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -278,8 +279,6 @@ public class MapFragment extends Fragment {
                 } catch (NullPointerException exception) {
                     exception.printStackTrace();
                 }
-
-
             }
         }
     }
@@ -315,6 +314,4 @@ public class MapFragment extends Fragment {
         else
             EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
     }
-
-
 }

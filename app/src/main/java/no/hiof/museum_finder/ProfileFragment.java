@@ -78,21 +78,20 @@ public class ProfileFragment extends Fragment {
         FirebaseUser firebaseUser = auth.getCurrentUser();
         radiusValue = view.findViewById(R.id.radiusValue);
 
-        radiusValue.setText(String.valueOf("Max distance: " +(radius) / 1000 +" km"));
+        radiusValue.setText(String.valueOf("Max distance: " +(radius)  +" km"));
 
         seekBar = view.findViewById(R.id.seekBar);
-
+        seekBar.setMax(50000);
         seekBar.setProgress(getRadius());
-
+        radiusValue.setText(String.valueOf((getRadius() / 1000) + " km"));
         //seekBar.setProgress(radius);
 
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //System.out.println((progress * 1000) / 2);
-                setRadius((progress * 1000) / 2);
-                radiusValue.setText(String.valueOf("Max distance: " +((progress * 1000) / 2) / 1000)+" km");
+                setRadius(progress);
+                radiusValue.setText(String.valueOf((progress / 1000) + " km"));
 
             }
 
