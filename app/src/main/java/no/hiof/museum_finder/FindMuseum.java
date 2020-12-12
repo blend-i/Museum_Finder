@@ -26,11 +26,16 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -62,14 +67,26 @@ import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
+import no.hiof.museum_finder.model.Museum;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -101,6 +118,12 @@ public class FindMuseum extends Fragment {
     private RatingBar ratingBar;
     private RequestQueue requestQueue;
     private TextView description;
+    private ToggleButton favourite;
+    private Bitmap bitmap;
+    private Museum foundMuseum;
+    private CollectionReference bucketCollectionReference;
+    private FirebaseFirestore fireStoreDb;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,6 +152,10 @@ public class FindMuseum extends Fragment {
         ratingBar = view.findViewById(R.id.ratingBarDetail);
         requestQueue = Volley.newRequestQueue(requireContext());
         description = view.findViewById(R.id.descriptionFindMuseum);
+        favourite = view.findViewById(R.id.button_favorite_find);
+
+        fireStoreDb = FirebaseFirestore.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
         Places.initialize(view.getContext(), getResources().getString(R.string.maps_api_key));
         placesClient = Places.createClient(getContext());
@@ -148,9 +175,9 @@ public class FindMuseum extends Fragment {
             @Override
             public void onButtonClicked(int buttonCode) {
                 //this function is called when you click the button on the search bar. this may be the "back" button or the hamburger menu like button
-                if(buttonCode == MaterialSearchBar.BUTTON_NAVIGATION) {
+                if (buttonCode == MaterialSearchBar.BUTTON_NAVIGATION) {
                     //for example open or close navigation drawer
-                } else if(buttonCode == MaterialSearchBar.BUTTON_BACK) {
+                } else if (buttonCode == MaterialSearchBar.BUTTON_BACK) {
                     materialSearchBar.disableSearch();
                 }
             }
@@ -176,9 +203,9 @@ public class FindMuseum extends Fragment {
                 placesClient.findAutocompletePredictions(predictionsRequest).addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
                     @Override
                     public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             FindAutocompletePredictionsResponse predictionsResponse = task.getResult();
-                            if(predictionsResponse!=null){
+                            if (predictionsResponse != null) {
                                 predictionList = predictionsResponse.getAutocompletePredictions();
                                 CharacterStyle s = new CharacterStyle() {
                                     @Override
@@ -188,29 +215,27 @@ public class FindMuseum extends Fragment {
                                 };
 
                                 List<String> suggestionsList = new ArrayList<>();
-                                for (int i = 0; i <predictionList.size() ; i++) {
+                                for (int i = 0; i < predictionList.size(); i++) {
                                     AutocompletePrediction prediction = predictionList.get(i);
 
                                     System.out.println("PLACETYPES: " + prediction.getPlaceTypes());
                                     /**
                                      * Checks if placetype is museum
                                      */
-                                    for (int j = 0; j <prediction.getPlaceTypes().size() ; j++) {
+                                    for (int j = 0; j < prediction.getPlaceTypes().size(); j++) {
                                         if (prediction.getPlaceTypes().get(j).name().equals("MUSEUM")) {
                                             suggestionsList.add(prediction.getFullText(null).toString());
                                         }
                                     }
 
 
-
-
                                 }
                                 materialSearchBar.updateLastSuggestions(suggestionsList);
-                                if(!materialSearchBar.isSuggestionsVisible()){
+                                if (!materialSearchBar.isSuggestionsVisible()) {
                                     materialSearchBar.showSuggestionsList();
                                 }
                             }
-                        }else {
+                        } else {
                             Log.i("enTag", "prediction unsuccessful");
                         }
                     }
@@ -230,7 +255,7 @@ public class FindMuseum extends Fragment {
                 //this needs to be sent to google places api and request it to return the latitude and longitude so we can find the actual address
                 //and information regarding the address.
 
-                if(position >= predictionList.size()){
+                if (position >= predictionList.size()) {
                     return;
                 }
                 AutocompletePrediction selectedPrediction = predictionList.get(position);
@@ -247,12 +272,12 @@ public class FindMuseum extends Fragment {
 
                 //closes keyboard after user clicks suggestion
                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if(imm != null){
+                if (imm != null) {
                     imm.hideSoftInputFromWindow(materialSearchBar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }
                 String placeId = selectedPrediction.getPlaceId();
                 //Here we write what we are interested in. You can chose opening hours etc.
-                List<Place.Field> placeFields  = Arrays.asList(
+                List<Place.Field> placeFields = Arrays.asList(
                         Place.Field.LAT_LNG,
                         Place.Field.OPENING_HOURS,
                         Place.Field.ADDRESS,
@@ -281,42 +306,45 @@ public class FindMuseum extends Fragment {
                         Log.i("Tag", "place opening hours: " + place.getOpeningHours());
 
                         LatLng latLng = place.getLatLng();
-                        if(latLng != null){
-                                    try {
-                                    List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+                        if (latLng != null) {
 
-                                    PhotoMetadata photoMetadata = metadata.get(0);
+                            try {
+                                List<PhotoMetadata> metadata = place.getPhotoMetadatas();
 
-                                    // Create a FetchPhotoRequest.
-                                    final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                                            .setMaxWidth(500) // Optional.
-                                            .setMaxHeight(300) // Optional.
-                                            .build();
-                                    placesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
-                                        @Override
-                                        public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
-                                            Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                                            imageCardView.setImageBitmap(bitmap);
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception exception) {
-                                            if (exception instanceof ApiException) {
-                                                final ApiException apiException = (ApiException) exception;
-                                                Log.e("TAG", "Place not found: " + exception.getMessage());
-                                                final int statusCode = apiException.getStatusCode();
-                                                // TODO: Handle error with given status code.
-                                            }
-                                        }
-                                    });
+                                PhotoMetadata photoMetadata = metadata.get(0);
 
-                                    } catch (Exception e) {
-                                        Log.d("Photometadata", "Cant find photometadata");
-                                        imageCardView.setBackgroundResource(R.drawable.nophoto);
+                                // Create a FetchPhotoRequest.
+                                final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                                        .setMaxWidth(500) // Optional.
+                                        .setMaxHeight(300) // Optional.
+                                        .build();
+                                placesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
+                                    @Override
+                                    public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
+                                        bitmap = fetchPhotoResponse.getBitmap();
+                                        imageCardView.setImageBitmap(bitmap);
+                                        System.out.println("REAL BITMAP" + bitmap);
+
                                     }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        if (exception instanceof ApiException) {
+                                            final ApiException apiException = (ApiException) exception;
+                                            Log.e("TAG", "Place not found: " + exception.getMessage());
+                                            final int statusCode = apiException.getStatusCode();
+                                            // TODO: Handle error with given status code.
+                                        }
+                                    }
+                                });
+
+                            } catch (Exception e) {
+                                Log.d("Photometadata", "Cant find photometadata");
+                                imageCardView.setBackgroundResource(R.drawable.nophoto);
+                            }
 
                             //openingHoursCardView.setText(Objects.requireNonNull(Objects.requireNonNull(place.getOpeningHours()).getWeekdayText()).toString());
-
+                            favourite.setAlpha(1);
                             LocalDate date = null;
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                 date = LocalDate.now().minusDays(1);
@@ -325,7 +353,7 @@ public class FindMuseum extends Fragment {
 
                             try {
                                 openingHoursCardView.setText(place.getOpeningHours().getWeekdayText().get(date.getDayOfWeek().getValue()));
-                            }catch (Exception e ){
+                            } catch (Exception e) {
                                 Log.d("Tag", "Could not find opening hours");
                                 openingHoursCardView.setText("Openinghours not available");
                             }
@@ -349,6 +377,34 @@ public class FindMuseum extends Fragment {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+
+
+                            foundMuseum = new Museum(place.getName(), "no description", place.getAddress(), latLng.latitude, latLng.longitude,"Openingshours not available", "no_photo","0");
+                            System.out.println("OPENINGHOURS FIND" + foundMuseum.getPlaceId());
+                            foundMuseum.setPlaceId(place.getId());
+                            foundMuseum.setLat(latLng.latitude);
+                            foundMuseum.setLng(latLng.longitude);
+
+                            if(place.getOpeningHours() != null) {
+                                foundMuseum.setOpen(String.valueOf(place.getOpeningHours()));
+                            }
+
+                            if(place.getPhotoMetadatas() != null) {
+                                foundMuseum.setPhoto(place.getPhotoMetadatas().get(0).zza());
+                            }
+
+                            if(place.getRating() != null) {
+                                foundMuseum.setRating(String.valueOf(place.getRating()));
+                            }
+
+                            System.out.println("PHOTOMETA" + place.getPhotoMetadatas().get(0).zza());
+
+
+
+                            //foundMuseum.setImageBitMap(bitmap);
+                            System.out.println("SE HEEER" + foundMuseum.getTitle() + " " + foundMuseum.getDescription() + " " + foundMuseum.getLocation() + " " + foundMuseum.getOpen() + " " + foundMuseum.getRating() + " " + foundMuseum.getPhoto() + " " + foundMuseum.getPlaceId() + " " + foundMuseum.getLat() + " " + foundMuseum.getLng());
+
+
                             /*System.out.println("Gjør det du skal her.");
                             System.out.println("Address: " + place.getAddress());
                             System.out.println("Lat Lng : " + place.getLatLng());
@@ -356,12 +412,40 @@ public class FindMuseum extends Fragment {
                             System.out.println("Phone number: " + place.getPhoneNumber());
                             System.out.println("Rating: " + place.getRating());
                              */
+
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            final String museumPlaceId = foundMuseum.getPlaceId();
+                            System.out.println("MUSEUM ID SE HE" + museumPlaceId);
+
+                            bucketCollectionReference = fireStoreDb.collection("account").document(user.getUid()).collection("bucketList");
+
+                            final ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
+                            scaleAnimation.setDuration(500);
+                            BounceInterpolator bounceInterpolator = new BounceInterpolator();
+                            scaleAnimation.setInterpolator(bounceInterpolator);
+
+                            favourite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                                    //animation
+
+                                    if (isChecked) {
+                                        setCheckedBucketList(museumPlaceId, true);
+                                        System.out.println("UNCHECKED");
+                                    } else {
+                                        setCheckedBucketList(museumPlaceId, false);
+                                    }
+                                    compoundButton.startAnimation(scaleAnimation);
+                                }
+                            });
+
+                            checkIfMusuemExistsInBucketList(foundMuseum.getPlaceId());
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        if(e instanceof ApiException) {
+                        if (e instanceof ApiException) {
                             ApiException apiException = (ApiException) e;
                             apiException.printStackTrace();
                             int statusCode = apiException.getStatusCode();
@@ -374,6 +458,47 @@ public class FindMuseum extends Fragment {
 
             @Override
             public void OnItemDeleteListener(int position, View v) {
+            }
+        });
+    }
+
+    private void setCheckedBucketList(final String museumId, final boolean bool) {
+        final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);
+        bucketListSpecificMuseumReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+
+                    if (documentSnapshot.exists()) {
+                        foundMuseum = documentSnapshot.toObject(Museum.class);
+                        foundMuseum.setFavorite(bool);
+                        if (!foundMuseum.isFavorite()) {
+                            bucketCollectionReference.document(museumId).delete();
+                        }
+                    } else {
+                        bucketCollectionReference.document(museumId).set(foundMuseum);
+                    }
+                }
+            }
+        });
+    }
+
+    private void checkIfMusuemExistsInBucketList(final String museumId) {
+        final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);
+        bucketListSpecificMuseumReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+
+                    if (documentSnapshot.exists()) {
+                        favourite.setChecked(true);
+                        System.out.println("DOCUMENT EXISTS IN BUCKETLIST");
+                    } else {
+                        System.out.println("Document doesn't exist");
+                    }
+                }
             }
         });
     }

@@ -1,4 +1,6 @@
 package no.hiof.museum_finder.model;
+import android.graphics.Bitmap;
+
 import com.google.firebase.database.Exclude;
 
 import java.lang.annotation.Annotation;
@@ -44,6 +46,26 @@ public class Museum {
         this.placeId = placeId;
     }
 
+    public Museum(String title, String location, String open, String photo, String placeId, String rating) {
+        this.title = title;
+        this.location = location;
+        this.open = open;
+        this.photo = photo;
+        this.placeId = placeId;
+        this.rating = rating;
+    }
+
+    public Museum(String title, String description, String location, double lat, double lng, String open, String photo, String rating) {
+        this.title = title;
+        this.description = description;
+        this.location = location;
+        this.lat = lat;
+        this.lng = lng;
+        this.open = open;
+        this.photo = photo;
+        this.rating = rating;
+    }
+
     public Museum(String title, String open, String photo, String rating, String placeId, double lat, double lng) {
         this.title = title;
         this.lat = lat;
@@ -59,15 +81,6 @@ public class Museum {
         this.description = description;
         this.lat = lat;
         this.lng = lng;
-        this.open = open;
-        this.photo = photo;
-        this.placeId = placeId;
-        this.rating = rating;
-    }
-
-    public Museum(String title, String location, String open, String photo, String placeId, String rating) {
-        this.title = title;
-        this.location = location;
         this.open = open;
         this.photo = photo;
         this.placeId = placeId;
@@ -119,22 +132,18 @@ public class Museum {
         isFavorite = favorite;
     }
 
-    @Exclude
     public double getLat() {
         return lat;
     }
 
-    @Exclude
     public void setLat(double lat) {
         this.lat = lat;
     }
 
-    @Exclude
     public double getLng() {
         return lng;
     }
 
-    @Exclude
     public void setLng(double lng) {
         this.lng = lng;
     }
@@ -161,4 +170,15 @@ public class Museum {
         this.placeId = placeId;
     }
 
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setOpen(String open) {
+        this.open = open;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
 }
