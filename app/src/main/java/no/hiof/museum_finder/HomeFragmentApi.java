@@ -88,6 +88,7 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
 
+
             ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
             //Get active network info
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -114,32 +115,34 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                     }
                 });
                 dialog.show();
-            return view;
-        } else {
-            try {
-                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-                placesClient = Places.createClient(getContext());
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-
-            if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                getCurrentLocation();
-                Log.d("HAS PERMISSION", "HAR PERMISSION");
             } else {
-                Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
-                EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
-                getCurrentLocation();
-            }
-            return view;
-        }
+                
+                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
+                Places.initialize(view.getContext(), getResources().getString(R.string.maps_api_key));
+                placesClient = Places.createClient(requireContext());
+
+
+                if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    getCurrentLocation();
+                    Log.d("HAS PERMISSION", "HAR PERMISSION");
+                } else {
+                    Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
+                    EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
+                    getCurrentLocation();
+                }
+            }
+
+
+
+        return view;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         getCurrentLocation();
+
     }
 
     @Override
