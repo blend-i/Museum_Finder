@@ -97,6 +97,21 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/openingHoursCardView" />
 
+            <ToggleButton
+                android:id="@+id/button_favorite_find"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/button_favorite"
+                android:checked="false"
+                android:text=""
+                android:textOff=""
+                android:textOn=""
+                android:alpha="0"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageCardView" />
+
+
             <TextView
                 android:id="@+id/descriptionFindMuseum"
                 android:layout_width="wrap_content"
