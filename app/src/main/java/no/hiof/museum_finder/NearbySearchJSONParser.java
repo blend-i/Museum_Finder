@@ -26,12 +26,19 @@ public class NearbySearchJSONParser {
                     .getJSONObject("location").getString("lat");
             String longitude = jsonObject.getJSONObject("geometry")
                     .getJSONObject("location").getString("lng");
-            String openNow = jsonObject.getJSONObject("opening_hours").getString("open_now");
+
+            if(!jsonObject.has("opening_hours")) {
+                dataList.put("openNow", "closed");
+            } else {
+                String openNow = jsonObject.getJSONObject("opening_hours").getString("open_now");
+                dataList.put("openNow", openNow);
+            }
+
 
             dataList.put("name", name);
             dataList.put("lat", latitude);
             dataList.put("lng", longitude);
-            dataList.put("openNow", openNow);
+
 
         } catch (JSONException jsonException) {
             jsonException.printStackTrace();
