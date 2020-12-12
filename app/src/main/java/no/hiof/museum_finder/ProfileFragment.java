@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,10 @@ public class ProfileFragment extends Fragment {
     private TextView emailTextView;
     private ImageView profilePictureImageView;
     private FirebaseAuth auth;
+    private SeekBar seekBar;
+    private TextView radiusValue;
+
+    public static int radius = 50000;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,6 +56,16 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
+
+    public static int getRadius() {
+        return radius;
+    }
+
+    public static void setRadius(int radius) {
+        ProfileFragment.radius = radius;
+    }
+
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -61,6 +76,35 @@ public class ProfileFragment extends Fragment {
         //getAccountInformationFromDb("account", view);
         auth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = auth.getCurrentUser();
+        radiusValue = view.findViewById(R.id.radiusValue);
+
+        radiusValue.setText(String.valueOf("Max distance: " +(radius)  +" km"));
+
+        seekBar = view.findViewById(R.id.seekBar);
+        seekBar.setMax(50000);
+        seekBar.setProgress(getRadius());
+        radiusValue.setText(String.valueOf((getRadius() / 1000) + " km"));
+        //seekBar.setProgress(radius);
+
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                setRadius(progress);
+                radiusValue.setText(String.valueOf((progress / 1000) + " km"));
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         nameTextView.setText(firebaseUser.getDisplayName());
         emailTextView.setText(firebaseUser.getEmail());
@@ -72,6 +116,8 @@ public class ProfileFragment extends Fragment {
         } else {
             profilePictureImageView.setImageResource(R.drawable.kon_tiki_museet);
         }
+
+
 
         Button button = getView().findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {

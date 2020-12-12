@@ -136,36 +136,50 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
 
             String posterUrl = museumToDisplay.getPhoto();
             String rating = museumToDisplay.getRating();
-
+            String photoUrl;
             lat = museumToDisplay.getLat();
             lng = museumToDisplay.getLng();
 
-            String photoUrl = "https://maps.googleapis.com/maps/api/place/photo" +
+
+            if(posterUrl.equals("0")) {
+                photoUrl = "https://bloggersbaba.com/wp-content/uploads/2020/04/no-image-available.jpg";
+            } else {
+                    photoUrl = "https://maps.googleapis.com/maps/api/place/photo" +
                     "?maxwidth=" + 400 +
                     "&photoreference=" + posterUrl +
                     "&key=" + itemView.getResources().getString(R.string.maps_api_key);
+            }
+
 
 
             //sets the title
             thumbnailTextView.setText(museumToDisplay.getTitle());
 
-            //sets the photo of museum in cardview
-            if (posterUrl != null && !posterUrl.equals("")) {
-                Glide.with(thumbnailimageView.getContext())
-                        .load(photoUrl)
-                        .into(thumbnailimageView);
-            }
+
+                //sets the photo of museum in cardview
+                if (posterUrl != null && !posterUrl.equals("")) {
+                    Glide.with(thumbnailimageView.getContext())
+                            .load(photoUrl)
+                            .into(thumbnailimageView);
+                }
+
 
             //sets if museum open or closed
             if (museumToDisplay.getOpen().equals("true")) {
                 openingHoursTextView.setText("Open");
                 openingHoursTextView.setTextColor(Color.GREEN);
-            } else {
+            }
+            else {
                 openingHoursTextView.setText("Closed");
                 openingHoursTextView.setTextColor(Color.RED);
             }
 
-            ratingBar.setRating(Float.parseFloat(rating));
+            if(rating.equals("0")){
+                ratingBar.setAlpha(0);
+            }else {
+                ratingBar.setRating(Float.parseFloat(rating));
+            }
+
         }
     }
 }

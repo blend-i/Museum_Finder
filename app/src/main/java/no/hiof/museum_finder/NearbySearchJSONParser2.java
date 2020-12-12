@@ -1,5 +1,7 @@
 package no.hiof.museum_finder;
 
+import com.google.gson.JsonObject;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,27 +29,40 @@ public class NearbySearchJSONParser2 {
             String longitude = jsonObject.getJSONObject("geometry")
                     .getJSONObject("location").getString("lng");
 
-            String open = jsonObject.getJSONObject("opening_hours").getString("open_now");
+            if(jsonObject.has("photos")) {
+                String  photo = jsonObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
+                dataList.put("photo", photo);
+            } else {
+               dataList.put("photo", "0");
+            }
 
-            String photo = jsonObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
-            String rating = jsonObject.getString("rating");
+            if (jsonObject.has("rating")){
+                String rating = jsonObject.getString("rating");
+                dataList.put("rating", rating);
+            } else {
+                dataList.put("rating", "0");
+            }
 
             String placeId = jsonObject.getString("place_id");
 
-            dataList.put("open", open);
+            if(!jsonObject.has("opening_hours")) {
+                dataList.put("open", "false");
+            } else {
+                String open = jsonObject.getJSONObject("opening_hours").getString("open_now");
+                dataList.put("open", open);
+            }
+
             dataList.put("name", name);
             dataList.put("lat", latitude);
             dataList.put("lng", longitude);
-            dataList.put("photo", photo);
             dataList.put("placeId", placeId);
-            dataList.put("rating", rating);
-
 
         } catch (JSONException jsonException) {
             jsonException.printStackTrace();
         }
         return dataList;
     }
+
 
     /**
      * Method that iterates the result of a Nearby Search Request, for every museum
@@ -70,6 +85,7 @@ public class NearbySearchJSONParser2 {
         return datalist;
     }
 
+
     /**
      * THIS METHOD IS THE ONE USED IN MapFragment (Utilizes both parseMuseumJSONArray and parseMuseumJSONObject)
      * Method that retrieves the "results" from the nearby search request (JSONArray of museum objects
@@ -81,13 +97,12 @@ public class NearbySearchJSONParser2 {
      */
     public List<HashMap<String, String>> parseResult(JSONObject jsonObject) {
         JSONArray jsonArray = null;
-
         try {
             jsonArray = jsonObject.getJSONArray("results");
+            System.out.println("JSON ARRAY: " +jsonArray);
         } catch (JSONException jsonException) {
             jsonException.printStackTrace();
         }
-
         return parseMuseumJSONArray(jsonArray);
     }
 }

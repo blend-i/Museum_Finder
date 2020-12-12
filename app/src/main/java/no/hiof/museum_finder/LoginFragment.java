@@ -81,6 +81,7 @@ public class LoginFragment extends Fragment {
                                         AuthUI.getInstance()
                                                 .createSignInIntentBuilder()
                                                 .setAvailableProviders(providers)
+                                                .setLogo(R.mipmap.museum_logo)
                                                 .build(),
                                         RC_SIGN_IN);
                             }

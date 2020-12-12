@@ -170,7 +170,7 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                     currentLong = location.getLongitude();
 
                     String placeType = "museum";
-                    int radius = 50000;
+                    int radius = ProfileFragment.getRadius();
                     String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
                             "?location=" + currentLat + "," + currentLong +
                             "&radius=" + radius +
@@ -216,6 +216,27 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     }
 
 
+    private class NextPageTokenTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            String museumData = null;
+
+            try {
+                museumData = downloadUrl(strings[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return museumData;
+        }
+
+        @Override
+        protected void onPostExecute(String museumData) {
+            new MuseumDataParserTask().execute(museumData);
+
+        }
+    }
+
+
     private String downloadUrl(String downloadUrl) throws IOException {
         URL url = new URL(downloadUrl);
 
@@ -238,22 +259,26 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     }
 
 
+
+
     private class MuseumDataParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> implements CardViewClickManager {
         @Override
         protected List<HashMap<String, String>> doInBackground(String... strings) {
             NearbySearchJSONParser2 nearbySearchJSONParser = new NearbySearchJSONParser2();
-
             List<HashMap<String, String>> mapList = null;
-            JSONObject jsonObject = null;
+            JSONObject jsonObject;
             try {
                 jsonObject = new JSONObject(strings[0]);
                 mapList = nearbySearchJSONParser.parseResult(jsonObject);
+                System.out.println("MAPLIST I MUSEUMDATA: " + mapList);
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
+                System.out.println("ERROR I MUSEUMDATA: ");
             }
 
             return mapList;
         }
+
 
         @Override
         protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
@@ -264,6 +289,7 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                 HashMap<String, String> hashMapList = hashMaps.get(i);
                 //WikiJSONParser wikiJSONParser = new WikiJSONParser();
                 //String description = hashMapList.get("openHours");
+
                 try {
                     String open = hashMapList.get("open");
                     String name = hashMapList.get("name");
@@ -273,11 +299,11 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                     double lat = Double.parseDouble(hashMapList.get("lat"));
                     double lng = Double.parseDouble(hashMapList.get("lng"));
                     museumArrayList.add(new Museum(name, open,  photo, rating,  placeId, lat, lng));
+
                 } catch (Exception e) {
                     System.out.println(e);
                 }
             }
-
 
             recyclerView = getView().findViewById(R.id.museumRecyclerViewApi);
             museumAdapter = new MuseumRecyclerAdapterApi(getContext(), museumArrayList, this);
