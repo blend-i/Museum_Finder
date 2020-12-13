@@ -12,6 +12,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -57,9 +58,29 @@ public class MainActivity extends AppCompatActivity {
 
     public static boolean gpsEnabled;
 
+
+    public GPSBroadcastReceiver gpsBroadcastReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        registerReceiver(gpsBroadcastReceiver= new GPSBroadcastReceiver(new LocationCallBack() {
+            @Override
+            public void onLocationTriggered() {
+                //Location state changed
+                System.out.println("LOCATION TURNED OFF IN MAINACTIVITY");
+            }
+        }), new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
+
+
+        if(gpsEnabled) {
+            unregisterReceiver(gpsBroadcastReceiver);
+        }
+
+
+
+
         ConnectivityManager connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         //Get active network info
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
