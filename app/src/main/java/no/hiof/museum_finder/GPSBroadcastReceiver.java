@@ -54,7 +54,7 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
 
                         @Override
                         public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                            paramDialogInterface.cancel();
+                            cancelMessageDialog(context);
                         }
                     });
                     dialog.show();
@@ -70,5 +70,24 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
 
     }
 
+    public void cancelMessageDialog(Context context) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+        dialog.setMessage("We are sorry, you need to enable location settings to use this application");
+        dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                context.startActivity(myIntent);
+                paramDialogInterface.dismiss();
 
+                LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                try {
+                    MainActivity.gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        dialog.show();
+    }
 }
