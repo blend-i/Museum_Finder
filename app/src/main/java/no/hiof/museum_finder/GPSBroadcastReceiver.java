@@ -26,8 +26,9 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         try{
             if(intent.getAction().matches("android.location.PROVIDERS_CHANGED")) {
+                System.out.println(MainActivity.gpsEnabled + " ABOVE ");
                 MainActivity.gpsEnabled = !MainActivity.gpsEnabled;
-                System.out.println("TRUE");
+                System.out.println(MainActivity.gpsEnabled + " BELOW ");
 
                 if(MainActivity.gpsEnabled) {
                     Toast.makeText(context, "Location on", Toast.LENGTH_SHORT).show();
@@ -87,6 +88,7 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
 
             }
         });

@@ -65,20 +65,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         registerReceiver(gpsBroadcastReceiver= new GPSBroadcastReceiver(new LocationCallBack() {
             @Override
             public void onLocationTriggered() {
                 //Location state changed
                 System.out.println("LOCATION TURNED OFF IN MAINACTIVITY");
+                unregisterReceiver(gpsBroadcastReceiver);
             }
         }), new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
 
 
         if(gpsEnabled) {
-            unregisterReceiver(gpsBroadcastReceiver);
+
+
         }
-
-
 
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -147,5 +148,4 @@ public class MainActivity extends AppCompatActivity {
             }*/
         }
     }
-    
 }
