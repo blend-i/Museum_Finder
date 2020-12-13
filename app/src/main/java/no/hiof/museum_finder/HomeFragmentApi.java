@@ -192,18 +192,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
         distanceTextView = view.findViewById(R.id.distanceTextView);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        try {
-            MainActivity.gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
     /**
      * Method called if the app has the ACCESS_FINE_LOCATION.
      * Creates a Location task that tries to retrieve last location from the FusedLocationProviderClient,
@@ -278,12 +266,9 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == PERMISSION_LOCATION_ID) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(getContext(), "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
                 getCurrentLocation();
-            }
-        }
+
         System.out.println("GRANTRESULTS: " + grantResults);
         System.out.println("REQUESTCODE: " + requestCode);
         System.out.println("PERMISSIONS: " + permissions);
@@ -320,28 +305,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
 
         }
     }
-
-
-    private class NextPageTokenTask extends AsyncTask<String, Integer, String> {
-        @Override
-        protected String doInBackground(String... strings) {
-            String museumData = null;
-
-            try {
-                museumData = downloadUrl(strings[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return museumData;
-        }
-
-        @Override
-        protected void onPostExecute(String museumData) {
-            new MuseumDataParserTask().execute(museumData);
-
-        }
-    }
-
 
     private String downloadUrl(String downloadUrl) throws IOException {
         URL url = new URL(downloadUrl);

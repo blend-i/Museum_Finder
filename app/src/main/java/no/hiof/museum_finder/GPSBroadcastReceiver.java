@@ -65,7 +65,7 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
                 System.out.println("FALSE");
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }
@@ -73,6 +73,7 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
     public void cancelMessageDialog(Context context) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setMessage("We are sorry, you need to enable location settings to use this application");
+        dialog.setCancelable(false);
         dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface paramDialogInterface, int paramInt) {
@@ -86,6 +87,7 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }
         });
         dialog.show();

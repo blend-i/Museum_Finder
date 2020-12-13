@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="no.hiof.museum_finder">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -26,7 +27,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/maps_api_key" />
 
-        <receiver android:name=".GPSBroadcastReceiver">
+        <receiver android:name=".GPSBroadcastReceiver"
+            tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="android.location.PROVIDERS_CHANGED" />
                 <category android:name="android.intent.category.DEFAULT" />
