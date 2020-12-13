@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -16,6 +18,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +31,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.Navigation;
@@ -43,7 +47,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -82,13 +90,32 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     private PlacesClient placesClient;
     private List<Museum> museumArrayList;
     private TextView distanceTextView;
+    public Location lastKnownLocation;
+    public LocationCallback locationCallback;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
+        return view;
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        System.out.println("GRANTRESULTS: " + grantResults);
+        System.out.println("REQUESTCODE: " + requestCode);
+        System.out.println("PERMISSIONS: " + permissions);
+        getCurrentLocation();
 
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if(MainActivity.gpsEnabled) {
             ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
             //Get active network info
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -116,7 +143,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                 });
                 dialog.show();
             } else {
-                
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
                 Places.initialize(view.getContext(), getResources().getString(R.string.maps_api_key));
@@ -128,29 +154,32 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                     Log.d("HAS PERMISSION", "HAR PERMISSION");
                 } else {
                     Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
-                    EasyPermissions.requestPermissions(this, "Failed to get location, please enable your location settings", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
+                    EasyPermissions.requestPermissions(this, "No permission, please enable permission for location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
                     getCurrentLocation();
                 }
+
+
             }
+        } else {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+            dialog.setMessage(getResources().getString(R.string.location_off));
+            dialog.setPositiveButton(getResources().getString(R.string.go_to_settings), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    getContext().startActivity(myIntent);
+                }
+            });
+            dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
 
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    paramDialogInterface.cancel();
+                }
+            });
+            dialog.show();
+        }
 
-
-        return view;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        System.out.println("GRANTRESULTS: " + grantResults);
-        System.out.println("REQUESTCODE: " + requestCode);
-        System.out.println("PERMISSIONS: " + permissions);
-        getCurrentLocation();
-
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         distanceTextView = view.findViewById(R.id.distanceTextView);
     }
 
@@ -186,8 +215,45 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                     new NearbyMuseumTask().execute(url);
                 }
             }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getContext(), "ONFAILIURELISTENER", Toast.LENGTH_SHORT).show();
+                LocationRequest locationRequest = LocationRequest.create();
+                locationRequest.setInterval(10000);
+                locationRequest.setFastestInterval(5000);
+                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+                //this function will be executed when an updated location is recieved
+                locationCallback = new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        super.onLocationResult(locationResult);
+                        //if its still null then just return and stop
+                        if (locationResult == null) {
+                            return;
+                        }
+                        //update location
+                        lastKnownLocation = locationResult.getLastLocation();
+                        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+
+                        String placeType = "museum";
+                        int radius = ProfileFragment.getRadius();
+                        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
+                                "?location=" + lastKnownLocation.getLatitude() + "," + lastKnownLocation.getLongitude() +
+                                "&radius=" + radius +
+                                "&type=" + placeType +
+                                "&key="+ getResources().getString(R.string.maps_api_key);
+
+                        new NearbyMuseumTask().execute(url);
+                    }
+                };
+            }
         });
-    }
+
+
+    };
+
 
     @Override
     public void onNetworkActive() {

@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -53,6 +54,8 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static boolean gpsEnabled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,10 +91,38 @@ public class MainActivity extends AppCompatActivity {
 
 
         } else {
+
             setContentView(R.layout.activity_main);
             NavController controller = Navigation.findNavController(this, R.id.fragment);
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_NavBar);
             NavigationUI.setupWithNavController(bottomNavigationView, controller);
+
+
+            LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            try{
+                gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if(!gpsEnabled){
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                dialog.setMessage(getResources().getString(R.string.location_off));
+                dialog.setPositiveButton(getResources().getString(R.string.go_to_settings), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        MainActivity.this.startActivity(myIntent);
+                    }
+                });
+                dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        paramDialogInterface.cancel();
+                    }
+                });
+                dialog.show();
+            }
         }
     }
 }

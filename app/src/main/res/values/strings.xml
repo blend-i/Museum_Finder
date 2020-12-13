@@ -15,5 +15,8 @@
     <string name="bucketlist_navigation">Bucketlist</string>
     <string name="map_navigation">Map</string>
     <string name="profile_navigation">Profile</string>
+    <string name="go_to_settings">Go to settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="location_off">Failed to get location, please go to settings to enable it</string>
     <string name="no_description">Could not retrieve description resources from WikiPedia</string>
 </resources>
