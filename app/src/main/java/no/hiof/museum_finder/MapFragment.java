@@ -105,7 +105,7 @@ public class MapFragment extends Fragment {
             } else {
                 Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
                 getCurrentLocation();
-                EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
+                EasyPermissions.requestPermissions(this, "Failed to get location, allow location settings get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
             }
             return view;
         }

@@ -128,7 +128,7 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                     Log.d("HAS PERMISSION", "HAR PERMISSION");
                 } else {
                     Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
-                    EasyPermissions.requestPermissions(this, "Access fine location needed to get my location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
+                    EasyPermissions.requestPermissions(this, "Failed to get location, please enable your location settings", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
                     getCurrentLocation();
                 }
             }
@@ -141,6 +141,9 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        System.out.println("GRANTRESULTS: " + grantResults);
+        System.out.println("REQUESTCODE: " + requestCode);
+        System.out.println("PERMISSIONS: " + permissions);
         getCurrentLocation();
 
     }
