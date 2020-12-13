@@ -76,54 +76,57 @@ public class WikiJSONParser {
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                double currentLat = location.getLatitude();
-                double currentLng = location.getLongitude();
+                if(location!= null) {
+                    double currentLat = location.getLatitude();
+                    double currentLng = location.getLongitude();
 
-                currentCountry = reverseGeoCode(currentLat, currentLng, context);
+                    currentCountry = reverseGeoCode(currentLat, currentLng, context);
 
-                System.out.println("LANDSKODE: " + currentCountry);
-
-                if(currentCountry.equals("NO")) {
-                    currentCountry = "no";
-                } else {
-                    currentCountry = "en";
-                }
+                    System.out.println("LANDSKODE: " + currentCountry);
 
 
-                System.out.println("ANNA" + currentCountry);
+                    if(currentCountry.equals("NO")) {
+                        currentCountry = "no";
+                    } else {
+                        currentCountry = "en";
+                    }
 
-                String downloadUrl = "https://" + currentCountry + ".wikipedia.org/w/api.php?action=query&format=json&titles=" + urlTitle + "&prop=extracts&exintro&explaintext";
 
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, downloadUrl, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject wikidata = response.getJSONObject("query").getJSONObject("pages");
-                            Iterator<String> keys = wikidata.keys();
-                            String key = "";
+                    System.out.println("ANNA" + currentCountry);
 
-                            while(keys.hasNext()) {
-                                key = keys.next();
+                    String downloadUrl = "https://" + currentCountry + ".wikipedia.org/w/api.php?action=query&format=json&titles=" + urlTitle + "&prop=extracts&exintro&explaintext";
+
+
+                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, downloadUrl, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                JSONObject wikidata = response.getJSONObject("query").getJSONObject("pages");
+                                Iterator<String> keys = wikidata.keys();
+                                String key = "";
+
+                                while(keys.hasNext()) {
+                                    key = keys.next();
+                                }
+
+                                String intro = wikidata.getJSONObject(key).getString("extract");
+
+                                description.setText(!intro.isEmpty() ? intro : "The retrieved description is empty");
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                description.setText(R.string.no_description);
+                                System.out.println("ERROR I ADAPTER");
                             }
-
-                            String intro = wikidata.getJSONObject(key).getString("extract");
-
-                            description.setText(!intro.isEmpty() ? intro : "The retrieved description is empty");
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            description.setText(R.string.no_description);
-                            System.out.println("ERROR I ADAPTER");
                         }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-                requestQueue.add(request);
-
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    });
+                    requestQueue.add(request);
+                }
             }
         });
     }

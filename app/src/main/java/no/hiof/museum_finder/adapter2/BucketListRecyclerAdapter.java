@@ -121,10 +121,12 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             task.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    originLat = location.getLatitude();
-                    originLng = location.getLongitude();
-                    //jsonParseAndDisplayDistanceInKm(originLat,originLng,lat,lng);
-                    new DistanceJsonParser().jsonParseAndDisplayDistanceInKm(originLat, originLng, lat, lng, distance, requestQueue, itemView.getResources().getString(R.string.maps_api_key));
+                    if(location!=null) {
+                        originLat = location.getLatitude();
+                        originLng = location.getLongitude();
+                        //jsonParseAndDisplayDistanceInKm(originLat,originLng,lat,lng);
+                        new DistanceJsonParser().jsonParseAndDisplayDistanceInKm(originLat, originLng, lat, lng, distance, requestQueue, itemView.getResources().getString(R.string.maps_api_key));
+                    }
                 }
             });
 

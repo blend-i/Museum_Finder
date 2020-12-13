@@ -36,6 +36,7 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
                 } else if(!MainActivity.gpsEnabled) {
                     AlertDialog.Builder dialog = new AlertDialog.Builder(context);
                     dialog.setMessage("Failed to find location, please enable your location settings");
+                    dialog.setCancelable(false);
                     dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface paramDialogInterface, int paramInt) {

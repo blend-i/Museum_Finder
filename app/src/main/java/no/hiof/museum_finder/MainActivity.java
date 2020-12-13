@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         if(gpsEnabled) {
-
+            unregisterReceiver(gpsBroadcastReceiver);
 
         }
 
