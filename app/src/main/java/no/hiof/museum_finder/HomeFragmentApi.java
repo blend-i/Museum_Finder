@@ -265,8 +265,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
         } else {
             requestPermissions(new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, PERMISSION_LOCATION_ID);
         }
-
-
     }
 
     @Override
