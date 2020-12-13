@@ -102,6 +102,8 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
+
+
         return view;
     }
 
