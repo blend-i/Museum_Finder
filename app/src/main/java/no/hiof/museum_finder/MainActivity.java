@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if(!gpsEnabled){
+            /*if(!gpsEnabled){
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                 dialog.setMessage(getResources().getString(R.string.location_off));
                 dialog.setPositiveButton(getResources().getString(R.string.go_to_settings), new DialogInterface.OnClickListener() {
@@ -122,7 +123,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 dialog.show();
-            }
+            }*/
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
     }
 }
