@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -118,9 +119,12 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             task.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    originLat = location.getLatitude();
-                    originLng = location.getLongitude();
-                    new DistanceJsonParser().jsonParseAndDisplayDistanceInKm(originLat, originLng, lat, lng, distance, requestQueue, itemView.getResources().getString(R.string.maps_api_key));
+                    if(location != null) {
+                        originLat = location.getLatitude();
+                        originLng = location.getLongitude();
+                        new DistanceJsonParser().jsonParseAndDisplayDistanceInKm(originLat, originLng, lat, lng, distance, requestQueue, itemView.getResources().getString(R.string.maps_api_key));
+                    }
+
                 }
             });
 
