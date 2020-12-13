@@ -21,6 +21,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -218,13 +219,23 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     private void getCurrentLocation() {
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Task<Location> task = fusedLocationProviderClient.getLastLocation();
-            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+
+            LocationRequest currentLocation = new LocationRequest();
+            currentLocation.setInterval(5000);
+            currentLocation.setFastestInterval(2000);
+            currentLocation.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+            fusedLocationProviderClient.requestLocationUpdates(currentLocation, new LocationCallback() {
                 @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        currentLat = location.getLatitude();
-                        currentLong = location.getLongitude();
+                public void onLocationResult(LocationResult locationResult) {
+                    super.onLocationResult(locationResult);
+                    fusedLocationProviderClient.removeLocationUpdates(this);
+
+                    if(locationResult != null && locationResult.getLocations().size() > 0) {
+                        int latestCurrentLocation = locationResult.getLocations().size() - 1;
+
+                        double currentLat = locationResult.getLocations().get(latestCurrentLocation).getLatitude();
+                        double currentLong = locationResult.getLocations().get(latestCurrentLocation).getLongitude();
 
                         String placeType = "museum";
                         int radius = ProfileFragment.getRadius();
@@ -237,12 +248,7 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                         new NearbyMuseumTask().execute(url);
                     }
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(getContext(), "ONFAILIURELISTENER", Toast.LENGTH_SHORT).show();
-                }
-            });
+            }, Looper.getMainLooper());
             Log.d("HAS PERMISSION", "HAR PERMISSION");
 
         } else if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
