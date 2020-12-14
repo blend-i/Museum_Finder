@@ -130,7 +130,7 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
          * and pass it in the DistanceJsonParser().jsonParseAndDisplayDistanceInKm method, together with museum lat, lng, distance textview,
          * requestQueue and api key to use google Distance Matrix Api which calculates the distance.
          *
-         * @param itemView
+         * @param itemView - museum list item
          */
         @SuppressLint("MissingPermission")
         public MuseumViewHolderApi(@NonNull final View itemView) {

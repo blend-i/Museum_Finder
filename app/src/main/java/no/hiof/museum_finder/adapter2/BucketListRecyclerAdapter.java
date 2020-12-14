@@ -40,7 +40,9 @@ import no.hiof.museum_finder.DistanceJsonParser;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
 
-
+/**
+ * Adapterclass which has the job to dynamically create and bind objects to the recyclerview when the user is scrolling.
+ */
 public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRecyclerAdapter.BucketListViewHolder> {
 
     private static final String TAG = BucketListRecyclerAdapter.class.getSimpleName();
@@ -53,13 +55,26 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
         this.clickListener = clickListener;
     }
 
+    /**
+     * Constructor for the recycler adapter which is set on the recyclerview.
+     *
+     * @param context              - creates an inflater based on the context of the fragment your on.
+     * @param museumList           - list of museums to be shown
+     * @param cardViewClickManager - clicklistener interface on a recyclerview list item
+     */
     public BucketListRecyclerAdapter(Context context, List<Museum> museumList, CardViewClickManager cardViewClickManager) {
-        //Lager en inflater basert på den konteksten man er i
         this.inflater = LayoutInflater.from(context);
         this.museumList = museumList;
         this.cardViewClickManager = cardViewClickManager;
     }
 
+    /**
+     * Inflates the museum list objects as a card in the recyclerview with the museum_list_item.xml file
+     *
+     * @param parent   - recyclerview
+     * @param position - position of the museum
+     * @return - museumobject itemview
+     */
     @NonNull
     @Override
     public BucketListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
@@ -69,6 +84,12 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
         return new BucketListViewHolder(itemView);
     }
 
+    /**
+     * Binds the itemview created to the viewholder dynamically and sets their spesific information
+     *
+     * @param viewHolder - holds the different museums
+     * @param position   - keeps track of the position of each museum
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull BucketListViewHolder viewHolder, int position) {
@@ -101,9 +122,17 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
         private double lng;
 
         //Suppressing here
-        @SuppressLint("MissingPermission") Task<Location> task;
+        @SuppressLint("MissingPermission")
+        Task<Location> task;
 
 
+        /**
+         * Initialize varius variables and fusedProviderClient task to get current lat and lng of the user
+         * and pass it in the DistanceJsonParser().jsonParseAndDisplayDistanceInKm method, together with museum lat, lng, distance textview,
+         * requestQueue and api key to use google Distance Matrix Api which calculates the distance.
+         *
+         * @param itemView - museum list item
+         */
         @SuppressLint("MissingPermission")
         public BucketListViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -121,7 +150,7 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             task.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    if(location!=null) {
+                    if (location != null) {
                         originLat = location.getLatitude();
                         originLng = location.getLongitude();
                         //jsonParseAndDisplayDistanceInKm(originLat,originLng,lat,lng);
@@ -130,6 +159,10 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
                 }
             });
 
+            /**
+             * Uses CardViewClickManager interface and listens for a click on the itemview card. When the user clicks the method is
+             * activated and the paramteres are passed to the onCardViewClick which is used in HomeFragmentApi.
+             */
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -138,6 +171,12 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             });
         }
 
+        /**
+         * This method sets the different elements in the museum_list_item.xml file with information about
+         * title, lat, lng, photo, rating and opening hours.
+         *
+         * @param museumToDisplay - museumobject with information about the specific museum
+         */
         public void setMuseum(final Museum museumToDisplay) {
 
             lat = museumToDisplay.getLat();
@@ -146,7 +185,7 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
             System.out.println("LAT I SETMUSEUM: " + lat);
             System.out.println("LNG I SETMUSEUM: " + lng);
 
-            if(thumbnailTextView != null) {
+            if (thumbnailTextView != null) {
                 thumbnailTextView.setText(museumToDisplay.getTitle());
             }
 
@@ -166,7 +205,7 @@ public class BucketListRecyclerAdapter extends RecyclerView.Adapter<BucketListRe
                     "&key=AIzaSyCis2iHvAD0nBpKigxJAHA0CVGo_vq88nc";
 
 
-            if(posterUrl != null && !posterUrl.equals("")) {
+            if (posterUrl != null && !posterUrl.equals("")) {
                 Glide.with(thumbnailimageView.getContext())
                         .load(url)
                         .into(thumbnailimageView);
