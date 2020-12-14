@@ -39,6 +39,14 @@ import no.hiof.museum_finder.model.Museum;
 
 import static android.content.ContentValues.TAG;
 
+/**
+ * The ProfileFragment class represents the user profile. We use the firebase auth
+ * to get information about the user and display their name, email and profile picture.
+ * The seekbar in profile changes the radius value in the api request for nearby museums
+ * which lets the user decide the max distance for museums. We also have a logout button which
+ * signs the user out of the logged inn session and navigates back to the login screen.
+ */
+
 public class ProfileFragment extends Fragment {
 
     private TextView nameTextView;
@@ -47,7 +55,6 @@ public class ProfileFragment extends Fragment {
     private FirebaseAuth auth;
     private SeekBar seekBar;
     private TextView radiusValue;
-
     public static int radius = 50000;
 
     @Override
@@ -66,7 +73,6 @@ public class ProfileFragment extends Fragment {
     }
 
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -78,14 +84,12 @@ public class ProfileFragment extends Fragment {
         FirebaseUser firebaseUser = auth.getCurrentUser();
         radiusValue = view.findViewById(R.id.radiusValue);
 
-        radiusValue.setText(String.valueOf("Max distance: " +(radius)  +" km"));
+        radiusValue.setText(String.valueOf("Max distance: " + (radius) + " km"));
 
         seekBar = view.findViewById(R.id.seekBar);
         seekBar.setMax(50000);
         seekBar.setProgress(getRadius());
         radiusValue.setText(String.valueOf((getRadius() / 1000) + " km"));
-        //seekBar.setProgress(radius);
-
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -109,15 +113,13 @@ public class ProfileFragment extends Fragment {
         nameTextView.setText(firebaseUser.getDisplayName());
         emailTextView.setText(firebaseUser.getEmail());
 
-        if(firebaseUser.getPhotoUrl() != null && !firebaseUser.getPhotoUrl().equals("")) {
+        if (firebaseUser.getPhotoUrl() != null && !firebaseUser.getPhotoUrl().equals("")) {
             Glide.with(profilePictureImageView.getContext())
                     .load(firebaseUser.getPhotoUrl())
                     .into(profilePictureImageView);
         } else {
             profilePictureImageView.setImageResource(R.drawable.kon_tiki_museet);
         }
-
-
 
         Button button = getView().findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
@@ -133,52 +135,4 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
-
-    /*private void getAccountInformationFromDb(String documentReference, View view) {
-        nameTextView = view.findViewById(R.id.nameTextView);
-        emailTextView = view.findViewById(R.id.eMailTextView);
-        profilePictureImageView = view.findViewById(R.id.profileImageView);
-
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
-
-        System.out.println("SKILLE" + account.getEmail());
-        FirebaseFirestore firestoreDb = FirebaseFirestore.getInstance();
-        final CollectionReference accountCollectionReference = firestoreDb.collection("account");
-
-        firestoreDb.collection("account").document("7AMUXAVCiNNllKTIBxty").collection("bucketlist").add((new Museum("Test", "testdesctiption", "10-17", "Fredrikstad")));
-
-        accountCollectionReference.whereEqualTo("eMail", account.getEmail())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            QuerySnapshot querySnapshot = task.getResult();
-
-                            for(QueryDocumentSnapshot document : querySnapshot) {
-                                Account account = document.toObject(Account.class);
-                                StringBuilder fullName = new StringBuilder();
-                                fullName.append(account.getFirstName());
-                                fullName.append(" ");
-                                fullName.append(account.getLastName());
-
-                                nameTextView.setText(fullName.toString());
-                                emailTextView.setText(account.geteMail());
-
-                                if(account.getProfilePictureUrl() != null && !account.getProfilePictureUrl().equals("")) {
-                                    Glide.with(profilePictureImageView.getContext())
-                                            .load(account.getProfilePictureUrl())
-                                            .into(profilePictureImageView);
-                                } else {
-                                    profilePictureImageView.setImageResource(R.drawable.kon_tiki_museet);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Log.d(TAG, "Get failed with", task.getException());
-                        }
-                    }
-                });
-    }*/
 }

@@ -103,8 +103,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
-
-
         return view;
     }
 
@@ -141,24 +139,9 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                 dialog.show();
             } else {
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-
                 Places.initialize(view.getContext(), getResources().getString(R.string.maps_api_key));
                 placesClient = Places.createClient(requireContext());
-
-                //EasyPermissions.requestPermissions(this, "No permission, please enable permission for location", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
-                /*if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
-
-                    getCurrentLocation();
-                    Log.d("HAS PERMISSION", "HAR PERMISSION");
-                } else {
-                    EasyPermissions.requestPermissions(this, "Location permission needed to get museum listings", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
-                    //getCurrentLocation();
-                }*/
-
                 getCurrentLocation();
-
-
             }
         } else if (!MainActivity.gpsEnabled) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
@@ -203,9 +186,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
      * map is ready set the maps ui settings (gestures and controls) and animate to the location based on
      * current latitude and current longitude (current location of the device).
      */
-    //@SuppressLint("MissingPermission")
-    //@SuppressWarnings("MissingPermission")
-    //@AfterPermissionGranted(PERMISSION_LOCATION_ID)
     private void getCurrentLocation() {
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -221,7 +201,7 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                     super.onLocationResult(locationResult);
                     fusedLocationProviderClient.removeLocationUpdates(this);
 
-                    if(locationResult != null && locationResult.getLocations().size() > 0) {
+                    if (locationResult != null && locationResult.getLocations().size() > 0) {
                         int latestCurrentLocation = locationResult.getLocations().size() - 1;
 
                         double currentLat = locationResult.getLocations().get(latestCurrentLocation).getLatitude();
@@ -241,41 +221,37 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
             }, Looper.getMainLooper());
             Log.d("HAS PERMISSION", "HAR PERMISSION");
 
-        } else if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
-                dialog.setMessage(getResources().getString(R.string.location_off));
-                dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        paramDialogInterface.dismiss();
-                        requestPermissions(new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, PERMISSION_LOCATION_ID);
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+            dialog.setMessage(getResources().getString(R.string.location_off));
+            dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    paramDialogInterface.dismiss();
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION_ID);
 
-                    }
-                });
-                dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                }
+            });
+            dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        paramDialogInterface.cancel();
-                    }
-                });
-                dialog.show();
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    paramDialogInterface.cancel();
+                }
+            });
+            dialog.show();
 
         } else {
-            requestPermissions(new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, PERMISSION_LOCATION_ID);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION_ID);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-                Toast.makeText(getContext(), "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
-                getCurrentLocation();
-
-        System.out.println("GRANTRESULTS: " + grantResults);
-        System.out.println("REQUESTCODE: " + requestCode);
-        System.out.println("PERMISSIONS: " + permissions);
+        Toast.makeText(getContext(), "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
+        getCurrentLocation();
     }
 
     @Override
@@ -410,7 +386,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
 
             String museumCardDetailTransitionName = getString(R.string.museum_card_detail_transition_name);
             FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder().addSharedElement(v, museumCardDetailTransitionName).build();
-            //System.out.println(museumList.get(position).getTitle());
             HomeFragmentApiDirections.ActionHomeFragmentApiToMuseumDetail navigateToDetailFragment = HomeFragmentApiDirections.actionHomeFragmentApiToMuseumDetail();
             navigateToDetailFragment.setPlaceId(museumArrayList.get(position).getPlaceId());
             navigateToDetailFragment.setOpeningHours(museumArrayList.get(position).getOpen());
@@ -431,9 +406,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
             List<Address> addresses = null;
             geocoder = new Geocoder(getContext(), Locale.getDefault());
 
-            //double latitude = Double.parseDouble(lat);
-            //double longitude = Double.parseDouble(lng);
-            //using latitude and longitude from last location to pinpoint address
             try {
                 addresses = geocoder.getFromLocation(lat, lng, 5); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
             } catch (IOException e) {
