@@ -7,6 +7,9 @@ import java.lang.annotation.Annotation;
 
 import no.hiof.museum_finder.R;
 
+/**
+ * Model class for the museum object with varius constructors for different usecases
+ */
 public class Museum {
 
     private String title;

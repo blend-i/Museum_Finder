@@ -37,7 +37,6 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class WikiJSONParser {
 
     String currentCountry;
-
     /**
      * Methoad that replaces white space in a string with underscores
      * @param title - The museum title to be parsed
@@ -54,7 +53,6 @@ public class WikiJSONParser {
         } else {
             name = title.replace(" ", "_");
         }
-
         return name;
     }
 
@@ -76,68 +74,72 @@ public class WikiJSONParser {
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                double currentLat = location.getLatitude();
-                double currentLng = location.getLongitude();
+                if(location!= null) {
+                    double currentLat = location.getLatitude();
+                    double currentLng = location.getLongitude();
 
-                currentCountry = reverseGeoCode(currentLat, currentLng, context);
+                    currentCountry = reverseGeoCode(currentLat, currentLng, context);
 
-                System.out.println("LANDSKODE: " + currentCountry);
+                    if(currentCountry.equals("NO")) {
+                        currentCountry = "no";
+                    } else {
+                        currentCountry = "en";
+                    }
 
-                if(currentCountry.equals("NO")) {
-                    currentCountry = "no";
-                } else {
-                    currentCountry = "en";
-                }
+                    String downloadUrl = "https://" + currentCountry + ".wikipedia.org/w/api.php?action=query&format=json&titles=" + urlTitle + "&prop=extracts&exintro&explaintext";
 
+                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, downloadUrl, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                JSONObject wikidata = response.getJSONObject("query").getJSONObject("pages");
+                                Iterator<String> keys = wikidata.keys();
+                                String key = "";
 
-                System.out.println("ANNA" + currentCountry);
+                                while(keys.hasNext()) {
+                                    key = keys.next();
+                                }
 
-                String downloadUrl = "https://" + currentCountry + ".wikipedia.org/w/api.php?action=query&format=json&titles=" + urlTitle + "&prop=extracts&exintro&explaintext";
+                                String intro = wikidata.getJSONObject(key).getString("extract");
 
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, downloadUrl, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject wikidata = response.getJSONObject("query").getJSONObject("pages");
-                            Iterator<String> keys = wikidata.keys();
-                            String key = "";
+                                description.setText(!intro.isEmpty() ? intro : "The retrieved description is empty");
 
-                            while(keys.hasNext()) {
-                                key = keys.next();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                description.setText(R.string.no_description);
+                                System.out.println("ERROR I ADAPTER");
                             }
-
-                            String intro = wikidata.getJSONObject(key).getString("extract");
-
-                            description.setText(!intro.isEmpty() ? intro : "The retrieved description is empty");
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            description.setText(R.string.no_description);
-                            System.out.println("ERROR I ADAPTER");
                         }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-                requestQueue.add(request);
-
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    });
+                    requestQueue.add(request);
+                }
             }
         });
     }
 
+    /**
+     * This method uses lat and lng to find a specific address which is user in the onSuccess
+     * in the tasklistener to get the countrycode, so we can specify which country's wikipedia
+     * we are using to search the title. Geocoder generates address(es) based on
+     * lat and lng. We set the address geocoder generated to the addresses variable and return its
+     * 0 index.
+     *
+     * @param lat - latitude of the museum
+     * @param lng - longitude of the museum
+     * @return - address of the museum
+     */
     public String reverseGeoCode(double lat, double lng, Context context) {
         Geocoder geocoder;
         List<Address> addresses = null;
         geocoder = new Geocoder(context, Locale.getDefault());
 
-        //double latitude = Double.parseDouble(lat);
-        //double longitude = Double.parseDouble(lng);
-        //using latitude and longitude from last location to pinpoint address
         try {
-            addresses = geocoder.getFromLocation(lat, lng, 5); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            addresses = geocoder.getFromLocation(lat, lng, 5);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -36,6 +36,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import no.hiof.museum_finder.exceptions.NoLocationException;
 import no.hiof.museum_finder.model.Museum;
 
+/**
+ * This class handles the details of the museum when the user clicks a museum card in the HomeFragmentApi og BucketlistFragment
+ */
 public class MuseumDetailFragment extends Fragment {
     private TextView museumTitle;
     private TextView museumDescription;
@@ -83,6 +86,15 @@ public class MuseumDetailFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_museum_detail, container, false);
     }
 
+    /**
+     * Initialize various variables and accept arguments sent with navigate from either HomeFragmentApi or
+     * BucketlistFragment with Bundle arguments = getArguments.
+     * We get the description in the details from the WikiJSONParser class by passing it the title of the museum
+     * clicked on (which we got from the Bundle args), add a requestQuene for volley library method,
+     * give it the spesific textview it should set the text to and pass the context of this fragment. Then we apply
+     * the information we received from either HomeFragmentApi or BucketlistFragment to the different textviews
+     * and imageview.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -148,6 +160,11 @@ public class MuseumDetailFragment extends Fragment {
         BounceInterpolator bounceInterpolator = new BounceInterpolator();
         scaleAnimation.setInterpolator(bounceInterpolator);
 
+        /**
+         * Listens to the favorite button. If the user checks the button then its added to the database with
+         * setCheckedBucketList method and passes inn true. If its unchecked it sends a false boolean, and if the
+         * document exists in the database, it will remove the document from the bucketlist in the database.
+         */
         favourite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -165,6 +182,11 @@ public class MuseumDetailFragment extends Fragment {
         checkIfMusuemExistsInBucketList(museum.getPlaceId());
     }
 
+    /**
+     * Adds museum to our database or deletes it based on the boolean value passed.
+     * @param museumId - the museum user has searched for
+     * @param bool - checked or unchecked / true or false
+     */
     private void setCheckedBucketList(final String museumId, final boolean bool) {
         final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);
         bucketListSpecificMuseumReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -187,6 +209,11 @@ public class MuseumDetailFragment extends Fragment {
         });
     }
 
+    /**
+     * This method is used to recognize if the museum has been checked before by
+     * doing a search in our database to see if its there or not.
+     * @param museumId - current museum
+     */
     private void checkIfMusuemExistsInBucketList(final String museumId) {
         final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);
         bucketListSpecificMuseumReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -197,9 +224,8 @@ public class MuseumDetailFragment extends Fragment {
 
                     if (documentSnapshot.exists()) {
                         favourite.setChecked(true);
-                        System.out.println("DOCUMENT EXISTS IN BUCKETLIST");
                     } else {
-                        System.out.println("Document doesn't exist");
+                        Log.d(getTag(), "Document doesent exist");
                     }
                 }
             }

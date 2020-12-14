@@ -12,9 +12,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -22,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -53,15 +56,38 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static boolean gpsEnabled;
+    public GPSBroadcastReceiver gpsBroadcastReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /**
+         * Used this page for inspiration on creating the broadcastreciever:
+         * https://stackoverflow.com/questions/57306302/how-to-detect-if-user-turned-off-location-in-settings
+         */
+        registerReceiver(gpsBroadcastReceiver = new GPSBroadcastReceiver(new LocationCallBack() {
+            @Override
+            public void onLocationTriggered() {
+                unregisterReceiver(gpsBroadcastReceiver);
+            }
+        }), new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
+
+
+        if (gpsEnabled) {
+            unregisterReceiver(gpsBroadcastReceiver);
+        }
+
+        /**
+         * Checks when you start the application if the internet on device is on. If its not then we show an
+         * AlertDialog which ask the user to turn on the internett and try again.
+         * If the user has internet on device we load up the app by setContentView and checking if user has gps location
+         */
         ConnectivityManager connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        //Get active network info
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        //Check network status
-        if(networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
+        if (networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
             Dialog dialog = new Dialog(this);
             dialog.setContentView(R.layout.no_internet_dialog);
 
@@ -77,21 +103,28 @@ public class MainActivity extends AppCompatActivity {
             tryAgainButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                recreate();
+                    recreate();
                 }
             });
             try {
                 dialog.show();
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
 
-
         } else {
+
             setContentView(R.layout.activity_main);
             NavController controller = Navigation.findNavController(this, R.id.fragment);
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_NavBar);
             NavigationUI.setupWithNavController(bottomNavigationView, controller);
+
+            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            try {
+                gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

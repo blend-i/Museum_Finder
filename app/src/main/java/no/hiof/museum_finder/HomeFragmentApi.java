@@ -1,21 +1,24 @@
 package no.hiof.museum_finder;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,24 +31,20 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.FragmentNavigator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.transition.MaterialElevationScale;
@@ -61,22 +60,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.SortedMap;
 
 
 import no.hiof.museum_finder.adapter3.MuseumRecyclerAdapterApi;
 import no.hiof.museum_finder.model.Museum;
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
 
-public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnNetworkActiveListener {
+/**
+ * This class represents the Home screen in the application. It works as the head which connects
+ * the adapter and parser classes together to host the recyclerview with information about the museums.
+ */
+public class HomeFragmentApi extends Fragment {
 
     private final int PERMISSION_LOCATION_ID = 1;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private double currentLat, currentLong;
     private MuseumRecyclerAdapterApi museumAdapter;
     private RecyclerView recyclerView;
     private PlacesClient placesClient;
@@ -87,14 +85,34 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_api, container, false);
+        return view;
+    }
 
+    /**
+     * When view is created we check to see if GPS is enabled on the phone. If thats true, we check if the phone has internet. If the user
+     * has internet and location settings on, we will try to get user current location.
+     * If the user turns off location on phone, an AlertDialog will pop up asking the user to enable their location. If the user
+     * clicks "Go to settnings" button we open new intent which takes user to location settings. If internet is not enabled
+     * we also open up an AlertDialog which ask the user to turn their internet on to use the application.
+     *
+     * @param view               - HomeFragment xml file
+     * @param savedInstanceState - Savedinstance
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (MainActivity.gpsEnabled) {
 
             ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            //Get active network info
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-            //Check network status
-            if(networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
+            /**
+             * Checks status of network and pops AlertDialog if user is not connected to the internet.
+             * If network is on then we initialize fusedLocationProviderClient and places api and try to
+             * get user current location
+             */
+            if (networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
                 Dialog dialog = new Dialog(getContext());
                 dialog.setContentView(R.layout.no_internet_dialog);
 
@@ -116,82 +134,128 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                 });
                 dialog.show();
             } else {
-                
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-
                 Places.initialize(view.getContext(), getResources().getString(R.string.maps_api_key));
                 placesClient = Places.createClient(requireContext());
-
-
-                if (EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    getCurrentLocation();
-                    Log.d("HAS PERMISSION", "HAR PERMISSION");
-                } else {
-                    Log.d("HAS NOT PERMISSION", "HAR PERMISSION");
-                    EasyPermissions.requestPermissions(this, "Failed to get location, please enable your location settings", PERMISSION_LOCATION_ID, Manifest.permission.ACCESS_FINE_LOCATION);
-                    getCurrentLocation();
-                }
+                getCurrentLocation();
             }
 
+            /**
+             * gpsEnabled is a static variable in MainActivity which listens to BroadcastReciever in the
+             * GPSBroadcastReciever class. The GPSBroadcastReciever class listens to if the user turns their location
+             * on or off and the variable in MainActivity is decided by this. If !gpsEnabled then we create an intent
+             * and send user to location settings in phone if the user clicks "Go to settings" button.
+             */
+        } else if (!MainActivity.gpsEnabled) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+            dialog.setMessage(getResources().getString(R.string.location_off));
+            dialog.setPositiveButton(getResources().getString(R.string.go_to_settings), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    getContext().startActivity(myIntent);
+                    paramDialogInterface.dismiss();
 
+                    LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                    try {
+                        MainActivity.gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-        return view;
-    }
+                }
+            });
+            dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        System.out.println("GRANTRESULTS: " + grantResults);
-        System.out.println("REQUESTCODE: " + requestCode);
-        System.out.println("PERMISSIONS: " + permissions);
-        getCurrentLocation();
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    paramDialogInterface.cancel();
+                }
+            });
+            dialog.show();
+        }
 
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         distanceTextView = view.findViewById(R.id.distanceTextView);
     }
 
     /**
-     * Method called if the app has the ACCESS_FINE_LOCATION.
-     * Creates a Location task that tries to retrieve last location from the FusedLocationProviderClient,
-     * which has a onSuccessListener, if the task is successful get latitude and longitude of the devices
-     * last location, create a new instance of NearbyMuseumTask and pass a nearbysearch URL on execution of
-     * the task (this to download museum data, parse the data and set markers on the map for every museum
-     * within the specified radius of the device in use). Lastly retrieve the supportMapFragment, when the
-     * map is ready set the maps ui settings (gestures and controls) and animate to the location based on
-     * current latitude and current longitude (current location of the device).
+     * Checks if the user has given our application permission to use location with checking the state of ACCESS_FINE_LOCATION
+     * If permission is granted we do a LocationRequest with max 1 per 5 seconds location calls and update users location.
+     * With this location and the radius which is default 50000 or decided by the user we create an URL with users current
+     * location, radius, museum placetype and send our API key for the request to the inner class NearbyMuseumTask.
      */
-    @SuppressLint("MissingPermission")
-    @AfterPermissionGranted(PERMISSION_LOCATION_ID)
     private void getCurrentLocation() {
-        Task<Location> task = fusedLocationProviderClient.getLastLocation();
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    currentLat = location.getLatitude();
-                    currentLong = location.getLongitude();
 
-                    String placeType = "museum";
-                    int radius = ProfileFragment.getRadius();
-                    String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
-                            "?location=" + currentLat + "," + currentLong +
-                            "&radius=" + radius +
-                            "&type=" + placeType +
-                            "&key="+ getResources().getString(R.string.maps_api_key);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-                    new NearbyMuseumTask().execute(url);
+            LocationRequest currentLocation = new LocationRequest();
+            currentLocation.setInterval(5000);
+            currentLocation.setFastestInterval(2000);
+            currentLocation.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+            fusedLocationProviderClient.requestLocationUpdates(currentLocation, new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    super.onLocationResult(locationResult);
+                    fusedLocationProviderClient.removeLocationUpdates(this);
+
+                    if (locationResult != null && locationResult.getLocations().size() > 0) {
+                        int latestCurrentLocation = locationResult.getLocations().size() - 1;
+
+                        double currentLat = locationResult.getLocations().get(latestCurrentLocation).getLatitude();
+                        double currentLong = locationResult.getLocations().get(latestCurrentLocation).getLongitude();
+
+                        String placeType = "museum";
+                        int radius = ProfileFragment.getRadius();
+                        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
+                                "?location=" + currentLat + "," + currentLong +
+                                "&radius=" + radius +
+                                "&type=" + placeType +
+                                "&key=" + getResources().getString(R.string.maps_api_key);
+
+                        new NearbyMuseumTask().execute(url);
+                    }
                 }
-            }
-        });
+            }, Looper.getMainLooper());
+            Log.d("HAS PERMISSION", "HAR PERMISSION");
+
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+            dialog.setMessage(getResources().getString(R.string.location_off));
+            dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    paramDialogInterface.dismiss();
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION_ID);
+
+                }
+            });
+            dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    paramDialogInterface.cancel();
+                }
+            });
+            dialog.show();
+
+        } else {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION_ID);
+        }
     }
 
+    /**
+     * Checks if the requestcode is the same as PERMISSION_LOCATION_ID then we get the user location if the user
+     * clicks allow
+     */
     @Override
-    public void onNetworkActive() {
-        System.out.println("NETWORK ACTIVE");
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Toast.makeText(getContext(), requestCode + " " + PERMISSION_LOCATION_ID, Toast.LENGTH_SHORT).show();
+        if (requestCode == PERMISSION_LOCATION_ID) {
+            getCurrentLocation();
+        }
     }
 
     /**
@@ -221,28 +285,16 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
         }
     }
 
-
-    private class NextPageTokenTask extends AsyncTask<String, Integer, String> {
-        @Override
-        protected String doInBackground(String... strings) {
-            String museumData = null;
-
-            try {
-                museumData = downloadUrl(strings[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return museumData;
-        }
-
-        @Override
-        protected void onPostExecute(String museumData) {
-            new MuseumDataParserTask().execute(museumData);
-
-        }
-    }
-
-
+    /**
+     * Method that handles the download of the data based on the URL passed in. In the process
+     * it initializes a HttpURLConnection on the URL passed in to the method, gets the input stream
+     * and passes it to a buffered reader and appends data to a string builder while the buffered
+     * reader has lines to read.
+     *
+     * @param downloadUrl - nearby places url to be downloaded
+     * @return - data retrieved from the download
+     * @throws IOException - if download fails
+     */
     private String downloadUrl(String downloadUrl) throws IOException {
         URL url = new URL(downloadUrl);
 
@@ -264,37 +316,41 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
         return museumData;
     }
 
-
-
-
+    /**
+     * Local class MuseumDataParserTask inherits from AsyncTask to handle JSON parsing
+     * (utilizes the JsonParser class) of the museum data in the background (The data retrieved in method donwloadUrl)
+     */
     private class MuseumDataParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> implements CardViewClickManager {
         @Override
         protected List<HashMap<String, String>> doInBackground(String... strings) {
-            NearbySearchJSONParser2 nearbySearchJSONParser = new NearbySearchJSONParser2();
+            NearbySearchJSONParserHome nearbySearchJSONParserHome = new NearbySearchJSONParserHome();
             List<HashMap<String, String>> mapList = null;
             JSONObject jsonObject;
             try {
                 jsonObject = new JSONObject(strings[0]);
-                mapList = nearbySearchJSONParser.parseResult(jsonObject);
-                System.out.println("MAPLIST I MUSEUMDATA: " + mapList);
+                mapList = nearbySearchJSONParserHome.parseResult(jsonObject);
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
-                System.out.println("ERROR I MUSEUMDATA: ");
             }
 
             return mapList;
         }
 
-
+        /**
+         * initialize an ArrayList
+         * loop over museumdata and get the different variables of the museum
+         * to create a museum object which then is added to museumArrayList.
+         * After the loop, we initiaslize recyclerView and museumAdapter with museumArrayList and set
+         * this adapter on the recyclerView
+         *
+         * @param hashMaps
+         */
         @Override
         protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
             museumArrayList = new ArrayList<>();
-            System.out.println("HASHMAPS: " + hashMaps);
 
             for (int i = 0; i < hashMaps.size(); i++) {
                 HashMap<String, String> hashMapList = hashMaps.get(i);
-                //WikiJSONParser wikiJSONParser = new WikiJSONParser();
-                //String description = hashMapList.get("openHours");
 
                 try {
                     String open = hashMapList.get("open");
@@ -304,7 +360,7 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
                     String rating = hashMapList.get("rating");
                     double lat = Double.parseDouble(hashMapList.get("lat"));
                     double lng = Double.parseDouble(hashMapList.get("lng"));
-                    museumArrayList.add(new Museum(name, open,  photo, rating,  placeId, lat, lng));
+                    museumArrayList.add(new Museum(name, open, photo, rating, placeId, lat, lng));
 
                 } catch (Exception e) {
                     System.out.println(e);
@@ -314,24 +370,34 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
             recyclerView = getView().findViewById(R.id.museumRecyclerViewApi);
             museumAdapter = new MuseumRecyclerAdapterApi(getContext(), museumArrayList, this);
             recyclerView.setAdapter(museumAdapter);
-            //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-                //Do some stuff
+            /**
+             * If user device is horizontal we show a gridview with spancount of 2.
+             */
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
             }
 
-            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-                //Do some stuff
+            /**
+             * If user device is vertical we show a list with a linear layout.
+             */
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             }
         }
 
-        @Override
-        public void onCardViewClick(int position, View v) {
 
-        }
-
+        /**
+         * Interface method which is implemented by MuseumDataParserTask class. Here we override the
+         * onCardViewCLick method which is also implemented in MuseumRecyclerAdapter where it passes location of museum,
+         * view and distance. This method activates when user clicks a cardview. It has MaterialElevationScale which creates an
+         * animation while switching to MuseumDetailFragment. When navigating to this fragment we use safeargs arguments from navgraph
+         * and specify their value. Then we pass this information to MuseumDetailFragment and navigate there.
+         *
+         * @param position - location of the museum (lat lng)
+         * @param v        - the spesific cardview of the museum in recyclerview
+         * @param distance - distance between userlocation and museum
+         */
         @Override
         public void onCardViewClick(int position, View v, String distance) {
 
@@ -345,7 +411,6 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
 
             String museumCardDetailTransitionName = getString(R.string.museum_card_detail_transition_name);
             FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder().addSharedElement(v, museumCardDetailTransitionName).build();
-            //System.out.println(museumList.get(position).getTitle());
             HomeFragmentApiDirections.ActionHomeFragmentApiToMuseumDetail navigateToDetailFragment = HomeFragmentApiDirections.actionHomeFragmentApiToMuseumDetail();
             navigateToDetailFragment.setPlaceId(museumArrayList.get(position).getPlaceId());
             navigateToDetailFragment.setOpeningHours(museumArrayList.get(position).getOpen());
@@ -361,26 +426,28 @@ public class HomeFragmentApi extends Fragment implements ConnectivityManager.OnN
             setReenterTransition(reenterTransition);
         }
 
+        /**
+         * This method uses lat and lng to find a specific address which is used by onCardViewClick method
+         * to find an address and pass it to MuseumDetailFragment. Geocoder generated address(es) based on
+         * lat and lng. We set the address geocoder generated to the addresses variable and return its
+         * 0 index.
+         *
+         * @param lat - latitude of the museum
+         * @param lng - longitude of the museum
+         * @return - address of the museum
+         */
         public String reverseGeoCode(double lat, double lng) {
             Geocoder geocoder;
             List<Address> addresses = null;
             geocoder = new Geocoder(getContext(), Locale.getDefault());
 
-            //double latitude = Double.parseDouble(lat);
-            //double longitude = Double.parseDouble(lng);
-            //using latitude and longitude from last location to pinpoint address
             try {
-                addresses = geocoder.getFromLocation(lat, lng, 5); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                addresses = geocoder.getFromLocation(lat, lng, 5);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             return addresses.get(0).getAddressLine(0);
-        }
-
-        @Override
-        public void onCardViewToggleButtonCheckedChanged(int position, ToggleButton favourite, boolean isChecked) {
-
         }
     }
 }

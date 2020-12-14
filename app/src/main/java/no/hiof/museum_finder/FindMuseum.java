@@ -90,26 +90,18 @@ import no.hiof.museum_finder.model.Museum;
 
 import static android.app.Activity.RESULT_OK;
 
+/**
+ * Some methods of places search and materialsearchbar are
+ * inspired by this video: https://www.youtube.com/watch?v=ifoVBdtXsv0&t=0s&ab_channel=AbbasHassan
+ */
 public class FindMuseum extends Fragment {
-
-    //This class tells you your current location
     public FusedLocationProviderClient fusedLocationProviderClient;
-
-    //this class is responsible for loading the suggestions as you see the user type in the search string.
     public PlacesClient placesClient;
-
-    //as the suggestions are recieved, we need a list to save those.
     public List<AutocompletePrediction> predictionList;
-
     public Location lastKnownLocation;
-
-    //update userrequest if last location is null
     public LocationCallback locationCallback;
-
-    //Search bar
     public MaterialSearchBar materialSearchBar;
 
-    //Finds the result the user is searching for
     public TextView titleCardView;
     public TextView openingHoursCardView;
     public ImageView imageCardView;
@@ -134,7 +126,6 @@ public class FindMuseum extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_find_museum, container, false);
     }
 
@@ -174,9 +165,9 @@ public class FindMuseum extends Fragment {
 
             @Override
             public void onButtonClicked(int buttonCode) {
-                //this function is called when you click the button on the search bar. this may be the "back" button or the hamburger menu like button
+                //Disable search when u click backbutton
                 if (buttonCode == MaterialSearchBar.BUTTON_NAVIGATION) {
-                    //for example open or close navigation drawer
+
                 } else if (buttonCode == MaterialSearchBar.BUTTON_BACK) {
                     materialSearchBar.disableSearch();
                 }
@@ -189,6 +180,7 @@ public class FindMuseum extends Fragment {
 
             }
 
+            // Finds autocompletepredictions of type ESTABLISHMENT based on each letter written
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 FindAutocompletePredictionsRequest predictionsRequest = FindAutocompletePredictionsRequest.builder()
@@ -198,8 +190,11 @@ public class FindMuseum extends Fragment {
                         .setQuery(s.toString())
                         .build();
 
-                // You can use this to restrict search if app is only gonna be used in one country -->  .setCountry("no")
 
+                /**
+                 * Send a findAutocompletePredictions request and listens to the response. If the task is successful then our
+                 * List<AutocompletePrediction> predictionList is set to that response.
+                 */
                 placesClient.findAutocompletePredictions(predictionsRequest).addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
                     @Override
                     public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
@@ -214,21 +209,21 @@ public class FindMuseum extends Fragment {
                                     }
                                 };
 
+                                /**
+                                 * Here we create a list which is to be filtered out even more. We use a for loop to go through
+                                 * the first list with autocomplete predictions of type ESTABLISHMENT, then loop each response
+                                 * with anohter for loop to see if the response has the placeType of "MUSEUM" before we add it
+                                 * to the list. THerefore the user can only search for museums in the museum app.
+                                 */
                                 List<String> suggestionsList = new ArrayList<>();
                                 for (int i = 0; i < predictionList.size(); i++) {
                                     AutocompletePrediction prediction = predictionList.get(i);
 
-                                    System.out.println("PLACETYPES: " + prediction.getPlaceTypes());
-                                    /**
-                                     * Checks if placetype is museum
-                                     */
                                     for (int j = 0; j < prediction.getPlaceTypes().size(); j++) {
                                         if (prediction.getPlaceTypes().get(j).name().equals("MUSEUM")) {
                                             suggestionsList.add(prediction.getFullText(null).toString());
                                         }
                                     }
-
-
                                 }
                                 materialSearchBar.updateLastSuggestions(suggestionsList);
                                 if (!materialSearchBar.isSuggestionsVisible()) {
@@ -248,13 +243,14 @@ public class FindMuseum extends Fragment {
             }
         });
 
+        /**
+         *  At this point we dont have the latitude and longitude. we only have a place id reference which the user has clicked on the search result
+         * this needs to be sent to google places api and request it to return the latitude and longitude so we can find the actual address
+         * and information regarding the address.
+         */
         materialSearchBar.setSuggstionsClickListener(new SuggestionsAdapter.OnItemViewClickListener() {
             @Override
             public void OnItemClickListener(int position, View v) {
-                //at this point we dont have the latitude and longitude. we only have a place id reference which the user has clicked on the search result
-                //this needs to be sent to google places api and request it to return the latitude and longitude so we can find the actual address
-                //and information regarding the address.
-
                 favourite.setChecked(false);
 
                 if (position >= predictionList.size()) {
@@ -278,7 +274,8 @@ public class FindMuseum extends Fragment {
                     imm.hideSoftInputFromWindow(materialSearchBar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }
                 String placeId = selectedPrediction.getPlaceId();
-                //Here we write what we are interested in. You can chose opening hours etc.
+
+                //Here we write what information we are interested in.
                 List<Place.Field> placeFields = Arrays.asList(
                         Place.Field.LAT_LNG,
                         Place.Field.OPENING_HOURS,
@@ -296,17 +293,20 @@ public class FindMuseum extends Fragment {
                         Place.Field.TYPES
                 );
 
+                //Builds a FetchPlaceRequest based on information about placeId and the placefield types of information specified in placeFields
                 FetchPlaceRequest fetchPlaceRequest = FetchPlaceRequest.builder(placeId, placeFields).build();
 
+                /**
+                 * Tries to fetchPlace with the fetchPleaceRequest information. If successful, then we try to get
+                 * photo of the place. This method uses photometadata in a Fetchphotorequest so that we can get the
+                 * bitmap value which can be interpreted by the imageView built in method "setImageBitmap(bitmap)
+                 * Link to this doc: https://developers.google.com/places/android-sdk/photos
+                 */
                 placesClient.fetchPlace(fetchPlaceRequest).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
                         final Place place = fetchPlaceResponse.getPlace();
-
-                        Log.i("Tag", "place found: " + place.getName());
-                        Log.i("Tag", "place opening hours: " + place.getOpeningHours());
-
                         LatLng latLng = place.getLatLng();
                         if (latLng != null) {
 
@@ -325,8 +325,6 @@ public class FindMuseum extends Fragment {
                                     public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
                                         bitmap = fetchPhotoResponse.getBitmap();
                                         imageCardView.setImageBitmap(bitmap);
-                                        System.out.println("REAL BITMAP" + bitmap);
-
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -335,7 +333,6 @@ public class FindMuseum extends Fragment {
                                             final ApiException apiException = (ApiException) exception;
                                             Log.e("TAG", "Place not found: " + exception.getMessage());
                                             final int statusCode = apiException.getStatusCode();
-                                            // TODO: Handle error with given status code.
                                         }
                                     }
                                 });
@@ -345,8 +342,14 @@ public class FindMuseum extends Fragment {
                                 imageCardView.setBackgroundResource(R.drawable.nophoto);
                             }
 
-                            //openingHoursCardView.setText(Objects.requireNonNull(Objects.requireNonNull(place.getOpeningHours()).getWeekdayText()).toString());
+                            /**
+                             * In the lines below we populate the different elements with information about the search result
+                             * which the user sees when he has clicked on an autocompleted line in his search bar.
+                             */
+
+                            //Makes the favorite button visible when the user has a search result
                             favourite.setAlpha(1);
+
                             LocalDate date = null;
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                 date = LocalDate.now().minusDays(1);
@@ -360,7 +363,6 @@ public class FindMuseum extends Fragment {
                                 openingHoursCardView.setText("Openinghours not available");
                             }
 
-                            //System.out.println("BUSINESS ID: " + place.getId());
                             try {
                                 locationTextView.setText(place.getAddress());
                                 titleCardView.setText(place.getName());
@@ -380,7 +382,6 @@ public class FindMuseum extends Fragment {
                                 e.printStackTrace();
                             }
 
-
                             foundMuseum = new Museum(place.getName(), "no description", place.getAddress(), latLng.latitude, latLng.longitude,"Openingshours not available", "no_photo","0");
                             System.out.println("OPENINGHOURS FIND" + foundMuseum.getPlaceId());
                             foundMuseum.setPlaceId(place.getId());
@@ -399,33 +400,22 @@ public class FindMuseum extends Fragment {
                                 foundMuseum.setRating(String.valueOf(place.getRating()));
                             }
 
-                            System.out.println("PHOTOMETA" + place.getPhotoMetadatas().get(0).zza());
-
-
-
-                            //foundMuseum.setImageBitMap(bitmap);
-                            System.out.println("SE HEEER" + foundMuseum.getTitle() + " " + foundMuseum.getDescription() + " " + foundMuseum.getLocation() + " " + foundMuseum.getOpen() + " " + foundMuseum.getRating() + " " + foundMuseum.getPhoto() + " " + foundMuseum.getPlaceId() + " " + foundMuseum.getLat() + " " + foundMuseum.getLng());
-
-
-                            /*System.out.println("Gjør det du skal her.");
-                            System.out.println("Address: " + place.getAddress());
-                            System.out.println("Lat Lng : " + place.getLatLng());
-                            System.out.println("Opening hours: " + place.getOpeningHours());
-                            System.out.println("Phone number: " + place.getPhoneNumber());
-                            System.out.println("Rating: " + place.getRating());
-                             */
-
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             final String museumPlaceId = foundMuseum.getPlaceId();
-                            System.out.println("MUSEUM ID SE HE" + museumPlaceId);
 
                             bucketCollectionReference = fireStoreDb.collection("account").document(user.getUid()).collection("bucketList");
 
+                            //Animation for the favorite button
                             final ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
                             scaleAnimation.setDuration(500);
                             BounceInterpolator bounceInterpolator = new BounceInterpolator();
                             scaleAnimation.setInterpolator(bounceInterpolator);
 
+                            /**
+                             * Listens to the favorite button. If the user checks the button then its added to the database with
+                             * setCheckedBucketList method and passes inn true. If its unchecked it sends a false boolean, and if the
+                             * document exists in the database, it will remove the document from the bucketlist in the database.
+                             */
                             favourite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                 @Override
                                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -450,9 +440,6 @@ public class FindMuseum extends Fragment {
                         if (e instanceof ApiException) {
                             ApiException apiException = (ApiException) e;
                             apiException.printStackTrace();
-                            int statusCode = apiException.getStatusCode();
-                            Log.i("randomTag", "place not found: " + e.getMessage());
-                            Log.i("randomTag", "status code: " + statusCode);
                         }
                     }
                 });
@@ -462,149 +449,13 @@ public class FindMuseum extends Fragment {
             public void OnItemDeleteListener(int position, View v) {
             }
         });
-       /* //check if gps is enabeled or not aand then request user to enable it
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
-        SettingsClient settingsClient = LocationServices.getSettingsClient(this.getContext());
-
-        Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
-        task.addOnSuccessListener((Activity) getContext(), new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                getDeviceLocation();
-            }
-        });
-
-        task.addOnFailureListener((Activity) getContext(), new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if(e instanceof ResolvableApiException) {
-                    ResolvableApiException resolvableApiException = (ResolvableApiException) e;
-                    try {
-                        //This line will ask the user if they want to accept enable location or not. The code is something i made up as successcode. Do not use elsewhere.
-                        resolvableApiException.startResolutionForResult((Activity) getContext(), 27);
-                    } catch (IntentSender.SendIntentException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        */
     }
 
-    /*@Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 27) {
-            //RESULT_OK is if the user has enabeled the gps. here we get access to location
-            if (resultCode == RESULT_OK){
-                getDeviceLocation();
-            }
-        }
-    }
-
+    /**
+     * Adds museum to our database or deletes it based on the boolean value passed.
+     * @param museumId - the museum user has searched for
+     * @param bool - checked or unchecked / true or false
      */
-
-    @SuppressLint("MissingPermission")
-    private void getDeviceLocation() {
-        //Here we ask the fusedLocationProviderClient to give us the last location
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if(task.isSuccessful()){
-                    //task is successful does not gurantee that it is so we check if its null
-                    lastKnownLocation = task.getResult();
-
-                    //If it is not null, we get the location
-                    if (lastKnownLocation != null) {
-                        //putting this in a thread beacuse i read somewhere that Geocoder can use alot of time.
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Geocoder geocoder;
-                                List<Address> addresses = null;
-                                geocoder = new Geocoder(getContext(), Locale.getDefault());
-
-                                //using latitude and longitude from last location to pinpoint address
-                                try {
-                                    addresses = geocoder.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                                String city = addresses.get(0).getLocality();
-                                String state = addresses.get(0).getAdminArea();
-                                String country = addresses.get(0).getCountryName();
-                                String postalCode = addresses.get(0).getPostalCode();
-                                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
-
-                                System.out.println("Address: " + address);
-                                System.out.println("City: " + city);
-                                System.out.println("Country: " + country);
-                            }
-                        }).start();
-                    }
-                    // if location is null, then we need to update the information
-                    else {
-                        final LocationRequest locationRequest = LocationRequest.create();
-                        locationRequest.setInterval(10000);
-                        locationRequest.setFastestInterval(5000);
-                        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-                        //this function will be executed when an updated location is recieved
-                        locationCallback = new LocationCallback() {
-                            @Override
-                            public void onLocationResult(LocationResult locationResult) {
-                                super.onLocationResult(locationResult);
-                                //if its still null then just return and stop
-                                if(locationResult == null){
-                                    return;
-                                }
-                                //update location
-                                lastKnownLocation = locationResult.getLastLocation();
-
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Geocoder geocoder;
-                                        List<Address> addresses = null;
-                                        geocoder = new Geocoder(getContext(), Locale.getDefault());
-                                        //using latitude and longitude from last location to pinpoint address
-                                        try {
-                                            addresses = geocoder.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                                        String city = addresses.get(0).getLocality();
-                                        String state = addresses.get(0).getAdminArea();
-                                        String country = addresses.get(0).getCountryName();
-                                        String postalCode = addresses.get(0).getPostalCode();
-                                        String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
-
-                                        System.out.println("Address after location turn on: " + address);
-                                        System.out.println("City: " + city);
-                                        System.out.println("Country: " + country);
-                                    }
-                                }).start();
-                                fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-                            }
-                        };
-                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-                    }
-                } else {
-                    Toast.makeText(getContext(), "unable to get last location", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
     private void setCheckedBucketList(final String museumId, final boolean bool) {
         final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);
         bucketListSpecificMuseumReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -627,6 +478,11 @@ public class FindMuseum extends Fragment {
         });
     }
 
+    /**
+     * This method is used to recognize if the museum you are searching for has been checked before by
+     * doing a search in our database to see if its there or not.
+     * @param museumId - the museum searched for
+     */
     private void checkIfMusuemExistsInBucketList(final String museumId) {
         final DocumentReference bucketListSpecificMuseumReference = bucketCollectionReference.document(museumId);
         bucketListSpecificMuseumReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
