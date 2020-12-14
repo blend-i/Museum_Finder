@@ -131,7 +131,6 @@ public class LoginFragment extends Fragment {
 
         if (resultCode == RESULT_OK) {
             FirebaseUser currentUser = auth.getCurrentUser();
-            //Toast.makeText(context, "Signed in as " + currentUser.getDisplayName(), Toast.LENGTH_LONG).show();
         } else {
             //Toast.makeText(context, "Signed in cancelled", Toast.LENGTH_LONG);
         }
@@ -153,15 +152,19 @@ public class LoginFragment extends Fragment {
         auth.removeAuthStateListener(authStateListener);
     }
 
+    /**
+     * Adds the user to the firebase database by getting current user from FirebaseAuth and then
+     * referenceing the FirebaseFireStore account collection. From there we make a document reference
+     * in the account collection which we get by referenceing the current user Uid. Since when we create a user
+     * document we use the same Uid, therefore it can be referenced here. If this exists , we dont add the user, if not
+     * we add the user in the database.
+     * @param account
+     */
     private void addAccountToDb(final Account account) {
         final FirebaseUser currentUser = auth.getCurrentUser();
         firebaseDb = FirebaseFirestore.getInstance();
         final CollectionReference accountCollection = firebaseDb.collection("account");
         DocumentReference documentReference = accountCollection.document(currentUser.getUid());
-
-        /*if(currentUser != null)
-            accountCollection.document(currentUser.getUid()).set(account, SetOptions.merge());
-         */
 
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override

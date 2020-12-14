@@ -431,11 +431,12 @@ public class HomeFragmentApi extends Fragment {
         /**
          * This method uses lat and lng to find a specific address which is used by onCardViewClick method
          * to find an address and pass it to MuseumDetailFragment. Geocoder generated address(es) based on
-         * lat and lng. We use the List of type address to equal this and return the first index.
+         * lat and lng. We set the address geocoder generated to the addresses variable and return its
+         * 0 index.
          *
          * @param lat - latitude of the museum
          * @param lng - longitude of the museum
-         * @return - adress of the museum
+         * @return - address of the museum
          */
         public String reverseGeoCode(double lat, double lng) {
             Geocoder geocoder;

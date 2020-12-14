@@ -37,7 +37,6 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class WikiJSONParser {
 
     String currentCountry;
-
     /**
      * Methoad that replaces white space in a string with underscores
      * @param title - The museum title to be parsed
@@ -54,7 +53,6 @@ public class WikiJSONParser {
         } else {
             name = title.replace(" ", "_");
         }
-
         return name;
     }
 
@@ -82,20 +80,13 @@ public class WikiJSONParser {
 
                     currentCountry = reverseGeoCode(currentLat, currentLng, context);
 
-                    System.out.println("LANDSKODE: " + currentCountry);
-
-
                     if(currentCountry.equals("NO")) {
                         currentCountry = "no";
                     } else {
                         currentCountry = "en";
                     }
 
-
-                    System.out.println("ANNA" + currentCountry);
-
                     String downloadUrl = "https://" + currentCountry + ".wikipedia.org/w/api.php?action=query&format=json&titles=" + urlTitle + "&prop=extracts&exintro&explaintext";
-
 
                     JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, downloadUrl, null, new Response.Listener<JSONObject>() {
                         @Override
@@ -131,16 +122,24 @@ public class WikiJSONParser {
         });
     }
 
+    /**
+     * This method uses lat and lng to find a specific address which is user in the onSuccess
+     * in the tasklistener to get the countrycode, so we can specify which country's wikipedia
+     * we are using to search the title. Geocoder generates address(es) based on
+     * lat and lng. We set the address geocoder generated to the addresses variable and return its
+     * 0 index.
+     *
+     * @param lat - latitude of the museum
+     * @param lng - longitude of the museum
+     * @return - address of the museum
+     */
     public String reverseGeoCode(double lat, double lng, Context context) {
         Geocoder geocoder;
         List<Address> addresses = null;
         geocoder = new Geocoder(context, Locale.getDefault());
 
-        //double latitude = Double.parseDouble(lat);
-        //double longitude = Double.parseDouble(lng);
-        //using latitude and longitude from last location to pinpoint address
         try {
-            addresses = geocoder.getFromLocation(lat, lng, 5); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            addresses = geocoder.getFromLocation(lat, lng, 5);
         } catch (IOException e) {
             e.printStackTrace();
         }
