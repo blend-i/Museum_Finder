@@ -64,11 +64,14 @@ public class MapFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
+        /**
+         * When user navigates to MapFragment we check if the device has internet connection. If not, we pop up
+         * an AlertDialog and ask the user to turn on the internet connection and click try again button. If the user
+         * has internet we check permission and call the getCurrentLocation method.
+         */
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        //Get active network info
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        //Check network status
         if(networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
             Dialog dialog = new Dialog(getContext());
             dialog.setContentView(R.layout.no_internet_dialog);

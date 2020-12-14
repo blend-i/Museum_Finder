@@ -43,6 +43,11 @@ import no.hiof.museum_finder.adapter2.BucketListRecyclerAdapter;
 import no.hiof.museum_finder.model.Museum;
 import static android.content.ContentValues.TAG;
 
+/**
+ * This class represents the Bucketlist screen in the application. It works as the head which connects
+ * the adapter and parser classes together to host the recyclerview with information about the museums added
+ * to our database.
+ */
 public class BucketlistFragment extends Fragment implements CardViewClickManager{
     private List<Museum> museumList;
     private List<String> museumUidList;
@@ -64,6 +69,12 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
         return inflater.inflate(R.layout.fragment_bucketlist, container, false);
     }
 
+    /**
+     * Initialize lists, database and currentuser so that we have access to these in the fragment.
+     * Further we initialize a museumCollectionReference that adds a bucketlist to the signed in
+     * user if they dont have one, or just referes to it if they have.
+     * Then we call the setUpRecyclerView method
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -78,6 +89,14 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
         setUpRecyclerView();
     }
 
+    /**
+     * createFireStoreReadListener is a method that is a snapShotListener of the database which means we get to see changes in realtime
+     * if something is added or removed from the database without restarting the app. To do this we have a for each loop of the
+     * document changes. We then create a museum object from this snapshot and get its id to match the museumarraylist with the
+     * documentsnapshot museum.
+     * Further we have a switch case which reacts to different states, based on how the document was changed (added, removed or modified)
+     * This is called onResume method and stopped onPause so that it doesent continuesly make calls to the database when not in use.
+     */
     private void createFireStoreReadListener() {
         if(museumCollectionReference == null) {
             return;
@@ -124,6 +143,7 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
         }
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -139,6 +159,12 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
         }
     }
 
+    /**
+     * Initialize the recyclerview and bucketlistAdapter. Bucketlist adapter is populated with the  museumlist
+     * which is regulated by the createFireStoreListener method. This method also contains methods if the user has
+     * vertical or horizontal device where in vertical is will show a list with cardsviews one by one and horizontal
+     * it will show a gridlayout with 2 cards next to eachother.
+     */
     private void setUpRecyclerView() {
         recyclerView = getView().findViewById(R.id.bucketListRecyclerView);
         bucketlistAdapter = new BucketListRecyclerAdapter(getContext(), museumList, this);
@@ -156,6 +182,17 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
         }
     }
 
+    /**
+     * Interface method which is implemented by BucketlistFragment class. Here we override the
+     * onCardViewCLick method which is also implemented in BucketlistRecyclerAdapter where it passes location of museum,
+     * view and distance. This method activates when user clicks a cardview. It has MaterialElevationScale which creates an
+     * animation while switching to MuseumDetailFragment. When navigating to this fragment we use safeargs arguments from navgraph
+     * and specify their value. Then we pass this information to MuseumDetailFragment and navigate there.
+     *
+     * @param position - location of the museum (lat lng)
+     * @param view        - the spesific cardview of the museum in recyclerview
+     * @param distance - distance between userlocation and museum
+     */
     @Override
     public void onCardViewClick(int position, View view, String distance) {
 

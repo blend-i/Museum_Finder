@@ -351,8 +351,6 @@ public class HomeFragmentApi extends Fragment {
 
             for (int i = 0; i < hashMaps.size(); i++) {
                 HashMap<String, String> hashMapList = hashMaps.get(i);
-                //WikiJSONParser wikiJSONParser = new WikiJSONParser();
-                //String description = hashMapList.get("openHours");
 
                 try {
                     String open = hashMapList.get("open");
