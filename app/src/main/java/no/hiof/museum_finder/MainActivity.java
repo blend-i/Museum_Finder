@@ -57,37 +57,37 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public class MainActivity extends AppCompatActivity {
 
     public static boolean gpsEnabled;
-
-
     public GPSBroadcastReceiver gpsBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        registerReceiver(gpsBroadcastReceiver= new GPSBroadcastReceiver(new LocationCallBack() {
+        /**
+         * Used this page for inspiration on creating the broadcastreciever:
+         * https://stackoverflow.com/questions/57306302/how-to-detect-if-user-turned-off-location-in-settings
+         */
+        registerReceiver(gpsBroadcastReceiver = new GPSBroadcastReceiver(new LocationCallBack() {
             @Override
             public void onLocationTriggered() {
-                //Location state changed
-                System.out.println("LOCATION TURNED OFF IN MAINACTIVITY");
                 unregisterReceiver(gpsBroadcastReceiver);
             }
         }), new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
 
 
-        if(gpsEnabled) {
+        if (gpsEnabled) {
             unregisterReceiver(gpsBroadcastReceiver);
-
         }
 
-
+        /**
+         * Checks when you start the application if the internet on device is on. If its not then we show an
+         * AlertDialog which ask the user to turn on the internett and try again.
+         * If the user has internet on device we load up the app by setContentView and checking if user has gps location
+         */
         ConnectivityManager connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        //Get active network info
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        //Check network status
-        if(networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
+        if (networkInfo == null || !networkInfo.isConnected() || !networkInfo.isAvailable()) {
             Dialog dialog = new Dialog(this);
             dialog.setContentView(R.layout.no_internet_dialog);
 
@@ -103,15 +103,14 @@ public class MainActivity extends AppCompatActivity {
             tryAgainButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                recreate();
+                    recreate();
                 }
             });
             try {
                 dialog.show();
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-
 
         } else {
 
@@ -120,32 +119,12 @@ public class MainActivity extends AppCompatActivity {
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_NavBar);
             NavigationUI.setupWithNavController(bottomNavigationView, controller);
 
-
-            LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-            try{
+            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            try {
                 gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            /*if(!gpsEnabled){
-                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                dialog.setMessage(getResources().getString(R.string.location_off));
-                dialog.setPositiveButton(getResources().getString(R.string.go_to_settings), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        MainActivity.this.startActivity(myIntent);
-                    }
-                });
-                dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        paramDialogInterface.cancel();
-                    }
-                });
-                dialog.show();
-            }*/
         }
     }
 }

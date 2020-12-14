@@ -16,19 +16,22 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
 
     private final LocationCallBack locationCallBack;
 
-
     public GPSBroadcastReceiver(LocationCallBack iLocationCallBack){
         this.locationCallBack = iLocationCallBack;
     }
 
-
+    /**
+     * Listens if the user turns location on or if the user turn location off on the device.
+     * Since our main method checks if the gps is on or off at the beginning, we set it to the opposite
+     * of that when user turns location on or off.
+     * If gpsEnabled is false, then we show an ALertDialog which ask the user to turn on location on phone settings
+     * and offer a button that sends you there.
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         try{
             if(intent.getAction().matches("android.location.PROVIDERS_CHANGED")) {
-                System.out.println(MainActivity.gpsEnabled + " ABOVE ");
                 MainActivity.gpsEnabled = !MainActivity.gpsEnabled;
-                System.out.println(MainActivity.gpsEnabled + " BELOW ");
 
                 if(MainActivity.gpsEnabled) {
                     Toast.makeText(context, "Location on", Toast.LENGTH_SHORT).show();
@@ -72,6 +75,12 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
 
     }
 
+    /**
+     * If the user clicks cancel we show an additional AlertDialog which informs the user that
+     * the app is not usable without turning on location settings and ask again if the user wants
+     * to turn location settings on.
+     * @param context - contect of the onReceive method
+     */
     public void cancelMessageDialog(Context context) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setMessage("We are sorry, you need to enable location settings to use this application");
@@ -89,8 +98,6 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-
             }
         });
         dialog.show();

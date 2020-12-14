@@ -178,14 +178,4 @@ public class BucketlistFragment extends Fragment implements CardViewClickManager
         navigateToDetailFragment.setLocation(museumList.get(position).getLocation());
         Navigation.findNavController(requireView()).navigate(navigateToDetailFragment, extras);
     }
-
-    @Override
-    public void onCardViewClick(int position, View v) {
-
-    }
-
-    @Override
-    public void onCardViewToggleButtonCheckedChanged(int position, ToggleButton favourite, boolean isChecked) {
-    }
-
 }

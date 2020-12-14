@@ -42,6 +42,9 @@ import no.hiof.museum_finder.DistanceJsonParser;
 import no.hiof.museum_finder.R;
 import no.hiof.museum_finder.model.Museum;
 
+/**
+ * Adapterclass which has the job to dynamically create and bind objects to the recyclerview when the user is scrolling.
+ */
 public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecyclerAdapterApi.MuseumViewHolderApi> {
     private static final String TAG = MuseumRecyclerAdapterApi.class.getSimpleName();
     private List<Museum> museumList;
@@ -53,21 +56,39 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
         this.clickListener = clickListener;
     }
 
+    /**
+     * Constructor for the recycler adapter which is set on the recyclerview.
+     *
+     * @param context              - creates an inflater based on the context of the fragment your on.
+     * @param museumList           - list of museums to be shown
+     * @param cardViewClickManager - clicklistener interface on a recyclerview list item
+     */
     public MuseumRecyclerAdapterApi(Context context, List<Museum> museumList, CardViewClickManager cardViewClickManager) {
-        //Lager en inflater basert på den konteksten man er i
         this.inflater = LayoutInflater.from(context);
         this.museumList = museumList;
         this.cardViewClickManager = cardViewClickManager;
     }
 
+    /**
+     * Inflates the museum list objects as a card in the recyclerview with the museum_list_item.xml file
+     *
+     * @param parent   - recyclerview
+     * @param position - position of the museum
+     * @return - museumobject itemview
+     */
     @NonNull
     @Override
     public MuseumViewHolderApi onCreateViewHolder(@NonNull ViewGroup parent, int position) {
-        Log.d(TAG, "onCreateViewHolder");
         View itemView = inflater.inflate(R.layout.museum_list_item, parent, false);
         return new MuseumViewHolderApi(itemView);
     }
 
+    /**
+     * Binds the itemview created to the viewholder dynamically and sets their spesific information
+     *
+     * @param viewHolder - holds the different museums
+     * @param position   - keeps track of the position of each museum
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull MuseumViewHolderApi viewHolder, int position) {
@@ -84,6 +105,7 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
         return museumList.size();
     }
 
+
     public class MuseumViewHolderApi extends RecyclerView.ViewHolder {
         private TextView thumbnailTextView;
         private ImageView thumbnailimageView;
@@ -96,12 +118,20 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
         private double originLat;
         private double originLng;
         private double lat;
-        private double  lng;
+        private double lng;
 
         //Suppressing here
-        @SuppressLint("MissingPermission") Task<Location> task;
+        @SuppressLint("MissingPermission")
+        Task<Location> task;
 
 
+        /**
+         * Initialize varius variables and fusedProviderClient task to get current lat and lng of the user
+         * and pass it in the DistanceJsonParser().jsonParseAndDisplayDistanceInKm method, together with museum lat, lng, distance textview,
+         * requestQueue and api key to use google Distance Matrix Api which calculates the distance.
+         *
+         * @param itemView
+         */
         @SuppressLint("MissingPermission")
         public MuseumViewHolderApi(@NonNull final View itemView) {
             super(itemView);
@@ -119,15 +149,18 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             task.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    if(location != null) {
+                    if (location != null) {
                         originLat = location.getLatitude();
                         originLng = location.getLongitude();
                         new DistanceJsonParser().jsonParseAndDisplayDistanceInKm(originLat, originLng, lat, lng, distance, requestQueue, itemView.getResources().getString(R.string.maps_api_key));
                     }
-
                 }
             });
 
+            /**
+             * Uses CardViewClickManager interface and listens for a click on the itemview card. When the user clicks the method is
+             * activated and the paramteres are passed to the onCardViewClick which is used in HomeFragmentApi.
+             */
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -136,8 +169,12 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             });
         }
 
+        /**
+         * This method sets the different elements in the museum_list_item.xml file with information about
+         * title, lat, lng, photo, rating and opening hours.
+         * @param museumToDisplay - museumobject with information about the specific museum
+         */
         public void setMuseum(final Museum museumToDisplay) {
-
             String posterUrl = museumToDisplay.getPhoto();
             String rating = museumToDisplay.getRating();
             String photoUrl;
@@ -145,45 +182,39 @@ public class MuseumRecyclerAdapterApi extends RecyclerView.Adapter<MuseumRecycle
             lng = museumToDisplay.getLng();
 
 
-            if(posterUrl.equals("0")) {
+            if (posterUrl.equals("0")) {
                 photoUrl = "https://bloggersbaba.com/wp-content/uploads/2020/04/no-image-available.jpg";
             } else {
-                    photoUrl = "https://maps.googleapis.com/maps/api/place/photo" +
-                    "?maxwidth=" + 400 +
-                    "&photoreference=" + posterUrl +
-                    "&key=" + itemView.getResources().getString(R.string.maps_api_key);
+                photoUrl = "https://maps.googleapis.com/maps/api/place/photo" +
+                        "?maxwidth=" + 400 +
+                        "&photoreference=" + posterUrl +
+                        "&key=" + itemView.getResources().getString(R.string.maps_api_key);
             }
-
-
 
             //sets the title
             thumbnailTextView.setText(museumToDisplay.getTitle());
 
-
-                //sets the photo of museum in cardview
-                if (posterUrl != null && !posterUrl.equals("")) {
-                    Glide.with(thumbnailimageView.getContext())
-                            .load(photoUrl)
-                            .into(thumbnailimageView);
-                }
-
+            //sets the photo of museum in cardview
+            if (posterUrl != null && !posterUrl.equals("")) {
+                Glide.with(thumbnailimageView.getContext())
+                        .load(photoUrl)
+                        .into(thumbnailimageView);
+            }
 
             //sets if museum open or closed
             if (museumToDisplay.getOpen().equals("true")) {
                 openingHoursTextView.setText("Open");
                 openingHoursTextView.setTextColor(Color.GREEN);
-            }
-            else {
+            } else {
                 openingHoursTextView.setText("Closed");
                 openingHoursTextView.setTextColor(Color.RED);
             }
 
-            if(rating.equals("0")){
+            if (rating.equals("0")) {
                 ratingBar.setAlpha(0);
-            }else {
+            } else {
                 ratingBar.setRating(Float.parseFloat(rating));
             }
-
         }
     }
 }
